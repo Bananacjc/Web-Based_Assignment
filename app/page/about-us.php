@@ -1,8 +1,8 @@
 <?php
-require '../base.php';
+require '../_base.php';
 $_title = 'About Us';
 $_css = '../css/about-us.css';
-include '../head.php';
+include '../_head.php';
 ?>
 <script src="../js/about-us.js"></script>
         <section class="blog">
@@ -73,4 +73,4 @@ include '../head.php';
                 </div>
             </div>
         </div>
-<?php include '../foot.php'; ?>
+<?php include '../_foot.php'; ?>
