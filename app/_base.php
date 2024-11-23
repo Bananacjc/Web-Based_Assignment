@@ -10,7 +10,4 @@ function redirect($url = null) {
     exit();
 }
 
-// Redirect to an existing page
-redirect('page\\login.php');
-
 ?>
