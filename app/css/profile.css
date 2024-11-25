@@ -1,0 +1,415 @@
+@keyframes backgroundSlide {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+#profile-title {
+    text-align: center;
+    font-family: "League Spartan", sans-serif;
+    font-weight: 700;
+    font-size: 48px;
+    letter-spacing: 3px;
+    color: #333;
+    margin: 80px 0 20px 0;
+    padding: 100px;
+    background-image: linear-gradient(120deg, #48b164, #d6eedd, #EFEFEF, #48b164);
+    background-size: 200% 200%;
+    animation: backgroundSlide 10s ease infinite, fadeIn 1.5s ease-out;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.profile-container {
+    display: flex;
+    width: 90%;
+    min-height: 600px;
+    margin: 20px auto;
+    border: 1px solid #cce7cc;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 250px;
+    padding: 20px;
+    height: 100%;
+}
+
+.content {
+    flex-grow: 1;
+    padding: 20px;
+    height: 100%;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    padding: 20px 15px;
+    border-right: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+#logout-btn {
+    padding: 0;
+}
+
+#logout-link {
+    padding: 20px 15px;
+    text-decoration: none;
+    width: 100%;
+    color: #000000;
+}
+
+.sidebar i {
+    margin-right: 10px;
+}
+
+
+.sidebar li:hover {
+    background-color: #ebebeb;
+}
+
+#personal-info-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.input-subcontainer {
+    width: 300px;
+    position: relative;
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+}
+
+.input-box {
+    width: 100%;
+    padding: 16px 40px 16px 16px;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    background: transparent;
+    transition: border-color 0.2s;
+    position: relative;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.label {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    color: #888;
+    pointer-events: none;
+    transition: transform 0.2s, color 0.2s;
+    transform-origin: left bottom;
+    font-size: 16px;
+}
+
+.input-box:focus,
+.input-box.has-content:valid {
+    border-color: #888;
+    outline: solid 1px #888;
+    color: #888;
+}
+
+.input-box:focus + .label,
+.input-box.has-content + .label {
+    transform: translateY(-135%) translateX(0%) scale(0.9);
+    color: #888;
+    background: #FFF;
+    padding: 0 5px;
+}
+
+.input-file-container {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    padding-right: 20px;
+}
+
+.input-file {
+    font-size: 100px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.input-label {
+    background-color: #f4f4f4;
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    display: inline-block;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #333;
+    text-align: center;
+    margin: 20px auto;
+    display: block;
+}
+
+.input-label:hover {
+    background-color: #ddd;
+}
+
+.input-label:active {
+    background-color: #ccc;
+}
+
+/* personal info */
+
+.image-preview-container {
+    margin-top: 20px;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f4f4f4;
+}
+
+#image-preview {
+    width: 300px;
+    height: 300px;
+}
+
+.btn{
+    margin: 20px 0;
+    padding: 15px 50px;
+    border: none;
+    border-radius: 8px;
+    font-family: "Inter", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    font-size: 18px;
+    background-color: #13c86f;
+    text-align: center;
+    text-decoration: none;
+    color: #4d4d4d;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+    cursor: pointer;
+    outline: none;
+    display: inline-block;
+}
+
+.btn:hover,
+.reviewbtn:hover,
+.viewbtn:hover {
+    background-color: #000000;
+    color: #EFEFEF;
+}
+
+/* payment */
+
+#payment-method-container {
+    display: flex;
+}
+
+#e-wallet-container {
+    margin-left: 50px;;
+}
+
+.normal-label {
+    margin: 20px;
+    color: #888;
+}
+
+#expiry-date-input {
+    padding: 8px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #888;
+    outline: none;
+    transition: border-color 0.2s ease-in-out;
+}
+
+#expiry-date-input:focus {
+    border-color: #13c86f;
+    box-shadow: 0 0 5px rgba(19, 200, 111, 0.3);
+}
+
+#card-type {
+    padding: 8px 18px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 14px;
+    color: #888;
+    cursor: pointer;
+}
+
+#card-type:focus {
+    border-color: #13c86f;
+    outline: none;
+    box-shadow: 0 0 5px rgba(19, 200, 111, 0.5);
+}
+
+/* address */
+
+#address-input-container {
+    width: 100%;
+}
+
+/* Order History */
+
+.history-table {
+    width: 90%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid #cce7cc;
+    margin: 50px auto;
+    border-radius: 8px;
+}
+
+.history-table th, .history-table td {
+    padding: 10px;
+    border-left: none;
+    border-right: none;
+    border-top: 1px solid #f6f6f6;
+    border-bottom: 1px solid #f6f6f6;
+    font-weight: 500;
+}
+
+.history-table tr:first-child th:first-child {
+    border-top-left-radius: 8px;
+}
+.history-table tr:first-child th:last-child {
+    border-top-right-radius: 8px;
+}
+.history-table tr:last-child td:first-child {
+    border-bottom-left-radius: 8px;
+}
+.history-table tr:last-child td:last-child {
+    border-bottom-right-radius: 8px;
+}
+
+.order-id-header,
+.order-id {
+    text-align: left;
+}
+
+.date-header,
+.date,
+.time-header,
+.time,
+.delivery-status-header,
+.delivery-status,
+.action-header {
+    text-align: center;    
+}
+
+.total-price-header,
+.total-price {
+    text-align: right;
+}
+
+.history-table th {
+    background-color: #f0fff1;
+    font-weight: 700;
+}
+
+.history-table tr {
+    transition: background-color 0.3s ease-in-out;
+}
+
+.history-table tr:hover {
+    background-color: #f5fff5;
+}
+
+.action {
+    display: flex;
+}
+
+.reviewbtn{
+    margin: 10px auto;
+    padding: 15px 15px;
+    border: none;
+    border-radius: 8px;
+    font-family: "Inter", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    font-size: 16px;
+    background-color: #FFBB38;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    color: #000000;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.ti.ti-circle-filled {
+    color: #ff0000;
+    font-size: 12px;
+}
+
+.ti.ti-check {
+    color: #0fa059;
+    font-size: 14px;
+    font-weight: 900;
+}
+
+.viewbtn{    
+    margin: 10px auto;
+    padding: 15px 15px;
+    border: none;
+    border-radius: 8px;
+    font-family: "Inter", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    font-size: 16px;
+    background-color: #13c86f;;
+    text-align: center;
+    text-decoration: none;
+    color: #000000;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+/* Change Password */
+
+#otp-btn {
+    background-color: #f4f4f4;
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #333;
+    text-align: center;
+    margin: auto 20px;
+}
+
+#otp-btn:hover {
+    background-color: #ddd;
+}
+
+.ti-eye, .ti-eye-off {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    color: #888;
+    font-size: 18px;
+    display: block;
+}
+
+.ti-eye:hover, .ti-eye-off:hover {
+    color: #555;
+}

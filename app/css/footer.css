@@ -1,0 +1,142 @@
+footer {
+    width: 100%;
+}
+
+#footer-wave-svg {
+    background-color: transparent;
+    height: 30px;
+    width: 100%;
+    margin-bottom: -5px;
+}
+#footer-wave-path {
+    fill: #212529;
+}
+
+#footer-container{
+    background: #212529;
+}
+
+#footer-top{
+    padding-top: 50px;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+#footer-top > *{
+    width: 25%;
+}
+
+#logo-footer {
+    display: flex;
+    text-decoration: none;
+}
+
+#banana-footer, #sis-footer {
+    font-family: "League Spartan", sans-serif;
+    font-weight: 700;
+    letter-spacing: 2px;
+    font-size: 44px;
+}
+
+#banana-footer {
+    color: #FFF67E;
+}
+
+#sis-footer {
+    color: #BFEA7C;
+}
+
+#menu{
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-contact-heading{
+    color: #EFEFEF;
+    font-family: "League Spartan", sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 20px 0;
+}
+
+.menu-item{
+    margin: 10px 0;
+}
+
+.menu-link{
+    text-decoration: none;
+    font-size: 18px;
+    color: #C8C8C8;
+    transition: color 0.3s ease-in-out, text-decoration 0.3s ease-in-out;
+}
+
+.menu-link:hover {
+    color: #34A853;
+    text-decoration: underline;
+}
+
+.contact-info-item{
+    display: flex;
+    align-items: center;
+    height: 105px;
+}
+
+.footer-contact-icon > *{
+    font-size: 30px;
+    border: #454545 solid 1px;
+    color: #EFEFEF;
+    padding: 8px;
+    border-radius: 50%;
+    margin-right: 20px;
+}
+
+.footer-contact-title{
+    color: #EFEFEF;
+    font-family: "League Spartan", sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin: 10px 0 0 0;
+}
+
+.footer-contact-content{
+    color: #C8C8C8;
+    margin: 10px 0 10px 0;
+}
+
+#divider{
+    margin: 10px 100px 0px 100px;
+    border-top: rgba(255,255,255,0.3) solid 1px;
+}
+
+#footer-bottom{
+    margin: 0 100px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#copyright{
+    height: 100px;
+    display: flex;
+    align-items: center;
+    color: #C8C8C8;
+    font-size: 18px;
+}
+
+#copyright2{
+    color: #FFF67E;
+}
+
+#copyright3{
+    color: #BFEA7C;
+}
+
+#payment-service{
+    display: flex;
+    align-items: center;
+}
+
+#payment-service > *{
+    border-radius: 15%;
+    background-color: #ffffff;
+    margin-left: 20px;
+}

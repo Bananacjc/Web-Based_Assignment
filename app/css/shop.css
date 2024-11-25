@@ -1,0 +1,330 @@
+html {
+    scroll-behavior: smooth;
+}
+
+#shop-title {
+    text-align: center;
+    font-family: "League Spartan", sans-serif;
+    font-weight: 700;
+    font-size: 48px;
+    letter-spacing: 3px;
+    color: #333;
+    margin: 80px 0 20px 0;
+    padding: 100px;
+    background-image: radial-gradient(circle at 100% 30%, #48b164 10%, transparent 10.1%),
+        radial-gradient(circle at -5% 100%, #EFEFEF 10%, transparent 10.1%),
+        radial-gradient(circle at -5% 100%, #48b164 15%, transparent 15.1%),
+        radial-gradient(ellipse at center, #d6eedd 10%, #EFEFEF 40%);
+}
+
+#container {
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+    position: relative;
+}
+
+#sidebar-container {
+    width: 250px;
+    height: auto;
+    margin: 20px;
+}
+
+.sidebar {
+    width: 250px;
+    height: 600px;
+    position: sticky;
+    top: 110px;
+    left: 0;
+    bottom: 900px;
+    background-color: #FFF;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 0 10px #ccc;
+    box-sizing: border-box;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+#searchbar-container {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background-color: #FFF;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+    border-radius: 6px;
+}
+
+#searchbar-container .ti-search {
+    position: absolute;
+    left: 10px;
+    color: #ccc;
+    pointer-events: none;
+}
+
+.searchbar {
+    width: 100%;
+    padding: 8px 8px 8px 40px;
+    border: none;
+    outline: none;
+    border-radius: 6px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.sidebar a {
+    text-decoration: none;
+    color: black;
+    display: block;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.sidebar a:hover {
+    background-color: #f4f4f4;
+}
+
+.sidebar a.active {
+    background-color: #e6e6e6;
+    color: #307C4F;
+}
+
+#price-slider {
+    background: linear-gradient(to right, #34A853 0%, #34A853 50%, #fff 50%, #fff 100%);
+    border: solid 1px #34A853;
+    border-radius: 8px;
+    height: 9px;
+    width: 100%;
+    outline: none;
+    transition: background 450ms ease-in;
+    -webkit-appearance: none;
+}
+
+#price-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 25%;
+    background: #5db975;
+    cursor: pointer;
+}
+
+#price-slider::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #82CFD0;
+    cursor: pointer;
+}
+
+#main-content {
+    padding: 20px;
+    width: 100%;
+}
+
+.category-title {
+    font-size: 24px;
+    color: #333;
+    margin: 20px 0;
+    padding-left: 10px;
+}
+
+.product-card {
+    width: calc(33% - 20px);
+    box-shadow: 0 0 10px #ccc;
+    margin: 10px;
+    display: inline-block;
+    vertical-align: top;
+    text-align: center;
+    text-decoration: none;
+}
+
+.product-detail-link {
+    text-decoration: none;
+}
+
+.product-card img {
+    width: 200px;
+    height: 200px;
+    display: block;
+    margin: 50px auto 10px auto;
+}
+
+.product-info {
+    padding: 10px;
+    color: #1d1d1d;
+}
+
+button {
+    background-color: #34A853;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+    display: block;
+    width: 80%;
+    margin: 10px auto;
+}
+
+button:hover {
+    background-color: #000000;
+    color: #EFEFEF;
+}
+
+/*Product details prompt*/
+
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 100; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; 
+    background-color: rgb(0,0,0); 
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; 
+    padding: 50px;
+    border: 1px solid #888;
+    border-radius: 8px;
+    width: 60%;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.product-detail-container,
+.rating-and-sold {
+    display: flex;
+}
+
+.product-detail-subcontainer {
+    width: 100%;
+    margin-left: 50px;
+}
+
+.selected-product-name {
+    font-size: 24px;
+    font-weight: 900;
+}
+
+.average-rating-stars {
+    color: #34A853;
+    margin: 0 10px 0 0;
+}
+
+.rating-amount {
+    padding: 0 10px;
+    margin: 0;
+    color: #888;
+    border-left: #ccc solid 1px;
+    border-right: #ccc solid 1px;
+}
+
+.amount-sold {
+    margin: 0 0 0 10px;
+    color: #888;
+}
+
+.price {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.description {
+    color: #888;
+    font-weight: 300;
+}
+
+/*Comment section*/
+
+.comment-container {
+    margin-top: 100px;
+}
+
+.comments-title {
+    font-family: "League Spartan", sans-serif;
+    font-size: 48px;
+    font-weight: 700;
+    margin: 0;
+    padding: 50px 0;
+    border-bottom: #e6e6e6 solid 1px;
+}
+
+.comments {
+    padding: 20px 0;
+    border-bottom: #e6e6e6 solid 1px;    
+    display: flex;
+}
+
+.profile-pic {
+    border-radius: 50%;
+    border: #e6e6e6 solid 1px;
+}
+
+.comments-detail-container {
+    margin-left: 20px;
+}
+
+.user-name,
+.rating-stars,
+.date-time,
+.comment {
+    margin: 0;
+}
+
+.user-name,
+.rating-stars {
+    font-size: 14px;
+}
+
+.date-time {
+    font-size: 12px;
+}
+
+.user-name,
+.date-time {
+    color: #888;
+}
+.rating-stars {
+    color: #34A853;
+}
+
+.comment {
+    margin-top: 10px;
+    
+}

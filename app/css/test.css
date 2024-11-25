@@ -1,0 +1,17 @@
+#login-container {
+    margin-top: 80px;
+    display: flex;
+    padding: 0;
+}
+
+#container-left {
+    width: 55%;
+    padding: 10rem;
+}
+
+#container-right {
+    background-image: url('../img/vegetables.jpg');
+    background-size: 100% 100%;
+    width: 45%;
+    height: 900px;
+}
