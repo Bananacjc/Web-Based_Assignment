@@ -1,8 +1,8 @@
 <?php
-require 'base.php';
+require '_base.php';
 $_title = 'BananaSIS';
 $_css = 'css/home.css';
-include 'head.php';
+include '_head.php';
 ?>
 <div id="content-container">
     <div id="info-container">
@@ -107,4 +107,4 @@ include 'head.php';
     </a>
 </div>
 <script src="js/categoryLink.js"></script>
-<?php include 'foot.php'; ?>
+<?php include '_foot.php'; ?>

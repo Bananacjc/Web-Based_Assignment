@@ -1,8 +1,8 @@
 <?php
-require '../base.php';
+require '../_base.php';
 $_title = 'Cart';
 $_css = '../css/cart.css';
-include '../head.php';
+include '../_head.php';
 ?>
 <h1 id="cart-title">Cart</h1>
 <table class="cart-table">
@@ -148,4 +148,4 @@ include '../head.php';
     </form>
     <button id="paymentbtn" onclick="goToPayment()">Proceed to Payment</button>
 </div>
-<?php include '../foot.php'; ?>
+<?php include '../_foot.php'; ?>
