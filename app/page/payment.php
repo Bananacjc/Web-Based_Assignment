@@ -1,8 +1,8 @@
 <?php
-require '_base.php';
+require '../_base.php';
 $_title = 'Cart';
 $_css = '../css/cart.css';
-include '_head.php';
+include '../_head.php';
 ?>
 <h1 id="payment-title">Payment</h1>
 <div id="payment-container">
