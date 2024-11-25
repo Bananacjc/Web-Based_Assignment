@@ -1,8 +1,8 @@
 <?php
-require '../_base.php';
+require '_base.php';
 $_title = 'Cart';
 $_css = '../css/cart.css';
-include '../_head.php';
+include '_head.php';
 ?>
 <h1 id="payment-title">Payment</h1>
 <div id="payment-container">
@@ -57,22 +57,22 @@ include '../_head.php';
         <div id="flex-container">
             <h5 class="flex-item order-header">PRODUCT</h5>
             <h5 class="flex-item order-header">TOTAL (RM)</h5>
-            <%
+            <!-- <%
                     List<Orderitems> orderItems = (List<Orderitems>) request.getAttribute("orderItemList");
                     List<Product> products = (List<Product>) request.getAttribute("products");
                     if (orderItems != null && products != null) {
                         for (Orderitems orderItem : orderItems) {
                             for (Product product : products) {
                                 if (orderItem.getProductId().equals(product.getProductId())) {
-                    %>
+                    %> -->
             <p class="flex-item product-name"><%= product.getProductName()%> x <%= orderItem.getQuantity()%></p>
             <p class="flex-item product-price"><%= orderItem.getTotalPrice(product.getPrice(), orderItem.getQuantity())%></p>
-            <%
+            <!-- <%
                                 }
                             }
                         }
                     }
-                    %>
+                    %> -->
             <h5 class="flex-item subtotal">SUBTOTAL</h5>
             <h5 class="flex-item subtotal">${subTotal}</h5>
             <h5 class="flex-item">Shipping Fee</h5>
@@ -113,7 +113,6 @@ include '../_head.php';
         <button class="paybtn" onclick="pay()">Pay</button>
     </form>
 </div>
-<%@ include file = "footer.jsp" %>
 <script src="js/paymentMethod.js"></script>
 <script>
     function pay() {
