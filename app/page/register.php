@@ -1,20 +1,14 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />    
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
-        <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap" rel="stylesheet">
-        <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet"/>
-        <link rel="stylesheet" href="css/register.css" />
-        <link rel="icon" href="img/logo.png">
-        <title>Register</title>
-    </head>
+
+<?php
+require '../_base.php';
+$_title = 'Register';
+$_css = '../css/register.css';
+include '../_head.php';
+?>
     <body>
-        <input type="hidden" id="status" value="<% if (request.getAttribute("status") != "") {out.print(request.getAttribute("status")); request.setAttribute("status", "");} %>">
+
         <div id="container">
             <div id="container-left">
                 <p>Join us to make grocery shopping faster and easier than ever</p>
@@ -68,5 +62,8 @@
             }
 
         </script>
-    </body>
+
+    </body>      
+      <?php  include '../_foot.php';  ?>
+
 </html>

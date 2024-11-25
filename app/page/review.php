@@ -1,24 +1,12 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@ page import="entity.OrderItem" %>
-<%@page import="entity.Customer" %>
-<jsp:useBean id="orderItems" class="java.util.ArrayList" scope="request" type="java.util.List<entity.OrderItem>" />
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="css/review.css" />
-        <link rel="icon" href="img/logo.png">
-        <title>Review</title>
-    </head>
+<?php
+require '../_base.php';
+$_title = 'Review';
+$_css = '../css/review.css';
+include '../_head.php';
+?>
     <body>
-        <input type="hidden" id="status" value="<% if (request.getAttribute("status") != "") {out.print(request.getAttribute("status")); request.setAttribute("status", "");} %>">
-        <% Customer customer = (Customer) session.getAttribute("customer");
-            if (customer != null) {%>
-        <%@ include file = "userheader.jsp" %>
-        <% } else { %>
-        <%@ include file = "header.jsp" %>
-        <% } %>
         <h1 id="review-title">Review</h1>
         <table class="review-table">
             <thead>
@@ -31,29 +19,27 @@
                 </tr>
             </thead>
             <tbody>
-                <% for (OrderItem orderItem : orderItems) { %>
                 <tr>
                     <td>
                         <div class="product-info">
-                            <img src="data:image/jpeg;base64, <%= orderItem.getImage() %>" alt="Product Image" width="100">
-                            <span class="product-name"><%= orderItem.getProductName() %></span>
+                            <img src="data:image/jpeg;base64" alt="Product Image" width="100">
+                            <span class="product-name"></span>
                         </div>
                     </td>
-                    <td class="price"><%= orderItem.getPrice() %></td>
-                    <td class="quantity"><%= orderItem.getQuantity() %></td>
-                    <td class="total-price"><%= orderItem.getTotalPrice() %></td>
+                    <td class="price"></td>
+                    <td class="quantity"></td>
+                    <td class="total-price"></td>
                     <td class="action">
-                        <% if (orderItem.getStatus() == 0) { %>
-                        <a class="reviewbtn" onclick="showModal('<%= orderItem.getOrderItemId() %>')"><span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i></a>
-                            <% } else if (orderItem.getStatus() == 1) { %>
+                       
+                        <a class="reviewbtn" onclick="showModal('')"><span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i></a>
+                          
                         <a class="reviewbtn"><span>Review&nbsp;&nbsp;</span><i class="ti ti-check"></i></a>
-                            <% } %>
+                        
                     </td>
                 </tr>
-                <% } %>
+          
             </tbody>
         </table>
-        <%@ include file = "footer.jsp" %>
 
         <div id="orderModal" class="modal" style="display:none;">
             <div class="modal-content">
@@ -118,6 +104,11 @@
                                 swal.fire("Sorry", "Review submit failed.", "error");
                             }
 
-        </script>        
+        </script>   
+        
+        <?php include '../_foot.php'; ?>
+
     </body>
+
+
 </html>
