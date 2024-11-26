@@ -39,6 +39,7 @@ Have fun coding!
   - [ ] Top Selling Products
   - [ ] AJAX Integration
   - [ ] Fake Payment (can be replaced by Real Payment in [feasible function](#feasible-function)
+  - [ ] SMS Integration
 
 ## Feasible function
   - [ ] Real Payment using [Stripe API](stripe.com)
