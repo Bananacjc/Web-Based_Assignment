@@ -3,7 +3,20 @@ Hi, this is the web-based integated system assignment, owned by **Someone who do
 
 Have fun coding!
 
-[Task to do](https://github.com/Bananacjc/Web-Based_Assignment/blob/test/task.md)
+# Task for each person
+
+1. Jee Cheng
+  - [ ] Login / Logout
+  - [ ] Shop
+  - [ ] Profile
+
+2. Jau Chun
+  - [ ] Promotion
+  - [ ] Cart
+  - [ ] Payment
+
+3. Chun Tian
+  - [ ] Admin
 
 # Additional Function
 
@@ -25,8 +38,9 @@ Have fun coding!
   - [ ] Filtering, Sorting and Paging
   - [ ] Top Selling Products
   - [ ] AJAX Integration
+  - [ ] Fake Payment (can be replaced by Real Payment in [feasible function](#feasible-function)
 
-## Require time and research
+## Feasible function
   - [ ] Real Payment using [Stripe API](stripe.com)
   - [ ] E-receipt sent to e-mail or in PDF
   - [ ] Drag-and-Drop Photo Upload
@@ -37,5 +51,19 @@ Have fun coding!
   - [ ] Batch Deletion
   - [ ] User Email Verification (either detecting real email / verify email from db)
   - [ ] Captcha Integration (3rd Party Library)
-  - [ ] SMS Integrastion (forgot password function)
-  - [ ] 
+  - [ ] Add to Favorites / Wishlist
+  - [ ] Reward Point Handling
+  - [ ] Product Stock Handling
+  - [ ] Low-in-Stock Alert
+  - [ ] Generaste + Scan QR Code
+
+## Out of scope stuff, feasible
+  - [ ] Google Maps Integration
+  - [ ] Remember User Preference (Theme, settings, etc.)
+  - [ ] Data Charts
+  - [ ] Real-Time Chat
+
+## No
+  - [ ] 1 Product, Multiple Photos
+  - [ ] Multilple Photos Upload
+  - [ ] Product Photos Sliders
