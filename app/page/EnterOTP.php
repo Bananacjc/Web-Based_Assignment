@@ -1,7 +1,7 @@
 <?php
-require '../_base.php';
 $_title = 'Cart';
-$_css = '../css/cart.css';
+$_css = '../css/home.css';
+require '../_base.php';
 include '../_head.php';
 ?>
 <form action="ValidateOTP" method="POST">

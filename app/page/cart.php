@@ -1,7 +1,7 @@
 <?php
-require '../_base.php';
 $_title = 'Cart';
 $_css = '../css/cart.css';
+require '../_base.php';
 include '../_head.php';
 ?>
 <h1 id="cart-title">Cart</h1>

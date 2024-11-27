@@ -1,7 +1,7 @@
 <?php
+$_title = 'Profile';
+$_css = '../css/profile.css';
 require '../_base.php';
-$_title = 'Cart';
-$_css = '../css/cart.css';
 include '../_head.php';
 ?>
 <input type="hidden" id="status" value="<% if (request.getAttribute("status") != "") {out.print(request.getAttribute("status")); request.setAttribute("status", "");} %>">
@@ -192,10 +192,10 @@ include '../_head.php';
     </div>
     <!-- Add other content divs similarly with display: none; -->
 </div>
-<script src="js/profileSidebar.js"></script>
-<script src="js/imagePreview.js"></script>
-<script src="js/inputHasContent.js"></script>
-<script src="js/showPassword.js"></script>
+<script src="../js/profileSidebar.js"></script>
+<script src="../js/imagePreview.js"></script>
+<script src="../js/inputHasContent.js"></script>
+<script src="../js/showPassword.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/javascript">
     let status = document.getElementById("status").value;

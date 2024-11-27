@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 <?php
-require '../_base.php';
 $_title = 'Shop';
 $_css = '../css/shop.css';
+require '../_base.php';
 include '../_head.php';
 ?>
     
@@ -108,9 +108,9 @@ include '../_head.php';
         </div>
      
 
-        <script src="js/slider.js"></script>
-        <script src="js/searchproducts.js"></script>
-        <script src="js/categoryFilter.js"></script>
+        <script src="../js/slider.js"></script>
+        <script src="../js/searchproducts.js"></script>
+        <script src="../js/categoryFilter.js"></script>
         <script type="text/javascript">
                             function closeModal() {
                                 var modal = document.getElementById('productModal');

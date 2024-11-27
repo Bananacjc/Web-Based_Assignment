@@ -1,7 +1,7 @@
 <?php
+$_title = 'Payment';
+$_css = '../css/payment.css';
 require '../_base.php';
-$_title = 'Cart';
-$_css = '../css/cart.css';
 include '../_head.php';
 ?>
 <h1 id="payment-title">Payment</h1>

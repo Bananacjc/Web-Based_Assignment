@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 <?php
-require '../_base.php';
 $_title = 'Review';
 $_css = '../css/review.css';
+require '../_base.php';
 include '../_head.php';
 ?>
     <body>

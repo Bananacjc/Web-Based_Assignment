@@ -1,27 +1,10 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="entity.Customer" %>
-<% if (request.getAttribute("message") != null) { %>
-    <p><%= request.getAttribute("message") %></p>
-<% } %>
-
-<%@page import="java.util.List, entity.Contact" %>
-
-
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <link href="css/contact.css" rel="stylesheet" type="text/css">
-        <link rel="icon" href="img/logo.png">
-        <title>Contact Us</title>
-    </head>
+<?php
+$_css = '../css/contact.css';
+$_title = 'Contact Us';
+require '../_base.php';
+include '../_head.php';
+?>
     <body>
-        <% Customer customer = (Customer) session.getAttribute("customer");
-            if (customer != null) {%>
-        <%@ include file = "userheader.jsp" %>
-        <% } else { %>
-        <%@ include file = "header.jsp" %>
-        <% } %>
         <section class="blog">
             <div class="container">
                 <div class="a1">
@@ -76,7 +59,7 @@
                 <div class="review-form">
                     <h5 class="comment-title">Get In Touch</h5>
                     <div id="vector-line">
-                        <img src="img/vector-line.png" width="354" height="30" />
+                        <img src="../images/vector-line.png" width="354" height="30" />
                     </div>
                 </div>
                 <div class="c1">
@@ -106,7 +89,8 @@
                 </div>
             </div>
         </section>
-        <%@ include file = "footer.jsp" %>
-        
+        <?php
+        include '../_foot.php';
+        ?>
     </body>
 </html>

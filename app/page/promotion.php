@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 <?php
-require '../_base.php';
 $_title = 'Promotion';
 $_css = '../css/promotion.css';
+require '../_base.php';
 include '../_head.php';
 ?>
     <body>

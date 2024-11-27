@@ -1,7 +1,7 @@
 <?php
-require '../_base.php';
 $_title = 'About Us';
 $_css = '../css/about-us.css';
+require '../_base.php';
 include '../_head.php';
 ?>
 <script src="../js/about-us.js"></script>

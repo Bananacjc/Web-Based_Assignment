@@ -1,14 +1,13 @@
 <?php
+$_css = '../css/login.css';
+$_title = 'Login';
 require '../_base.php';
-$_title = 'Cart';
-$_css = '../css/cart.css';
-include '../_head.php';
 ?>
 <div id="container">
     <div id="container-left">
         <form id="login-container" action="LoginServlet" method="post">
             <div id="logo">
-                <img src="../images/logo.png" alt="Logo" width="100" height="100" />
+                <img src="../images/logo.png" alt="Logo" width="70" height="70" />
                 <p id="banana">BANANA</p>
                 <p id="sis">SIS</p>
             </div>
@@ -23,11 +22,11 @@ include '../_head.php';
                     <i class="ti ti-eye-off" id="togglePassword"></i>
                 </div>
             </div>
-            <a href="ForgetPassword.jsp" id="forgotpass">Forgot your password?</a>
+            <a href="ForgetPassword.php" id="forgotpass">Forgot your password?</a>
             <button id="loginbtn" type="submit">Login</button>
             <div id="signup-container">
                 <p>Don't have an account? </p>
-                <a href="register.jsp">Sign up here</a>
+                <a href="register.php">Sign up here</a>
             </div>
         </form>
     </div>
@@ -36,7 +35,7 @@ include '../_head.php';
         <img src="../images/login-products.png" alt="Grocery items on shelves" style="width:60%; height:auto;">
     </div>
 </div>
-<script src="js/showPassword.js"></script>
+<script src="../js/showPassword.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/javascript">
     let status = document.getElementById("status").value;
@@ -48,4 +47,6 @@ include '../_head.php';
         swal.fire("Sorry", "Password not match.", "error");
     }
 </script>
-<?php include '../_foot.php'; ?>
+</body>
+
+</html>

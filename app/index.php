@@ -1,7 +1,7 @@
 <?php
-require '_base.php';
 $_title = 'BananaSIS';
 $_css = 'css/home.css';
+require '_base.php';
 include '_head.php';
 ?>
 <div id="content-container">

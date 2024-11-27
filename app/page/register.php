@@ -2,22 +2,21 @@
 <html>
 
 <?php
-require '../_base.php';
 $_title = 'Register';
 $_css = '../css/register.css';
-include '../_head.php';
+require '../_base.php';
 ?>
     <body>
 
         <div id="container">
             <div id="container-left">
                 <p>Join us to make grocery shopping faster and easier than ever</p>
-                <img src="img/register-products.webp" alt="Grocery items on shelves" style="width:60%; height:auto;">
+                <img src="../images/register-products.webp" alt="Grocery items on shelves" style="width:60%; height:auto;">
             </div>
             <div id="container-right">
                 <form id="register-container" action="RegisterServlet" method="POST">
                     <div id="logo">
-                        <img src="img/logo.png" alt="Logo" width="70" height="70" />
+                        <img src="../images/logo.png" alt="Logo" width="70" height="70" />
                         <p id="banana">BANANA</p>
                         <p id="sis">SIS</p>
                     </div>
@@ -49,7 +48,7 @@ include '../_head.php';
                 </form>
             </div>          
         </div>
-        <script src="js/showPassword.js"></script>
+        <script src="../js/showPassword.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script type="text/javascript">
             let status = document.getElementById("status").value;
@@ -63,7 +62,6 @@ include '../_head.php';
 
         </script>
 
-    </body>      
-      <?php  include '../_foot.php';  ?>
+    </body>
 
 </html>
