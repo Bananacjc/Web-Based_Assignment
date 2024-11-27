@@ -68,3 +68,4 @@ Have fun coding!
   - [ ] 1 Product, Multiple Photos
   - [ ] Multilple Photos Upload
   - [ ] Product Photos Sliders
+  - [ ] Youtube Video Integration
