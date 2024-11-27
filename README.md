@@ -6,7 +6,7 @@ Have fun coding!
 # Task for each person
 
 1. Jee Cheng
-  - [ ] Login / Logout
+  - [x] Login / Logout
   - [ ] Shop
   - [ ] Profile
 
