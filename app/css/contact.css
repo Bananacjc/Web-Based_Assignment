@@ -1,0 +1,254 @@
+.blog {
+    padding: 4rem 0;
+    margin-top: 80px;
+    margin-bottom: 50px;
+    background: linear-gradient(rgba(239, 239, 239, 0.97), rgba(239, 239, 239, 0.97)), url("../img/doodleart.jpg");
+    background-size: 100% auto;
+
+}
+
+.blog::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 312px;
+    background: rgba(30, 255, 0, 0.03);
+}
+
+.a1 .heading{
+    text-align:center;
+    z-index: 99999;
+}
+
+.a1 > h1{
+    color: #1d1d1d;
+    font-family: "League Spartan", sans-serif;
+    font-weight: 700;
+    font-size: 2.5rem;
+}
+
+.container2{
+    margin: 20px 30px 50px 100px;
+    width:100%;
+}
+
+.bigB{
+    display:flex;
+}
+
+.b1b{
+    color: #1d1d1d;
+    font-family: "League Spartan", sans-serif;
+    font-weight: 600;
+    margin: 20px 20px 20px 0px;
+    font-size: 24px;
+}
+
+.parag{
+    font-size: 16px;
+    color: #797979;
+    font-weight: 400;
+    font-family: "Inter", sans-serif;
+    margin-bottom: 0;
+}
+
+.b2b1,.b2b2{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    width: 280px;
+    border: 1px solid #34a853;
+    height: 15rem;
+    border-radius: 0.5rem;
+    margin:20px;
+}
+
+.content{
+    display:flex;
+}
+
+
+.container3{
+   margin: 20px 100px 50px 30px;
+   
+   width:100%;
+   background-color: #ffffff;
+   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 10px 10px;
+}
+
+.review-form{
+    
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding:0px;
+}
+
+.comment-title{
+    margin:20px;
+    font-family: "Inter", sans-serif;
+    font-weight: 700;
+    text-align: center;
+}
+
+h5{
+    font-size: 2.5rem;
+}
+
+#vector-line{
+    display:flex;
+    justify-content: center;
+    margin: -30px 0 30px 0;
+}
+
+.bb1,i{
+    color: #1d1d1d;
+    font-family: "League Spartan", sans-serif;
+    font-weight: 700;
+    font-size: 1.6rem;
+}
+
+.iPhone , .iEmail , .iPins{
+    border-radius: 50%;
+    border: 1px solid #34a853;
+    padding:10px;
+    
+}
+
+.b2{
+    display:flex;
+}
+
+.bb2{
+    width:10%;
+    display:flex;
+    height:45px;
+}
+
+.bb3{
+    width:90%;
+    margin:15px;
+}
+
+.add1{
+    height:20px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #1d1d1d;
+    font-family: "League Spartan", sans-serif;
+    margin: 0;
+}
+
+.pp1{
+    font-size: 15px;
+    color: #797979;
+    font-weight: 400;
+    font-family: "Inter", sans-serif;
+    margin-bottom: 0;
+}
+
+.question-section, .review-form, .review-form-name {
+    margin-bottom: 2rem;
+}
+
+.review-form, label {
+    font-family: "Inter", sans-serif;
+    font-size: 1.0rem;
+    color: #797979;
+    margin-bottom: 0.5rem;
+}
+
+.form-label {
+    margin-bottom: 0.5rem;
+}
+
+label {
+    display: inline-block;
+}
+
+
+.review-form .form-control, .review-form .form-select {
+    border: 1px solid rgba(52, 168, 83, 0.2);
+    box-shadow: none;
+    color: #1d1d1d;
+}
+
+.review-form input, .review-form textarea, .review-form select {
+    padding: 1rem 2rem;
+    font-size: 1.4rem;
+}
+
+.form-control {
+    display: block;
+    width: 95%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--bs-body-color);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: var(--bs-body-bg);
+    background-clip: padding-box;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.review-form, .form-control, .review-form .form-select {
+    border: 1px solid rgba(52, 168, 83, 0.2);
+    box-shadow: none;
+    color: #1d1d1d;
+}
+
+input {
+    font-size: 1.3rem;
+}
+input, button {
+    border: 1px solid grey;
+    outline: none;
+    background: transparent;
+}
+button, input, optgroup, select, textarea {
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+.question-section .review-form .review-form-name {
+    margin-bottom: 2rem;
+}
+
+.c1{
+    padding:20px;
+    margin-top:30px;
+    
+}
+
+.send-btn {
+    padding: 1.2rem 18.4rem;
+    margin: 2rem 0;
+    text-align: center;
+    border-radius: 0.4rem;
+    display: inline-block;
+    background: #34a853;
+    font-size: 1.0rem;
+    font-weight: 500;
+    color: #EFEFEF;
+    font-family: "Inter", sans-serif;
+    z-index: 1;
+    text-decoration: none;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.send-btn:hover{
+    background-color: #000000;
+}
