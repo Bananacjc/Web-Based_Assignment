@@ -22,7 +22,16 @@ require '../_base.php';
                     <i class="ti ti-eye-off" id="togglePassword"></i>
                 </div>
             </div>
-            <a href="ForgetPassword.php" id="forgotpass">Forgot your password?</a>
+            <div id="login-helper-container">
+                <div>
+                <input type="checkbox" name="remember_me">
+                <label id="remember-me" for="remember_me">Remember Me</label>
+                </div>
+                <div>
+                <a href="ForgetPassword.php" id="forgotpass">Forgot your password?</a>
+
+                </div>
+            </div>
             <button id="loginbtn" type="submit">Login</button>
             <div id="signup-container">
                 <p>Don't have an account? </p>
