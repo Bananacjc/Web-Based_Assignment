@@ -53,6 +53,7 @@ function req($key, $value = null) {
     <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet" />
     <link rel="icon" href="../images/logo.png">
+    <link rel="stylesheet" href="../css/base.css" type="text/css">
     <link href="<?= $_css ?>" rel="stylesheet" type="text/css">
     <title><?= $_title ?? 'Untitled' ?></title>
 </head>

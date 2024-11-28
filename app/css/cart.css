@@ -15,10 +15,10 @@
     font-weight: 700;
     font-size: 48px;
     letter-spacing: 3px;
-    color: #333;
+    color: var(--color-black-carbon);
     margin: 80px 0 20px 0;
     padding: 100px;
-    background-image: linear-gradient(120deg, #48b164, #d6eedd, #EFEFEF, #48b164);
+    background-image: linear-gradient(120deg, var(--color-yellow-light), var(--color-yellow-light), var(--color-white-crystal), var(--color-yellow-light));
     background-size: 200% 200%;
     animation: backgroundSlide 10s ease infinite, fadeIn 1.5s ease-out;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -28,7 +28,7 @@
     width: 90%;
     border-collapse: separate;
     border-spacing: 0;
-    border: 1px solid #cce7cc;
+    border: 1px solid var(--color-green-light);
     min-height: 300px;
     margin: 50px auto;
     border-radius: 8px;
@@ -39,8 +39,8 @@
     text-align: center;
     border-left: none;
     border-right: none;
-    border-top: 1px solid #f6f6f6;
-    border-bottom: 1px solid #f6f6f6;
+    border-top: 1px solid var(--color-white-lighthouse);
+    border-bottom: 1px solid var(--color-white-lighthouse);
     font-weight: 500;
 }
 

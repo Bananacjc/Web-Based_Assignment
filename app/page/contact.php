@@ -7,26 +7,27 @@ include '../_head.php';
     <body>
         <section class="blog">
             <div class="container">
-                <div class="a1">
-                    <h1 class="heading">Contact</h1>
+                <div>
+                    <h1 class="text-center h-1">Contact</h1>
                 </div>
             </div>
         </section>
-        <section class="content">
+        <section class="d-flex">
             <div class="container2">
                 <div class="b1">
                     <h1 class="b1b">Contact Information</h1>
                     <span class="parag">Fill the form below or write us .We will help you as soon as possible.</span>
-                    <div class="bigB">
+                    <div class="d-flex">
                         <div class="b2b1">
                             <div class="iPhone">
                                 <i class="ti ti-phone" style="color:#34a853;"></i>
                             </div>
                             <span class="bb1">Phone</span>
-                            <span style="    font-size: 15px;
+                            <span style="
+                            font-size: 15px;
                                   color: #797979;
                                   font-weight: 500;
-                                  font-family: "Inter", sans-serif;">+601163985186</span>
+                                  font-family: 'Inter', sans-serif;">+601163985186</span>
                         </div>
                         <div class="b2b2">
                             <div class="iEmail">
@@ -36,11 +37,11 @@ include '../_head.php';
                             <span style="    font-size: 15px;
                                   color: #797979;
                                   font-weight: 500;
-                                  font-family: "Inter", sans-serif;">tanjc@gmail.com</span>
+                                  font-family: 'Inter', sans-serif;">tanjc@gmail.com</span>
                         </div>
                     </div>
                 </div>
-                <div class="b2">
+                <div class="d-flex">
                     <div class="bb2">
                         <span class="iPins">
                             <i class="ti ti-map-pins" style="color:#34a853"></i>
@@ -56,7 +57,7 @@ include '../_head.php';
             </div>
             <div class="container3">
 
-                <div class="review-form">
+                <div class="align-items-center justify-content-center position-relative p-0 flex-direction-column">
                     <h5 class="comment-title">Get In Touch</h5>
                     <div id="vector-line">
                         <img src="../images/vector-line.png" width="354" height="30" />
