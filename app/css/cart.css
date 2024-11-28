@@ -18,7 +18,10 @@
     color: var(--color-black-carbon);
     margin: 80px 0 20px 0;
     padding: 100px;
-    background-image: linear-gradient(120deg, var(--color-yellow-light), var(--color-yellow-light), var(--color-white-crystal), var(--color-yellow-light));
+    background-image: linear-gradient(120deg, 
+    var(--color-green-darker), 
+    var(--color-white-crystal), 
+    var(--color-green-darker));
     background-size: 200% 200%;
     animation: backgroundSlide 10s ease infinite, fadeIn 1.5s ease-out;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -44,29 +47,6 @@
     font-weight: 500;
 }
 
-.cart-table tr:first-child th:first-child {
-    border-top-left-radius: 8px;
-}
-.cart-table tr:first-child th:last-child {
-    border-top-right-radius: 8px;
-}
-.cart-table tr:last-child td:first-child {
-    border-bottom-left-radius: 8px;
-}
-.cart-table tr:last-child td:last-child {
-    border-bottom-right-radius: 8px;
-}
-
-.cart-table .product-info {
-    text-align: left;
-    display: flex;
-    align-items: center;
-}
-
-.cart-table .product-header {
-    text-align: left;
-}
-
 .cart-table th {
     background-color: #f0fff1;
     font-weight: 700;
@@ -89,15 +69,6 @@
     margin-right: 30px;
 }
 
-.quantity-control {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-}
-
-.quantity-control i, .action i {
-    cursor: pointer;
-}
 
 .quantity-value {
     font-weight: 400;
@@ -109,6 +80,7 @@
 }
 
 #paymentbtn, #clearbtn {
+    width: 300px;
     margin: 20px 10px;
     padding: 20px 40px;
     border: none;
@@ -125,21 +97,18 @@
 }
 
 #paymentbtn {
-    background-color: #13c86f;
-    color: #000;
+    background-color: var(--color-green);
 }
 
 #paymentbtn:hover {
-    background-color: #0f9b58;
-    color: #EFEFEF;
+    background-color: var(--color-green-darker);
 }
 
 #clearbtn {
-    background-color: #BE2525;
-    color: #EFEFEF;
+    background-color: var(--color-red);
+    color: var(--color-white-crystal);
 }
 
 #clearbtn:hover {
-    background-color: #F83232;
-    color: #000000;
+    background-color: var(--color-red-darker);
 }

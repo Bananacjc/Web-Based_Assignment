@@ -181,6 +181,12 @@
     justify-content: space-between !important;
 }
 
+.justify-content-space-around {
+    -webkit-box-pack: space-around!important;
+    -ms-flex-pack: space-around !important;
+    justify-content: space-around !important;
+}
+
 /* align-items */
 .align-items-center {
     -webkit-box-align: center !important;
