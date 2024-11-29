@@ -4,11 +4,11 @@
 
 <body>
     <header id="header">
-        <div id="navbar">
-            <a href="/index.php" id="logo">
+        <div class="navbar d-flex">
+            <a href="/index.php" class="logo d-flex text-decoration-none align-items-center">
                 <img src="../images/logo.png" alt="Logo" width="60" height="60" />
-                <p id="banana">BANANA</p>
-                <p id="sis">SIS</p>
+                <p class="text-yellow-light">BANANA</p>
+                <p class="text-green-light">SIS</p>
             </a>
             <a href="/index.php" class="navlink">Home</a>
             <a href="/page/shop.php" class="navlink">Shop</a>

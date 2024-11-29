@@ -276,10 +276,7 @@ Special CSS
 
 /* CSS for logo */
 .logo {
-    display: flex;
-    align-items: center;
     margin: auto 50px;
-    text-decoration: none;
     transition: transform 0.3s ease-in-out;
 }
 
@@ -288,5 +285,9 @@ Special CSS
     font-weight: 700;
     letter-spacing: 2px;
     font-size: 22px;
+}
+
+.logo:hover {
+    transform: scale(1.1);
 }
 
