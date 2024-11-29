@@ -34,6 +34,14 @@
     background-color: transparent !important;
 }
 
+.text-yellow-light {
+    color: var(--color-yellow-light);
+}
+
+.text-green-light {
+    color: var(--color-green-light);
+}
+
 /* width */
 .w-100 {
     width: 100% !important;
@@ -175,16 +183,22 @@
     justify-content: space-evenly !important;
 }
 
-.justify-space-between {
+.justify-content-space-between {
     -webkit-box-pack: space-between !important;
     -ms-flex-pack: space-between !important;
     justify-content: space-between !important;
 }
 
 .justify-content-space-around {
-    -webkit-box-pack: space-around!important;
+    -webkit-box-pack: space-around !important;
     -ms-flex-pack: space-around !important;
     justify-content: space-around !important;
+}
+
+.justify-content-flex-start {
+    -webkit-box-pack: start !important;
+    -ms-flex-pack: start !important;
+    justify-content: flex-start !important;
 }
 
 /* align-items */
@@ -192,6 +206,12 @@
     -webkit-box-align: center !important;
     -ms-flex-align: center !important;
     align-items: center !important;
+}
+
+.align-items-flex-start {
+    -webkit-box-align: start !important;
+    -ms-flex-align: start !important;
+    align-items: flex-start !important;
 }
 
 /* text-align */
@@ -253,3 +273,20 @@ Special CSS
     font-weight: 700;
     font-size: 2.5rem;
 }
+
+/* CSS for logo */
+.logo {
+    display: flex;
+    align-items: center;
+    margin: auto 50px;
+    text-decoration: none;
+    transition: transform 0.3s ease-in-out;
+}
+
+.logo > p{
+    font-family: 'League Spartan', sans-serif;
+    font-weight: 700;
+    letter-spacing: 2px;
+    font-size: 22px;
+}
+
