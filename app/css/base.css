@@ -1,5 +1,12 @@
 @charset "UTF-8";
 
+html,
+body {
+    margin: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
 /* Set some useful variable for use*/
 :root {
     --color-white-pure: #FFF;
@@ -43,12 +50,20 @@
 }
 
 /* width */
+.w-auto {
+    width: auto !important;
+}
+
 .w-100 {
     width: 100% !important;
 }
 
 .w-50 {
     width: 50% !important;
+}
+
+.w-fit-content {
+    width: fit-content !important;
 }
 
 /* height */
@@ -60,13 +75,13 @@
     height: 50% !important;
 }
 
+.h-fit-content {
+    height: fit-content !important;
+}
+
 /* margin */
 .m-0 {
     margin: 0 !important;
-}
-
-.m-top-80px {
-    margin-top: 80px !important;
 }
 
 /* padding */
@@ -74,9 +89,6 @@
     padding: 0 !important;
 }
 
-.p-20 {
-    padding: 20px !important;
-}
 
 /* border */
 .border-none {
@@ -89,7 +101,7 @@
 
 /* outline */
 .outline-none {
-    outline: none;
+    outline: none !important;
 }
 
 /* font-weight */
@@ -158,16 +170,16 @@
 }
 
 .d-inline-block {
-    display: inline-block;
+    display: inline-block !important;
 }
 
 /* flex-direction */
 .flex-direction-row {
-    flex-direction: row;
+    flex-direction: row !important;
 }
 
 .flex-direction-column {
-    flex-direction: column;
+    flex-direction: column !important; 
 }
 
 /* justify-content */
@@ -228,6 +240,11 @@
     cursor: pointer !important;
 }
 
+/* Overflow */
+.overflow-hidden {
+    overflow: hidden !important;
+}
+
 /*  
 ===================================================================
 Special CSS
@@ -267,7 +284,7 @@ Special CSS
     z-index: 9999;
 }
 
-.h-1 {
+.h1 {
     color: var(--color-black-pure);
     font-family: "League Spartan", sans-serif;
     font-weight: 700;
@@ -276,11 +293,15 @@ Special CSS
 
 /* CSS for logo */
 .logo {
+    display: flex;
+    text-decoration: none;
+    justify-content: center;
+    align-items: center;
     margin: auto 50px;
     transition: transform 0.3s ease-in-out;
 }
 
-.logo > p{
+.logo>p {
     font-family: 'League Spartan', sans-serif;
     font-weight: 700;
     letter-spacing: 2px;
@@ -289,5 +310,39 @@ Special CSS
 
 .logo:hover {
     transform: scale(1.1);
+    cursor: pointer;
 }
 
+/* Hover - Underlineanimation
+Source: https://stackoverflow.com/questions/54616139/how-to-animate-underline-from-left-to-right
+*/
+.hover-underline-anim {
+    display: inline-block;
+    padding-bottom: 2px;
+    background-image: linear-gradient(currentColor 0 0);
+    background-position: 0 100%;
+    background-size: 0% 3px;
+    background-repeat: no-repeat;
+    transition:
+        background-position 0s 0.3s,
+        background-size 0.3s;
+}
+
+.hover-underline-anim:hover {
+    background-position: 100% 100%;
+    background-size: 100% 3px;
+}
+
+/* Hover - Transalate Y animation */
+.hover-translate-y {
+    -webkit-transition: transform 0.3s ease;
+    -o-transition: transform 0.3s ease;
+    transition: transform 0.3s ease;
+}
+
+.hover-translate-y:hover {
+    --unit-to-translate: -10px;
+    -webkit-transform: translateY(var(--unit-to-translate));
+    -ms-transform: translateY(var(--unit-to-translate));
+    transform: translateY(var(--unit-to-translate));
+}

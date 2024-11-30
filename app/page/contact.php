@@ -8,7 +8,7 @@ include '../_head.php';
         <section class="blog">
             <div class="container">
                 <div>
-                    <h1 class="text-center h-1">Contact</h1>
+                    <h1 class="text-center h1">Contact</h1>
                 </div>
             </div>
         </section>
