@@ -1,0 +1,201 @@
+
+h1 {
+    margin-top: 160px;
+    color: #333;
+    text-align: center;
+}
+
+.data-table {
+    width: 95%;
+    border-collapse: collapse;
+    margin: 20px auto;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.data-table th, .data-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.data-table th {
+    background-color: #007BFF;
+    color: white;
+}
+
+.data-table tr:hover {
+    background-color: #f5f5f5;
+}
+
+.data-table img {
+    height: 50px;
+    width: auto;
+    max-width: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+form button.delete-action-button, button.cancel-button{
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.action-button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.action-button:hover {
+    background-color: #0056b3;
+}
+
+.update-form {
+    background-color: #ffffff; /* Lighter background for a clean look */
+    padding: 20px;
+    border-radius: 5px; /* Less pronounced radius for a subtle effect */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Softer shadow */
+    max-width: 600px; /* Max width to avoid too large appearance */
+    margin: 20px auto; /* Centering horizontally and providing some vertical spacing */
+    width: 90%; /* Responsive width */
+}
+
+.update-form label {
+    display: block;
+    margin-bottom: 8px; /* Smaller margin for compact spacing */
+    color: #333333; /* Standard dark color for readability */
+    font-size: 14px; /* Optional: adjust font size for consistency */
+}
+
+.update-form input, .update-form select, .update-form textarea {
+    width: 100%;
+    padding: 10px; /* Adjust padding for better text visibility */
+    margin-bottom: 15px; /* Consistent margin */
+    border: 1px solid #cccccc; /* Lighter border for a softer look */
+    border-radius: 4px; /* Consistency in rounding */
+    box-sizing: border-box;
+}
+
+.update-form img {
+    margin-top: 10px;
+    border-radius: 4px; /* Keeping the border-radius consistent */
+}
+
+.update-form input[type="submit"] {
+    background-color: #4CAF50; /* A greener, more neutral color */
+    color: white;
+    font-weight: bold;
+    border: none; /* Remove additional border styling */
+    cursor: pointer;
+}
+
+.update-form input[type="submit"]:hover {
+    background-color: #45a049; /* Slightly darker shade on hover */
+}
+
+
+.add-form {
+    background-color: #ffffff; /* Lighter background for a clean look */
+    padding: 20px;
+    border-radius: 5px; /* Less pronounced radius for a subtle effect */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Softer shadow */
+    max-width: 600px; /* Max width to avoid too large appearance */
+    margin: 20px auto; /* Centering horizontally and providing some vertical spacing */
+    width: 90%; /* Responsive width */
+}
+
+.add-form label {
+    display: block;
+    margin-bottom: 8px; /* Smaller margin for compact spacing */
+    color: #333333; /* Standard dark color for readability */
+    font-size: 14px; /* Optional: adjust font size for consistency */
+}
+
+.add-form input, .add-form select, .add-form textarea {
+    width: 100%;
+    padding: 10px; /* Adjust padding for better text visibility */
+    margin-bottom: 15px; /* Consistent margin */
+    border: 1px solid #cccccc; /* Lighter border for a softer look */
+    border-radius: 4px; /* Consistency in rounding */
+    box-sizing: border-box;
+}
+
+.add-form img {
+    margin-top: 10px;
+    border-radius: 4px; /* Keeping the border-radius consistent */
+}
+
+.add-form input[type="submit"] {
+    background-color: #4CAF50; /* A greener, more neutral color */
+    color: white;
+    font-weight: bold;
+    border: none; /* Remove additional border styling */
+    cursor: pointer;
+}
+
+.add-form input[type="submit"]:hover {
+    background-color: #45a049; /* Slightly darker shade on hover */
+}
+
+.password-button {
+        padding: 10px 20px;
+        background-color: yellowgreen;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .password-button:hover {
+        background-color: darkgreen;
+    }
+
+
+/* Styling labels for better readability and alignment */
+#passwordForm label {
+    display: block; /* Makes the label display as a block */
+    margin-bottom: 8px; /* Adds space below the label */
+    color: #333; /* Sets the text color */
+    font-size: 16px; /* Sets the text size */
+    font-weight: bold; /* Makes the font bold */
+}
+
+/* Styling inputs for a unified, appealing look */
+#passwordForm input[type="password"] {
+    width: 100%; /* Makes input take full container width */
+    padding: 10px; /* Adds padding inside the input for text */
+    margin-bottom: 15px; /* Adds space below each input */
+    border: 1px solid #ccc; /* Adds a subtle border */
+    border-radius: 4px; /* Rounds the corners of the input fields */
+    box-sizing: border-box; /* Changes the box-sizing so padding doesn't affect width */
+}
+
+/* Focus styling to highlight the input when clicked or tabbed into */
+#passwordForm input[type="password"]:focus {
+    border-color: #0056b3; /* Changes border color to blue when focused */
+    box-shadow: 0 0 8px rgba(0, 86, 179, 0.5); /* Adds a soft glow */
+}
+
+
+

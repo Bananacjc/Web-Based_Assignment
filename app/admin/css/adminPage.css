@@ -1,0 +1,148 @@
+.dashboard-title-container {
+    margin: 100px auto 0 auto;
+    width: 90%;
+    box-sizing: border-box;
+}
+
+.dashboard-title-container h1 {
+    font-size: 36px;
+    font-weight: 700;
+    padding: 40px;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px #ccc;
+    border-radius: 10px;
+}
+
+.dashboard-subcontainer {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+}
+
+.dashboard-item {
+    display: flex;
+    width: 26%;
+    align-items: center;
+    border-radius: 10px;
+    background-color: #f9f9f9; /* Light light light grey for dashboard items */
+    box-shadow: 0 0 10px #ccc;
+}
+
+.icon-bg {
+    display: flex;
+    padding: 40px;
+    justify-content: center;
+    align-items: center;
+    width: 60px;  /* Larger icon size */
+    height: 60px; /* Larger icon size */
+    font-size: 56px; /* Increase the size of the icon */
+    color: white;
+}
+
+.icon-bg.blue {
+    background-color: #5ab2ff;
+    border-bottom-left-radius: 10px;
+    border-top-left-radius: 10px;
+}
+
+.icon-bg.light-blue {
+    background-color: #488ecc ; /* Medium blue for user icon */
+    border-bottom-left-radius: 10px;
+    border-top-left-radius: 10px;
+}
+
+.icon-bg.dark-blue {
+    background-color: #7bc1ff;
+    border-bottom-left-radius: 10px;
+    border-top-left-radius: 10px;
+}
+
+.dashboard-item h4 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.total-detail {
+    padding: 20px;
+}
+
+.dashboard-item p {
+    margin: 0;
+    font-weight: 900;
+    font-size: 24px;
+    color: #333;
+}
+
+.top-sales-title {
+    margin: 50px 0 0 75px;
+    width: 13%;
+    box-sizing: border-box;
+    font-size: 24px;
+    font-weight: 700;
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px #ccc;
+    border-radius: 10px;
+}
+
+/*table*/
+
+.top-sales-table {
+    width: 90%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid #488ecc; /* Adjusted to mid-blue */
+    min-height: 300px;
+    margin: 50px auto;
+    border-radius: 8px;
+}
+
+.top-sales-table th, .top-sales-table td {
+    padding: 20px;
+    text-align: center;
+    border-left: none;
+    border-right: none;
+    border-top: 1px solid #7bc1ff; /* Lightest blue */
+    border-bottom: 1px solid #7bc1ff; /* Lightest blue */
+    font-weight: 500;
+}
+
+.top-sales-table tr:first-child th:first-child {
+    border-top-left-radius: 8px;
+}
+
+.top-sales-table tr:first-child th:last-child {
+    border-top-right-radius: 8px;
+}
+
+.top-sales-table tr:last-child td:first-child {
+    border-bottom-left-radius: 8px;
+}
+
+.top-sales-table tr:last-child td:last-child {
+    border-bottom-right-radius: 8px;
+}
+
+.top-sales-table th {
+    background-color: #5ab2ff; /* Darkest blue */
+    color: white; /* Text color for headers */
+    font-weight: 700;
+}
+
+.top-sales-table tr {
+    transition: background-color 0.3s ease-in-out;
+}
+
+.top-sales-table tr:hover {
+    background-color: #e5f3ff; /* Hover with lightest blue */
+}
+
+.align-left {
+    text-align: left !important;
+}
+
+.align-right {
+    text-align: right !important;
+}

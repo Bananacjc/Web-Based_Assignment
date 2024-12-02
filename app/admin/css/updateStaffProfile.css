@@ -1,0 +1,143 @@
+h1 {
+    margin-top: 20px; /* Adjusted for less whitespace */
+    color: #007bff;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.profile-container {
+display:flex;
+    background: #ffffff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px auto; /* Adjusted for centering and less spacing */
+    max-width: 960px;
+}
+.profile-image-section {
+
+    flex-direction: column;
+    align-items: center;
+    padding-right: 20px;
+    border-right: 1px solid #dee2e6;
+}
+.profile-form-section {
+
+    padding-left: 20px;
+}
+.updateprofile-form {
+    display: flex;
+    flex-direction: column;
+}
+.updateprofile-form label {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.updateprofile-form input[type="text"],
+.updateprofile-form input[type="password"],
+.updateprofile-form input[type="email"],
+.updateprofile-form input[type="file"],
+.updateprofile-form input[type="submit"],
+.updateprofile-form button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.updateprofile-form input[type="submit"] {
+    background-color: #28a745;
+    color: white;
+    margin-top: 20px;
+    cursor: pointer;
+}
+.profile-image-section img {
+    width: 200px;
+    height: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+
+.password-button {
+    padding: 10px 20px;
+    background-color: blue;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.password-button:hover {
+    background-color: darkblue;
+}
+
+.cancel-button {
+    padding: 10px 20px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.cancel-button:hover {
+    background-color: darkred;
+}
+
+
+/* Styling labels for better readability and alignment */
+#passwordForm label {
+    display: block; /* Makes the label display as a block */
+    margin-bottom: 8px; /* Adds space below the label */
+    color: #333; /* Sets the text color */
+    font-size: 16px; /* Sets the text size */
+    font-weight: bold; /* Makes the font bold */
+}
+
+/* Styling inputs for a unified, appealing look */
+#passwordForm input[type="password"] {
+    width: 100%; /* Makes input take full container width */
+    padding: 10px; /* Adds padding inside the input for text */
+    margin-bottom: 15px; /* Adds space below each input */
+    border: 1px solid #ccc; /* Adds a subtle border */
+    border-radius: 4px; /* Rounds the corners of the input fields */
+    box-sizing: border-box; /* Changes the box-sizing so padding doesn't affect width */
+}
+
+/* Focus styling to highlight the input when clicked or tabbed into */
+#passwordForm input[type="password"]:focus {
+    border-color: #0056b3; /* Changes border color to blue when focused */
+    box-shadow: 0 0 8px rgba(0, 86, 179, 0.5); /* Adds a soft glow */
+}
+
+.modal {
+    margin-top: 80px;
+    display: none;
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+.modal-content {
+    background: white;
+    width: 60%;
+    margin: 35px auto;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+}
+.close-button {
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
