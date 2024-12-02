@@ -6,12 +6,12 @@ require '../_base.php';
 <div id="container">
     <div id="container-left">
         <form id="login-container" action="LoginServlet" method="post">
-            <div id="logo">
-                <img src="../images/logo.png" alt="Logo" width="70" height="70" />
-                <p id="banana">BANANA</p>
-                <p id="sis">SIS</p>
+            <div class="logo">
+                <img src="../images/logo.png" alt="Logo" width="60" height="60" />
+                <p class="text-gold">BANANA</p>
+                <p class="text-green-darker">SIS</p>
             </div>
-            <div id="input-container">
+            <div id="input-container" class="w-100 d-flex flex-direction-column justify-content-center align-items-center">
                 <div class="input-subcontainer">
                     <input type="text" name="username-email" value="" class="input-box" spellcheck="false" required />
                     <label for="username-email" class="label">Username or email</label>
@@ -22,20 +22,20 @@ require '../_base.php';
                     <i class="ti ti-eye-off" id="togglePassword"></i>
                 </div>
             </div>
-            <div id="login-helper-container">
-                <div>
-                <input type="checkbox" name="remember_me">
-                <label id="remember-me" for="remember_me">Remember Me</label>
+            <div id="login-helper-container" class="d-flex justify-content-space-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <input type="checkbox" name="remember_me">
+                    <label id="remember-me" for="remember_me">Remember Me</label>
                 </div>
                 <div>
-                <a href="ForgetPassword.php" id="forgotpass">Forgot your password?</a>
+                    <a href="ForgetPassword.php" id="forgotpass" class="hover-underline-anim">Forgot your password?</a>
 
                 </div>
             </div>
             <button id="loginbtn" type="submit">Login</button>
-            <div id="signup-container">
-                <p>Don't have an account? </p>
-                <a href="register.php">Sign up here</a>
+            <div id="signup-container" class="d-flex justify-content-center">
+                <p>Don't have an account?</p>
+                <a href="register.php" class="hover-underline-anim">Sign up here</a>
             </div>
         </form>
     </div>
