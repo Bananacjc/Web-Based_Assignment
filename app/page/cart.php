@@ -4,7 +4,7 @@ $_css = '../css/cart.css';
 require '../_base.php';
 include '../_head.php';
 ?>
-<h1 id="cart-title">Cart</h1>
+<h1 class="h1 header-banner">Cart</h1>
 <table class="rounded-table cart-table">
     <thead>
         <tr>

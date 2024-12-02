@@ -1,18 +1,5 @@
 @import url('base.css');
 
-.blog{
-    padding: 4rem 0;
-    margin-top: 80px;
-}
-
-.heading{
-    color: #1d1d1d;
-    font-family: "League Spartan", sans-serif;
-    font-weight: 700;
-    font-size: 2.5rem;
-    text-align:center;
-}
-
 .container{
     display:flex;
     justify-content: space-evenly;
@@ -33,6 +20,7 @@
     line-height: 3rem;
     margin-bottom: 1rem;
     display: -webkit-box;
+    line-clamp: 2;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;

@@ -321,7 +321,7 @@ Source: https://stackoverflow.com/questions/54616139/how-to-animate-underline-fr
     padding-bottom: 2px;
     background-image: linear-gradient(currentColor 0 0);
     background-position: 0 100%;
-    background-size: 0% 3px;
+    background-size: 0% 0.1rem;
     background-repeat: no-repeat;
     transition:
         background-position 0s 0.3s,
@@ -330,7 +330,7 @@ Source: https://stackoverflow.com/questions/54616139/how-to-animate-underline-fr
 
 .hover-underline-anim:hover {
     background-position: 100% 100%;
-    background-size: 100% 3px;
+    background-size: 100% 0.1rem;
 }
 
 /* Hover - Transalate Y animation */
@@ -345,4 +345,29 @@ Source: https://stackoverflow.com/questions/54616139/how-to-animate-underline-fr
     -webkit-transform: translateY(var(--unit-to-translate));
     -ms-transform: translateY(var(--unit-to-translate));
     transform: translateY(var(--unit-to-translate));
+}
+
+/* Header Banner */
+.header-banner {
+    text-align: center;
+    margin: 80px 0 20px 0;
+    padding: 100px;
+    background-image: linear-gradient(90deg,
+    var(--color-green-darker),
+    var(--color-white-crystal),
+    var(--color-green-darker));
+    background-size: 200% 100%;
+    animation: backgroundSlide 10s linear infinite, fadeIn 1.5s ease-out;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes backgroundSlide {
+    from { background-position: 0% 50%; }
+    to {background-position: 200% 50%; }
+    
 }

@@ -4,9 +4,9 @@ $_css = '../css/profile.css';
 require '../_base.php';
 include '../_head.php';
 ?>
-<input type="hidden" id="status" value="<% if (request.getAttribute("status") != "") {out.print(request.getAttribute("status")); request.setAttribute("status", "");} %>">
-<h1 id="profile-title">Profile</h1>
-<div class="profile-container">
+<input type="hidden" id="status" value="<% if (request.getAttribute('status') != "") {out.print(request.getAttribute("status")); request.setAttribute("status", "");} %>">
+<h1 class="h1 header-banner">Profile</h1>
+<div id="profile-container">
     <div class="sidebar">
         <ul>
             <li id="personal-info-btn"><i class="ti ti-user-filled"></i> Personal Info</li>

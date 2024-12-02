@@ -1,21 +1,3 @@
-#promo-container {
-    margin-top: 80px;
-}
-
-#promo-title {
-    text-align: center;
-    font-family: "League Spartan", sans-serif;
-    font-weight: 700;
-    font-size: 48px;
-    letter-spacing: 3px;
-    color: #333;
-    margin: 20px 0;
-    padding: 100px;
-    background-image: radial-gradient(circle at 0% 70%, #48b164 10%, transparent 10.1%),
-        radial-gradient(circle at 105% 0%, #EFEFEF 10%, transparent 10.1%),
-        radial-gradient(circle at 105% 0%, #48b164 15%, transparent 15.1%), 
-        radial-gradient(ellipse at center, #d6eedd 10%, #EFEFEF 40%);
-}
 
 .promo-card {
     display: flex;
