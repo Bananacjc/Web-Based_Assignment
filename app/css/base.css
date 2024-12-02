@@ -330,34 +330,20 @@ Special CSS
 Source: https://stackoverflow.com/questions/54616139/how-to-animate-underline-from-left-to-right
 */
 .hover-underline-anim {
-<<<<<<< HEAD
     display: inline-block !important;
     padding-bottom: 2px !important;
     background-image: linear-gradient(currentColor 0 0) !important;
     background-position: 0 100% !important;
     background-size: 0% 0.1rem !important;
     background-repeat: no-repeat !important;
-=======
-    display: inline-block;
-    padding-bottom: 2px;
-    background-image: linear-gradient(currentColor 0 0);
-    background-position: 0 100%;
-    background-size: 0% 0.2rem;
-    background-repeat: no-repeat;
->>>>>>> 6d8d892023d141769ebbadbf3a46dea8575ed394
     transition:
         background-position 0s 0.3s,
         background-size 0.3s !important;
 }
 
 .hover-underline-anim:hover {
-<<<<<<< HEAD
     background-position: 100% 100% !important;
     background-size: 100% 0.1rem !important; 
-=======
-    background-position: 100% 100%;
-    background-size: 100% 0.2rem;
->>>>>>> 6d8d892023d141769ebbadbf3a46dea8575ed394
 }
 
 /* Hover - Transalate Y animation */
