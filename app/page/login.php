@@ -3,9 +3,30 @@ $_css = '../css/login.css';
 $_title = 'Login';
 require '../_base.php';
 ?>
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $usernameOrEmail = post('username-email');
+    $password = post('password');
+
+    // Fetch user from database
+    $stmt = $_db->prepare("SELECT * FROM customers WHERE username = ? OR email = ?");
+    $stmt->execute([$usernameOrEmail, $usernameOrEmail]);
+    $user = $stmt->fetch();
+
+    if ($user && password_verify($password, $user['password'])) {
+        $_SESSION['user'] = $user;
+        echo "<script>swal.fire('Success', 'Login successful', 'success').then(() => {
+            window.location.href = 'page/index.php'; // Change this to your home page
+        });</script>";
+    } else {
+        echo "<script>swal.fire('Error', 'Invalid username/email or password', 'error');</script>";
+    }
+}
+?>
+
 <div id="container">
     <div id="container-left">
-        <form id="login-container" action="LoginServlet" method="post">
+        <form id="login-container" action="" method="post">
             <div class="logo">
                 <img src="../images/logo.png" alt="Logo" width="60" height="60" />
                 <p class="text-gold">BANANA</p>

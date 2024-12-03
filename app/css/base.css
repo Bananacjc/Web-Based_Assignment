@@ -316,7 +316,11 @@ Special CSS
     text-decoration: none;
     justify-content: center;
     align-items: center;
+<<<<<<< HEAD
     margin: auto 25px;
+=======
+    margin: 25px 50px;
+>>>>>>> 0528fba0aa2216acd4ff1b098916c589f970dcfc
     transition: transform 0.3s ease-in-out;
 }
 
