@@ -5,17 +5,17 @@ $_css = '../css/header.css';
 include '../_head.php';
 ?>
 <header id="header">
-    <div id="navbar">
-        <a href="index.php" id="logo">
-            <img src="${logo}" alt="Logo" width="60" height="60" />
-            <p id="banana"></p>
-            <p id="sis"></p>
+    <div class="navbar d-flex">
+        <a href="index.php" class="logo">
+            <img src="../images/logo.png" alt="Logo" width="60" height="60" />
+            <p class="text-yellow-light">BANANA</p>
+            <p class="text-green-light">SIS</p>
         </a>
-        <a href="index.php" class="navlink">Home</a>
-        <a href="RetrieveProduct" class="navlink">Shop</a>
-        <a href="PromotionServlet?url=promotion" class="navlink">Promotion</a>
-        <a href="about-us.php" class="navlink">About</a>
-        <a href="contact.php" class="navlink">Contact</a>
+        <a href="index.php" class="navlink hover-underline-anim">Home</a>
+        <a href="RetrieveProduct" class="navlink hover-underline-anim">Shop</a>
+        <a href="PromotionServlet?url=promotion" class="navlink hover-underline-anim">Promotion</a>
+        <a href="about-us.php" class="navlink hover-underline-anim">About</a>
+        <a href="contact.php" class="navlink hover-underline-anim">Contact</a>
     </div>
     <div id="user-features">
         <a href="OrderServlet?url=cart"><i class="ti ti-shopping-cart-filled"></i>Cart</a>

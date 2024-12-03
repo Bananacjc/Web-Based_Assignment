@@ -54,15 +54,15 @@ include '../_head.php';
     </div>
 </div>
 
-<div id="productModal" class="modal" style="display:block;">
-    <div class="modal-content">
-        <div class="product-detail-container">
+<div id="modal" style="display:block;">
+    <div id="modal-content">
+        <div id="product-detail-container" class="d-flex">
             <img src="data:image/jpeg;base64,<%= selectedProduct.getImage() %>" alt="<%= selectedProduct.getProductName() %>" width="250" height="250" />
-            <div class="product-detail-subcontainer">
-                <span class="close" onclick="closeModal();"><i class="ti ti-x"></i></span>
-                <h4 class="selected-product-name"></h4>
-                <div class="rating-and-sold">
-                    <p class="average-rating-stars">
+            <div id="product-detail-subcontainer">
+                <span id="close" onclick="closeModal();"><i class="ti ti-x"></i></span>
+                <h4 id="selected-product-name"></h4>
+                <div id="rating-and-sold" class="d-flex">
+                    <p id="average-rating-stars">
 
                         <i class="ti ti-star-filled"></i>
 
@@ -71,22 +71,22 @@ include '../_head.php';
                         <i class="ti ti-star"></i>
 
                     </p>
-                    <p class="rating-amount"></p>
-                    <p class="amount-sold">sold</p>
+                    <p id="rating-amount"></p>
+                    <p id="amount-sold">0</p>
                 </div>
-                <p class="price">RM </p>
-                <p class="description"></p>
+                <p id="price">RM 0.00</p>
+                <p id="description">Description</p>
             </div>
         </div>
-        <div class="comment-container">
-            <h4 class="comments-title">Comments</h4>
+        <div id="comment-container">
+            <h4 id="comments-title">Comments</h4>
 
 
-            <div class="comments">
-                <img class="profile-pic" src="data:image/jpeg;base64,<%= comment.getImage() %>" alt="<%= comment.getCustomerName() %>" width="50px" height="50px" />
-                <div class="comments-detail-container">
-                    <p class="user-name"><%= comment.getCustomerName() %></p>
-                    <p class="rating-stars">
+            <div id="comments">
+                <img id="profile-pic" src="data:image/jpeg;base64,<%= comment.getImage() %>" alt="<%= comment.getCustomerName() %>" width="50px" height="50px" />
+                <div id="comments-detail-container">
+                    <p id="user-name">Customer Name</p>
+                    <p id="rating-stars">
 
                         <i class="ti ti-star-filled"></i>
 
@@ -95,8 +95,8 @@ include '../_head.php';
                         <i class="ti ti-star"></i>
 
                     </p>
-                    <p class="date-time"></p>
-                    <p class="comment"></p>
+                    <p id="date-time"></p>
+                    <p id="comment"></p>
                 </div>
             </div>
 
@@ -113,7 +113,7 @@ include '../_head.php';
 <script src="../js/categoryFilter.js"></script>
 <script type="text/javascript">
     function closeModal() {
-        var modal = document.getElementById('productModal');
+        var modal = document.getElementById('modal');
         modal.style.display = 'none';
     }
 </script>
