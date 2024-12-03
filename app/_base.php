@@ -404,9 +404,9 @@ function update_cart($id, $unit) {
 // ============================================================================
 
 // Global PDO object
-// $_db = new PDO('mysql:dbname=db11', 'root', '', [
-//     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
-// ]);
+$_db = new PDO('mysql:dbname=db_bananasis', 'root', '', [
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
+]);
 
 // Is unique?
 function is_unique($value, $table, $field) {
@@ -422,6 +422,26 @@ function is_exists($value, $table, $field) {
     $stm = $_db->prepare("SELECT COUNT(*) FROM $table WHERE $field = ?");
     $stm->execute([$value]);
     return $stm->fetchColumn() > 0;
+}
+
+//Generate a unique id
+function generate_unique_id($prefix, $table, $column, $pdo) {
+    do {
+        // Generate the date part
+        $date = date('Ymd');
+
+        // Generate the random 6-character suffix
+        $random_suffix = substr(str_shuffle('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'), 0, 6);
+
+        // Combine all parts to form the ID
+        $generated_id = "$prefix-$date-$random_suffix";
+
+        // Check for collision using is_exists function
+        $collision = is_exists($generated_id, $table, $column);
+
+    } while ($collision);
+
+    return $generated_id;
 }
 
 // ============================================================================
