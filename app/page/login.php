@@ -2,28 +2,34 @@
 $_css = '../css/login.css';
 $_title = 'Login';
 require '../_base.php';
-?>
-<?php
+
+$error = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $usernameOrEmail = post('username-email');
     $password = post('password');
 
-    // Fetch user from database
+    // Fetch user from the database
     $stmt = $_db->prepare("SELECT * FROM customers WHERE username = ? OR email = ?");
     $stmt->execute([$usernameOrEmail, $usernameOrEmail]);
     $user = $stmt->fetch();
 
-    if ($user && password_verify($password, $user['password'])) {
-        $_SESSION['user'] = $user;
-        echo "<script>swal.fire('Success', 'Login successful', 'success').then(() => {
-            window.location.href = 'page/index.php'; // Change this to your home page
-        });</script>";
+    if ($user && password_verify($password, $user->password)) {
+        $_SESSION['user'] = $user; // Set user session
+        redirect("/index.php"); // Redirect to the homepage
     } else {
-        echo "<script>swal.fire('Error', 'Invalid username/email or password', 'error');</script>";
+        // Pass an error message to be displayed in a popup
+        $error = 'Invalid username/email or password';
     }
 }
 ?>
 
+<body>
+<?php if (!empty($error)): ?>
+    <script>
+        showPopup('<?= $error ?>', 'error');
+    </script>
+<?php endif; ?>
 <div id="container">
     <div id="container-left">
         <form id="login-container" action="" method="post">
@@ -66,17 +72,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 <script src="../js/showPassword.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script type="text/javascript">
-    let status = document.getElementById("status").value;
-
-    if (status === "userNotFound") {
-        swal.fire("Sorry", "User not found.", "error");
-    }
-    if (status === "passwordNotMatch") {
-        swal.fire("Sorry", "Password not match.", "error");
-    }
-</script>
 </body>
 
 </html>

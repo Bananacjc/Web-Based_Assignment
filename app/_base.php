@@ -463,4 +463,5 @@ function generate_unique_id($prefix, $table, $column, $pdo) {
     <link rel="stylesheet" href="../css/base.css" type="text/css">
     <link href="<?= $_css ?>" rel="stylesheet" type="text/css">
     <title><?= $_title ?? 'Untitled' ?></title>
+    <script src="../js/popup.js"></script>
 </head>
