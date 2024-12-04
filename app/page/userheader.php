@@ -1,9 +1,3 @@
-<?php
-require '../_base.php';
-$_title = 'Promotion';
-$_css = '../css/header.css';
-include '../_head.php';
-?>
 <header id="header">
     <div class="navbar d-flex">
         <a href="index.php" class="logo">

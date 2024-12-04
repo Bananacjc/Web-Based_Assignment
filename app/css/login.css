@@ -208,6 +208,30 @@ input[type="checkbox"]:checked::after {
     color: var(--color-mint-light);
 }
 
+#cont-guest{
+    margin: 40px 0;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-family: "Inter", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 14px;
+    background-color: var(--color-black-pure);
+    text-align: center;
+    text-decoration: none;
+    color: var(--color-white-crystal);
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+    cursor: pointer;
+    outline: none;
+    display: inline-block;
+}
+
+#cont-guest:hover{
+    background-color: var(--color-black-pure);
+    color: var(--color-white-crystal);
+}
+
 #container-right p {
     font-family: "League Spartan", sans-serif;
     letter-spacing: 2px;
