@@ -29,6 +29,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
+    position: relative;
 }
 
 #container-right {
@@ -54,6 +56,7 @@ body {
     margin: 15px 0;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .input-box {
@@ -71,16 +74,6 @@ body {
     box-sizing: border-box;
 }
 
-.ti {
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    color: var(--color-grey);
-    font-size: 18px;
-    z-index: 10;
-}
 
 .ti-eye, .ti-eye-off {
     position: absolute;
@@ -88,7 +81,8 @@ body {
     cursor: pointer;
     color: var(--color-grey);
     font-size: 18px;
-    display: block;
+    display: inline-block;
+    text-align: center;
 }
 
 .ti-eye:hover, .ti-eye-off:hover {
@@ -208,8 +202,13 @@ input[type="checkbox"]:checked::after {
     color: var(--color-mint-light);
 }
 
+#cont-guest-container {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
 #cont-guest{
-    margin: 40px 0;
     padding: 10px;
     border: none;
     border-radius: 8px;
@@ -224,12 +223,20 @@ input[type="checkbox"]:checked::after {
     transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
     cursor: pointer;
     outline: none;
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    
 }
 
 #cont-guest:hover{
     background-color: var(--color-black-pure);
     color: var(--color-white-crystal);
+}
+
+.ti-user-off {
+    position: absolute;
+    left: 0;
+    margin-right: 5px;
 }
 
 #container-right p {
@@ -239,3 +246,6 @@ input[type="checkbox"]:checked::after {
     font-weight: 700;
     color: #EFEFEF;
 }
+
+
+

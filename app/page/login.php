@@ -63,10 +63,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <p>Don't have an account?</p>
                     <a href="register.php" class="hover-underline-anim">Sign up here</a>
                 </div>
-                <div class="d-flex justify-content-center">
-                    <a href="../index.php" id="cont-guest"><i class="ti ti-user-off"></i>Continue As Guest</a>
-                </div>
+                
             </form>
+            <div id="cont-guest-container">
+                <a href="../index.php" id="cont-guest"><i class="ti ti-user-off position-relative"></i>Continue As Guest</a>
+            </div>
         </div>
         <div id="container-right">
             <p>Get all your groceries<br>with just a few clicks</p>
