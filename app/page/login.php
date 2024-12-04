@@ -32,30 +32,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div id="container">
         <div id="container-left">
             <form id="login-container" action="" method="post">
-                <div class="logo">
-                    <img src="../images/logo.png" alt="Logo" width="60" height="60" />
-                    <p class="text-gold">BANANA</p>
-                    <p class="text-green-darker">SIS</p>
-                </div>
+                <?= html_logo(60, 60, true) ?>
                 <div id="input-container" class="w-100 d-flex flex-direction-column justify-content-center align-items-center">
                     <div class="input-subcontainer">
-                        <input type="text" name="username-email" value="" class="input-box" spellcheck="false" required />
+                        <?= html_text('username-email', "class='input-box' spellcheck='false' required")?>
                         <label for="username-email" class="label">Username or email</label>
                     </div>
                     <div class="input-subcontainer">
-                        <input type="password" name="password" id="password" class="input-box" spellcheck="false" required />
+                        <?= html_password('password', "class='input-box' spellcheck='false' required")?>
                         <label for="password" class="label">Password</label>
                         <i class="ti ti-eye-off" id="togglePassword"></i>
                     </div>
                 </div>
                 <div id="login-helper-container" class="d-flex justify-content-space-between align-items-center">
                     <div class="d-flex align-items-center">
-                        <input type="checkbox" name="remember_me">
-                        <label id="remember-me" for="remember_me">Remember Me</label>
+                        <?= html_checkbox('remember_me', 'Remember Me', '', "id='remember-me'")?>
                     </div>
                     <div>
                         <a href="ForgetPassword.php" id="forgotpass" class="hover-underline-anim">Forgot your password?</a>
-
                     </div>
                 </div>
                 <button id="loginbtn" type="submit">Login</button>
@@ -63,9 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <p>Don't have an account?</p>
                     <a href="register.php" class="hover-underline-anim">Sign up here</a>
                 </div>
-                
+
             </form>
-            <div id="cont-guest-container">
+            <div id="cont-guest-container" class="hover-translate-y">
                 <a href="../index.php" id="cont-guest"><i class="ti ti-user-off position-relative"></i>Continue As Guest</a>
             </div>
         </div>

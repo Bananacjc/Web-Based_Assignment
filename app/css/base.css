@@ -7,6 +7,10 @@ body {
     overflow-x: hidden;
 }
 
+label input[type='checkbox'] {
+    vertical-align: middle;
+}
+
 /* Set some useful variable for use*/
 :root {
     --color-white-pure: #FFF;
@@ -319,6 +323,7 @@ Special CSS
 ===================================================================
 */
 
+
 .text-hover-underline:hover {
     text-decoration: underline !important;
 }
@@ -409,7 +414,7 @@ Source: https://stackoverflow.com/questions/54616139/how-to-animate-underline-fr
 }
 
 .hover-translate-y:hover {
-    --unit-to-translate: -10px;
+    --unit-to-translate: -0.5rem;
     -webkit-transform: translateY(var(--unit-to-translate));
     -ms-transform: translateY(var(--unit-to-translate));
     transform: translateY(var(--unit-to-translate));

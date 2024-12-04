@@ -14,11 +14,7 @@ $userLoggedIn = isset($_SESSION['user']); // Check if user session exists
 <body>
     <header id="header">
         <div class="navbar d-flex">
-            <a href="/index.php" class="logo">
-                <img src="../images/logo.png" alt="Logo" width="60" height="60" />
-                <p class="text-yellow-light">BANANA</p>
-                <p class="text-green-light">SIS</p>
-            </a>
+            <?= html_logo(60, 60, false, true, '/index.php'); ?>
             <a href="/index.php" class="navlink hover-underline-anim">Home</a>
             <a href="/page/shop.php" class="navlink hover-underline-anim">Shop</a>
             <a href="/page/promotion.php" class="navlink hover-underline-anim">Promotion</a>
