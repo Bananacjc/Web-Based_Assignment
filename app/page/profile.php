@@ -8,11 +8,11 @@ include '../_head.php';
 <div id="profile-container">
     <div class="sidebar">
         <ul>
-            <li id="personal-info-btn"><i class="ti ti-user-filled"></i> Personal Info</li>
-            <li id="payment-method-btn"><i class="ti ti-credit-card-filled"></i> Payment Method</li>
+            <li id="personal-info-btn"><i class="ti ti-user"></i> Personal Info</li>
+            <li id="payment-method-btn"><i class="ti ti-credit-card"></i> Payment Method</li>
             <li id="address-btn"><i class="ti ti-map-pins"></i>Address</li>
-            <li id="order-history-btn"><i class="ti ti-shopping-cart-filled"></i> Order and Reviews</li>
-            <li id="change-password-btn"><i class="ti ti-lock-filled"></i> Change Password</li>
+            <li id="order-history-btn"><i class="ti ti-shopping-cart"></i> Order and Reviews</li>
+            <li id="change-password-btn"><i class="ti ti-lock"></i> Change Password</li>
             <li id="logout-btn"><a href="LogoutServlet" id="logout-link"><i class="ti ti-logout"></i>Logout</a></li>
         </ul>
     </div>
@@ -35,17 +35,11 @@ include '../_head.php';
                     <input type="text" name="email" value="${empty customer ? '' : customer.email}" class="input-box" spellcheck="false" />
                     <label for="email" class="label">Email</label>
                 </div>
-                <button class="btn" type="submit">Save</button>
-            </div>
-            <div>
-                <div class="input-subcontainer">
-                    <input type="text" name="customer-name" value="${empty customer ? '' : customer.customerName}" class="input-box" spellcheck="false" />
-                    <label for="customer-name" class="label">Name</label>
-                </div>
                 <div class="input-subcontainer">
                     <input type="text" name="phone" value="${empty customer ? '' : customer.contactNumber}" class="input-box" spellcheck="false" />
                     <label for="phone" class="label">Phone</label>
                 </div>
+                <button class="btn" type="submit">Save</button>
             </div>
         </form>
     </div>

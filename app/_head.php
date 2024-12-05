@@ -31,7 +31,7 @@ $userLoggedIn = isset($_SESSION['user']); // Check if user session exists
             <div id="user-features">
                 <a href="/page/cart.php"><i class="ti ti-shopping-cart-filled"></i> Cart</a>
                 <a href="/page/profile.php"><i class="ti ti-user-filled"></i> Profile</a>
-                <a href="?logout=true" class="logout-button"><i class="ti ti-logout"></i> Logout</a>
+                <a href="?logout=true"><i class="ti ti-logout"></i> Logout</a>
             </div>
         <?php else: ?>
             <a href="/page/login.php" id="loginbtn">Login</a>
