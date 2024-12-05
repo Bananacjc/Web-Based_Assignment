@@ -15,11 +15,7 @@
     <div id="footer-container">
         <div id="footer-top" class="d-flex justify-content-space-evenly">
             <div class="d-flex justify-content-center align-items-center"> 
-                <a href="/index.php" class="logo m-0 h-fit-content w-fit-content">
-                    <img src="../images/logo.png" alt="Logo" width="60" height="60" />
-                    <p class="text-yellow-light">BANANA</p>
-                    <p class="text-green-light">SIS</p>
-                </a>
+                <?= html_logo(80, 80);?>
             </div>
             <div class="d-flex h-100 flex-direction-column justify-content-flex-start align-items-flex-start">
                 <p class="footer-contact-heading">Useful Links</p>

@@ -52,13 +52,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p>Join us to make grocery shopping faster and easier than ever</p>
             <img src="../images/register-products.webp" alt="Grocery items on shelves" style="width:60%; height:auto;">
         </div>
-        <div id="container-right">
+        <div id="container-right" class="flex-direction-column">
+
             <form id="register-container" action="" method="POST">
-                <div id="logo">
-                    <img src="../images/logo.png" alt="Logo" width="70" height="70" />
-                    <p id="banana">BANANA</p>
-                    <p id="sis">SIS</p>
-                </div>
+                <?= html_logo(70, 70, true); ?>
                 <div id="input-container">
                     <div class="input-subcontainer">
                         <input type="text" name="username" value="" class="input-box" spellcheck="false" required />
