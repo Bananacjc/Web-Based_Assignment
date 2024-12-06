@@ -1,17 +1,10 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="java.util.*, entity.Product" %>
-<jsp:include page="/product" />
-
-<% List<Product> products = (List<Product>) session.getAttribute("productList"); %>
-
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" href="css/productStaffAdmin.css" />
+        <link rel="stylesheet" href="../css/productStaffAdmin.css" />
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Product Management</title>
     </head>
-    <%@ include file = "adminHeader.jsp" %>
     <style>
 .modal {
     margin-top: 80px;
@@ -40,7 +33,10 @@
     cursor: pointer;
 }
 </style>
-    <body>  
+<?php include 'adminHeader.php' ?>
+
+
+<div class="main">
         <h1>PRODUCTS</h1>
         <div class="category-filter">
             <label for="categoryFilter">Category:</label>
@@ -102,7 +98,7 @@
         <div id="addProductModal" class="modal" style="margin-top: 80px;">
             <div class="modal-content">
                 <span class="close-button" onclick="hideAddForm()">&times;</span>
-                <form id="addForm" action="../product" method="POST" enctype="multipart/form-data" class="add-form">
+                <form id="addForm" action="addProduct.php" method="POST" enctype="multipart/form-data" class="add-form">
                     <input type="hidden" name="action" value="add">
                     <label for="newProductId">Product ID:</label>
                     <input type="text" id="newProductId" name="productId"><br>
@@ -179,6 +175,7 @@
                 </form>
             </div>
         </div>
+</div>
 
         <script>
             function filterByCategory() {
@@ -246,6 +243,5 @@
             }
         </script>
 
-    </body>
 
 </html>

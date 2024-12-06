@@ -1,4 +1,3 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -6,9 +5,14 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Update Profile</title>
 
+        <?php
+$_title = 'About Us';
+$_css = '../css/about-us.css';
+require '../_base.php';
+include 'adminHeader.php';
+?>
     </head>
     <body>
-        <%@ include file = "adminHeader.jsp" %>
         <h1 style="margin-top: 150px;">Update Profile</h1>
         <div class="profile-container">
             <form id="updateForm" action="../employee" method="POST" enctype="multipart/form-data" class="updateprofile-form">

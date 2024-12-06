@@ -1,13 +1,11 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<jsp:useBean id="employee" scope="session" class="entity.Employee" />
-<%@page import="java.util.*, entity.Employee" %>
-<jsp:include page="/employee" />
-<% List<Employee> employees = (List<Employee>) session.getAttribute("employeeList");
-%>
 
 <!DOCTYPE html>
 <html>
     <head>
+    <?php
+require '../_base.php';
+include 'head.php';
+?>
 
         <link rel="stylesheet" href="css/staff.css" />
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">

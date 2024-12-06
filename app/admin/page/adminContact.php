@@ -1,8 +1,3 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="java.util.*, entity.Contact" %>
-<jsp:include page="/AdminContactServlet" />
-<% List<Contact> contacts = (List<Contact>) session.getAttribute("adminContactList");
-%>
 <!DOCTYPE html>
 <html>
     <head>

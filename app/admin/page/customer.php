@@ -1,10 +1,3 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="java.util.*, entity.Customer, entity.Status" %>
-<jsp:include page="/CustomerServlet" />
-
-<% List<Customer> customers = (List<Customer>) session.getAttribute("customerList");
-
-%>
 <html>
     <head>
         <link rel="stylesheet" href="css/customer.css" />

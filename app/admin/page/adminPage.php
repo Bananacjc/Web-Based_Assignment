@@ -1,11 +1,4 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@ page import="java.math.BigDecimal" %>
-<%@page import="java.util.*, entity.Product" %>
-<jsp:include page="/AdminDashboardSalesServlet" />
-<jsp:useBean id="admintopSalesList" class="java.util.ArrayList" type="java.util.List<entity.Product>" scope="session" />
-<jsp:useBean id="admintotalSales" type="java.math.BigDecimal" scope="session" />
-<jsp:useBean id="admintotalProduct" type="java.lang.Integer" scope="session" />
-<jsp:useBean id="admintotalCustomer" type="java.lang.Integer" scope="session" />
+<%@page contentType="text/html" pageEncoding="UTF-8"%
 <!DOCTYPE html>
 <html>
     <head>

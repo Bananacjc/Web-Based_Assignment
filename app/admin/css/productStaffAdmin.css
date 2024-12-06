@@ -149,4 +149,16 @@ form button.delete-action-button, button.cancel-button {
     padding: 10px; /* Adds padding inside the dropdown */
 }
 
+/* Adjust the layout when the sidebar is toggled */
+#nav-toggle:checked~.main {
+    margin-left: 70px;
+
+}
+
+
+.main {
+    margin-left: 250px;
+    padding-left: 20px;
+
+}
 
