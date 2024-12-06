@@ -7,7 +7,7 @@
 body {
     margin: 0;
     padding: 0;
-    min-height: 100vh;
+    height: 100vh;
     overflow: auto;
     background-color: var(--color-white-crystal) ;
     background-image: radial-gradient(circle at 90% 30%, var(--color-yellow-light) 25%, transparent 25.1%), 
@@ -32,7 +32,6 @@ body {
 #container-right {
     width: 50%;
     height: 100%;
-    padding: 1rem;
     background-color: var(--color-white-pure);
     display: flex;
     justify-content: center;
@@ -43,6 +42,7 @@ body {
 
 #container-left {
     width: 50%;
+    height: 100%;
     background-image: radial-gradient(circle at 35% 65%, var(--color-yellow-light) 25%, transparent 25.1%), 
     radial-gradient(circle at 70% 40%, var(--color-gold) 20%, transparent 20.1%), 
     linear-gradient(to bottom left, var(--color-yellow-light), var(--color-gold));
@@ -55,7 +55,6 @@ body {
 
 #register-container {
     width: 65%;
-    height: 100%;
     display: flex;
     flex-direction: column;
 }
