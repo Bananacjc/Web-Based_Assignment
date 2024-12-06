@@ -265,7 +265,7 @@ function html_textarea($key, $attr = '')
     echo "<textarea id='$key' name='$key' $attr>$value</textarea>";
 }
 
-// Generate SINGLE <input type='checkbox'>
+// Generate SINGLE <input type= 'checkbox'>
 function html_checkbox($key, $label = '', $inputAttr = '', $labelAttr = '')
 {
     $value = encode($GLOBALS[$key] ?? '');
