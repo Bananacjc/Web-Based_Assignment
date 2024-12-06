@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 02, 2024 at 05:22 PM
+-- Generation Time: Dec 06, 2024 at 01:38 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -24,30 +24,29 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `categories`
---
-
-CREATE TABLE `categories` (
-  `category` enum('category') NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `customers`
 --
 
 CREATE TABLE `customers` (
-  `customer_id` varchar(17) NOT NULL,
+  `customer_id` varchar(19) NOT NULL,
   `username` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `contact_num` varchar(17) NOT NULL,
+  `contact_num` varchar(19) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `bank` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`bank`)),
-  `ewallet` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`ewallet`)),
-  `address` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`address`)),
-  `image` longblob DEFAULT NULL
+  `banks` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `ewallets` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `addresses` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `cart` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`cart`)),
+  `promotion_records` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `profile_image` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `customers`
+--
+
+INSERT INTO `customers` (`customer_id`, `username`, `email`, `contact_num`, `password`, `banks`, `ewallets`, `addresses`, `cart`, `promotion_records`, `profile_image`) VALUES
+('CUS-20241205-h415YA', 'tanjc', 'haha@gmail.com', '', '$2y$10$3nqdhbNjYymK5NMZzWfQY.4tNlSXdDjYTyF57QK7vdnkVxwAt2Eu2', NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -56,12 +55,11 @@ CREATE TABLE `customers` (
 --
 
 CREATE TABLE `employees` (
-  `employee_id` varchar(17) NOT NULL,
+  `employee_id` varchar(19) NOT NULL,
   `employee_name` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `image` longblob DEFAULT NULL,
-  `role` enum('manager','staff','delivery_guy') NOT NULL
+  `role` enum('MANAGER','STAFF','DELIVERY_GUY') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -71,23 +69,11 @@ CREATE TABLE `employees` (
 --
 
 CREATE TABLE `orders` (
-  `order_id` varchar(17) NOT NULL,
-  `customer_id` varchar(17) NOT NULL,
-  `status` enum('pending','paid','packaging','shipping','delivery') NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `order_items`
---
-
-CREATE TABLE `order_items` (
-  `order_item_id` varchar(17) NOT NULL,
-  `order_id` varchar(17) NOT NULL,
-  `product_id` varchar(17) NOT NULL,
-  `quantity` int(11) NOT NULL,
-  `status` enum('none','reviewed') NOT NULL
+  `order_id` varchar(19) NOT NULL,
+  `customer_id` varchar(19) NOT NULL,
+  `order_items` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`order_items`)),
+  `order_time` datetime NOT NULL,
+  `status` enum('PENDING','PAID','SHIPPING','DELIVERED') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -97,10 +83,10 @@ CREATE TABLE `order_items` (
 --
 
 CREATE TABLE `payments` (
-  `payment_id` varchar(17) NOT NULL,
-  `customer_id` varchar(17) NOT NULL,
-  `order_id` varchar(17) NOT NULL,
-  `promo_id` varchar(17) NOT NULL,
+  `payment_id` varchar(19) NOT NULL,
+  `customer_id` varchar(19) NOT NULL,
+  `order_id` varchar(19) NOT NULL,
+  `promo_id` varchar(19) NOT NULL,
   `subtotal` float NOT NULL,
   `shipping_fee` float NOT NULL,
   `promo_amount` float NOT NULL,
@@ -116,14 +102,15 @@ CREATE TABLE `payments` (
 --
 
 CREATE TABLE `products` (
-  `product_id` varchar(17) NOT NULL,
+  `product_id` varchar(19) NOT NULL,
   `product_name` varchar(255) NOT NULL,
-  `category` enum('category') NOT NULL,
+  `category` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`category`)),
   `price` float NOT NULL,
   `description` varchar(255) NOT NULL,
   `current_stock` int(11) NOT NULL,
   `amount_sold` int(11) NOT NULL,
-  `image` longblob NOT NULL
+  `product_image` varchar(255) NOT NULL,
+  `status` enum('AVAILABLE','UNAVAILABLE','OUT_OF_STOCK') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -133,31 +120,17 @@ CREATE TABLE `products` (
 --
 
 CREATE TABLE `promotions` (
-  `promo_id` varchar(17) NOT NULL,
+  `promo_id` varchar(19) NOT NULL,
   `promo_name` varchar(255) NOT NULL,
   `promo_code` varchar(255) NOT NULL,
   `description` varchar(255) NOT NULL,
   `requirement` float NOT NULL,
   `promo_amount` float NOT NULL,
   `limit_usage` int(11) NOT NULL,
-  `promo_image` longblob NOT NULL,
+  `promo_image` varchar(255) NOT NULL,
   `start_date` datetime NOT NULL,
-  `end_date` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `promotion_records`
---
-
-CREATE TABLE `promotion_records` (
-  `promo_record_id` varchar(17) NOT NULL,
-  `promo_id` varchar(17) NOT NULL,
-  `customer_id` varchar(17) NOT NULL,
-  `used` int(11) NOT NULL,
-  `start_date` datetime NOT NULL,
-  `end_date` datetime NOT NULL
+  `end_date` datetime NOT NULL,
+  `status` enum('AVAILABLE','UNAVAILABLE') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -167,53 +140,18 @@ CREATE TABLE `promotion_records` (
 --
 
 CREATE TABLE `reviews` (
-  `review_id` varchar(17) NOT NULL,
-  `customer_id` varchar(17) NOT NULL,
-  `product_id` varchar(17) NOT NULL,
+  `review_id` varchar(19) NOT NULL,
+  `customer_id` varchar(19) NOT NULL,
+  `product_id` varchar(19) NOT NULL,
   `rating` float NOT NULL,
   `comment` varchar(255) NOT NULL,
+  `review_image` varchar(255) NOT NULL,
   `comment_date_time` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `sales_reports`
---
-
-CREATE TABLE `sales_reports` (
-  `sales_id` varchar(17) NOT NULL,
-  `start_date` datetime NOT NULL,
-  `end_date` datetime NOT NULL,
-  `sales_total` float NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `sales_report_items`
---
-
-CREATE TABLE `sales_report_items` (
-  `sales_item_id` varchar(17) NOT NULL,
-  `sales_id` varchar(17) NOT NULL,
-  `product_id` varchar(17) NOT NULL,
-  `product_name` varchar(255) NOT NULL,
-  `product_description` varchar(255) NOT NULL,
-  `product_price` float NOT NULL,
-  `quantity` int(11) NOT NULL,
-  `total` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Indexes for dumped tables
 --
-
---
--- Indexes for table `categories`
---
-ALTER TABLE `categories`
-  ADD PRIMARY KEY (`category`);
 
 --
 -- Indexes for table `customers`
@@ -233,14 +171,6 @@ ALTER TABLE `employees`
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`order_id`),
   ADD KEY `customer_id` (`customer_id`);
-
---
--- Indexes for table `order_items`
---
-ALTER TABLE `order_items`
-  ADD PRIMARY KEY (`order_item_id`),
-  ADD KEY `order_id` (`order_id`),
-  ADD KEY `product_id` (`product_id`);
 
 --
 -- Indexes for table `payments`
@@ -264,33 +194,11 @@ ALTER TABLE `promotions`
   ADD PRIMARY KEY (`promo_id`);
 
 --
--- Indexes for table `promotion_records`
---
-ALTER TABLE `promotion_records`
-  ADD PRIMARY KEY (`promo_record_id`),
-  ADD KEY `promo_id` (`promo_id`),
-  ADD KEY `customer_id` (`customer_id`);
-
---
 -- Indexes for table `reviews`
 --
 ALTER TABLE `reviews`
   ADD PRIMARY KEY (`review_id`),
   ADD KEY `customer_id` (`customer_id`),
-  ADD KEY `product_id` (`product_id`);
-
---
--- Indexes for table `sales_reports`
---
-ALTER TABLE `sales_reports`
-  ADD PRIMARY KEY (`sales_id`);
-
---
--- Indexes for table `sales_report_items`
---
-ALTER TABLE `sales_report_items`
-  ADD PRIMARY KEY (`sales_item_id`),
-  ADD KEY `sales_id` (`sales_id`),
   ADD KEY `product_id` (`product_id`);
 
 --
@@ -304,13 +212,6 @@ ALTER TABLE `orders`
   ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`);
 
 --
--- Constraints for table `order_items`
---
-ALTER TABLE `order_items`
-  ADD CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
-  ADD CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`);
-
---
 -- Constraints for table `payments`
 --
 ALTER TABLE `payments`
@@ -319,25 +220,11 @@ ALTER TABLE `payments`
   ADD CONSTRAINT `payments_ibfk_3` FOREIGN KEY (`promo_id`) REFERENCES `promotions` (`promo_id`);
 
 --
--- Constraints for table `promotion_records`
---
-ALTER TABLE `promotion_records`
-  ADD CONSTRAINT `promotion_records_ibfk_1` FOREIGN KEY (`promo_id`) REFERENCES `promotions` (`promo_id`),
-  ADD CONSTRAINT `promotion_records_ibfk_2` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`);
-
---
 -- Constraints for table `reviews`
 --
 ALTER TABLE `reviews`
   ADD CONSTRAINT `reviews_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`),
   ADD CONSTRAINT `reviews_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`);
-
---
--- Constraints for table `sales_report_items`
---
-ALTER TABLE `sales_report_items`
-  ADD CONSTRAINT `sales_report_items_ibfk_1` FOREIGN KEY (`sales_id`) REFERENCES `sales_reports` (`sales_id`),
-  ADD CONSTRAINT `sales_report_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

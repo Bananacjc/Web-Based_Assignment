@@ -32,13 +32,13 @@ include '../_head.php';
     <div id="main-content">
         <!-- Repeat this block for each product -->
 
-        <h2 id="category-title" id="<%= category.toLowerCase() %>"><%= category %></h2>
+        <h2 id="category-title" id="<%= category.toLowerCase() %>">Fruits</h2>
 
         <div id="product-card">
             <a href="ProductDetail?productId=<%= product.getProductId() %>" class="text-decoration-none">
-                <img src="data:image/jpeg;base64,<%= product.getImage() %>" alt="<%= product.getProductName() %>">
+                <img src="../upload/product_image/apple.webp" alt="<%= product.getProductName() %>">
                 <div id="product-info">
-                    <h4 class="product-name"></h4>
+                    <h4 class="product-name">Apple</h4>
                     <p class="rating">Rating: ★★★☆☆</p>
                     <p class="price-tag">Price: RM </p>
                 </div>
