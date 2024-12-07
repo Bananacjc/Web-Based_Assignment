@@ -7,10 +7,8 @@ require '../_base.php';
 
 
 if (is_post()) {
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $msg = '';
     $isSuccess = false;
-
     $username = post('username');
     $email = post('email');
     $password = post('password');
