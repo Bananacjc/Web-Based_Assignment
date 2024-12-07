@@ -1,52 +1,84 @@
 <?php
-require '../_base.php'; // Include your database connection
+require '../_base.php'; // Include base functions and database connection
 
-// Fetch existing categories from the database
+// Fetch existing categories
 $categories = [];
 try {
-    $stmt = $_db->query("SELECT DISTINCT JSON_EXTRACT(category, '$[*]') AS category_list FROM products");
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $decodedCategories = json_decode($row['category_list'], true);
-        if (is_array($decodedCategories)) {
-            $categories = array_merge($categories, $decodedCategories);
-        }
-    }
-    $categories = array_unique($categories); // Remove duplicates
+    $stmt = $_db->query("SELECT category_name, category_image FROM categories");
+    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    echo "Error fetching categories: " . $e->getMessage();
+    temp('error', "Error fetching categories: " . $e->getMessage());
+    redirect(); // Redirect to prevent further execution
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $productName = $_POST['product_name'];
-    $price = $_POST['price'];
-    $description = $_POST['description'];
-    $currentStock = $_POST['current_stock'];
-    $productImage = $_POST['product_image'];
-    $status = $_POST['status'];
+// Handle POST request for adding products
+if (is_post()) {
+    global $_err;
 
-    // Handle category selection or new category addition
-    $selectedCategories = isset($_POST['existing_categories']) ? $_POST['existing_categories'] : [];
-    $newCategory = isset($_POST['new_category']) && !empty($_POST['new_category']) ? $_POST['new_category'] : null;
+    // Validate inputs
+    $productName = post('product_name');
+    $price = post('price');
+    $description = post('description');
+    $currentStock = post('current_stock');
+    $status = post('status');
+    $categoryName = post('category_name');
 
-    if ($newCategory) {
-        $selectedCategories[] = $newCategory; // Add new category to the list
+    if (empty($productName)) $_err['product_name'] = 'Product name is required.';
+    if (!is_money($price)) $_err['price'] = 'Invalid price format.';
+    if (empty($description)) $_err['description'] = 'Description is required.';
+    if (!is_numeric($currentStock) || $currentStock < 0) $_err['current_stock'] = 'Invalid stock value.';
+    if (empty($categoryName) && !post('new_category_name')) $_err['category_name'] = 'Category is required.';
+    
+    // Handle product image
+    $productImage = get_file('product_image');
+    if (!$productImage) {
+        $_err['product_image'] = 'Product image is required.';
+    } elseif (!str_starts_with($productImage->type, 'image/')) {
+        $_err['product_image'] = 'Invalid image file.';
     }
 
-    // Encode selected categories as JSON
-    $categoryJson = json_encode($selectedCategories);
+    // Handle new category
+    if (empty($_err)) {
+        if (post('new_category_name')) {
+            $newCategoryName = post('new_category_name');
+            $categoryImage = get_file('new_category_image');
 
-    try {
-        $productId = generate_unique_id('PRO', 'products', 'product_id', $_db); // Generate unique product ID
+            if ($categoryImage && str_starts_with($categoryImage->type, 'image/')) {
+                $categoryImagePath = save_photo($categoryImage, '../uploads/category_images');
+            } else {
+                $_err['new_category_image'] = 'Invalid or missing category image.';
+            }
 
-        $stmt = $_db->prepare("
-            INSERT INTO products (product_id, product_name, category, price, description, current_stock, amount_sold, product_image, status)
-            VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)
-        ");
-        $stmt->execute([$productId, $productName, $categoryJson, $price, $description, $currentStock, $productImage, $status]);
+            if (!$_err) {
+                try {
+                    $stmt = $_db->prepare("INSERT INTO categories (category_name, category_image) VALUES (?, ?)");
+                    $stmt->execute([$newCategoryName, $categoryImagePath]);
+                    $categoryName = $newCategoryName; // Use the newly created category
+                } catch (PDOException $e) {
+                    temp('error', "Error adding category: " . $e->getMessage());
+                    redirect();
+                }
+            }
+        }
 
-        echo "Product added successfully!";
-    } catch (PDOException $e) {
-        echo "Error adding product: " . $e->getMessage();
+        // Save product if no errors
+        if (!$_err) {
+            $productImagePath = save_photo($productImage, '../uploads/product_images');
+            $productId = generate_unique_id('PRO', 'products', 'product_id', $_db);
+
+            try {
+                $stmt = $_db->prepare("
+                    INSERT INTO products (product_id, product_name, category_name, price, description, current_stock, amount_sold, product_image, status)
+                    VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)
+                ");
+                $stmt->execute([$productId, $productName, $categoryName, $price, $description, $currentStock, $productImagePath, $status]);
+                temp('success', "Product added successfully!");
+                redirect();
+            } catch (PDOException $e) {
+                temp('error', "Error adding product: " . $e->getMessage());
+                redirect();
+            }
+        }
     }
 }
 ?>
@@ -57,38 +89,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Add Product</title>
 </head>
 <body>
-    <form method="POST" action="">
+    <form method="POST" action="" enctype="multipart/form-data">
         <label for="product_name">Product Name:</label>
-        <input type="text" id="product_name" name="product_name" required><br><br>
+        <?php html_text('product_name', 'required'); ?>
+        <?php err('product_name'); ?><br><br>
 
-        <label for="categories">Categories:</label><br>
-        <select id="categories" name="existing_categories[]" multiple>
-            <?php foreach ($categories as $category): ?>
-                <option value="<?= htmlspecialchars($category) ?>"><?= htmlspecialchars($category) ?></option>
-            <?php endforeach; ?>
-        </select><br><br>
+        <label for="categories">Existing Categories:</label>
+        <?php html_select('category_name', array_column($categories, 'category_name', 'category_name'), '- Select Category -'); ?>
+        <?php err('category_name'); ?><br><br>
 
-        <label for="new_category">Add New Category:</label>
-        <input type="text" id="new_category" name="new_category" placeholder="New Category"><br><br>
+        <label for="new_category_name">New Category Name:</label>
+        <?php html_text('new_category_name'); ?><br><br>
+
+        <label for="new_category_image">New Category Image:</label>
+        <?php html_file('new_category_image', 'image/*'); ?>
+        <?php err('new_category_image'); ?><br><br>
 
         <label for="price">Price:</label>
-        <input type="number" id="price" name="price" step="0.01" required><br><br>
+        <?php html_number('price', '0', '', '0.01', 'required'); ?>
+        <?php err('price'); ?><br><br>
 
         <label for="description">Description:</label>
-        <textarea id="description" name="description" required></textarea><br><br>
+        <?php html_textarea('description', 'required'); ?>
+        <?php err('description'); ?><br><br>
 
         <label for="current_stock">Current Stock:</label>
-        <input type="number" id="current_stock" name="current_stock" required><br><br>
+        <?php html_number('current_stock', '0', '', '1', 'required'); ?>
+        <?php err('current_stock'); ?><br><br>
 
-        <label for="product_image">Product Image URL:</label>
-        <input type="text" id="product_image" name="product_image" required><br><br>
+        <label for="product_image">Product Image:</label>
+        <?php html_file('product_image', 'image/*', 'required'); ?>
+        <?php err('product_image'); ?><br><br>
 
         <label for="status">Status:</label>
-        <select id="status" name="status" required>
-            <option value="AVAILABLE">Available</option>
-            <option value="UNAVAILABLE">Unavailable</option>
-            <option value="OUT_OF_STOCK">Out of Stock</option>
-        </select><br><br>
+        <?php html_select('status', [
+            'AVAILABLE' => 'Available',
+            'UNAVAILABLE' => 'Unavailable',
+            'OUT_OF_STOCK' => 'Out of Stock'
+        ], '- Select Status -', 'required'); ?>
+        <?php err('status'); ?><br><br>
 
         <button type="submit">Add Product</button>
     </form>

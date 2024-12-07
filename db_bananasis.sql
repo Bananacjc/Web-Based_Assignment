@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 06, 2024 at 01:38 AM
+-- Generation Time: Dec 06, 2024 at 11:38 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -24,6 +24,17 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `categories`
+--
+
+CREATE TABLE `categories` (
+  `category_name` varchar(255) NOT NULL,
+  `category_image` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `customers`
 --
 
@@ -37,7 +48,7 @@ CREATE TABLE `customers` (
   `ewallets` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `addresses` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `cart` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`cart`)),
-  `promotion_records` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `promotion_records` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`promotion_records`)),
   `profile_image` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -46,7 +57,8 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`customer_id`, `username`, `email`, `contact_num`, `password`, `banks`, `ewallets`, `addresses`, `cart`, `promotion_records`, `profile_image`) VALUES
-('CUS-20241205-h415YA', 'tanjc', 'haha@gmail.com', '', '$2y$10$3nqdhbNjYymK5NMZzWfQY.4tNlSXdDjYTyF57QK7vdnkVxwAt2Eu2', NULL, NULL, NULL, NULL, NULL, NULL);
+('CUS-20241205-h415YA', 'tanjc', 'haha@gmail.com', '', '$2y$10$3nqdhbNjYymK5NMZzWfQY.4tNlSXdDjYTyF57QK7vdnkVxwAt2Eu2', NULL, NULL, NULL, NULL, NULL, NULL),
+('CUS-20241206-rX31Kx', 'hahahaha', 'hahahaha@gmail.com', '', '$2y$10$SnLxrkeL/h2uU3hJ79ykeOK.SpsbXO.4XePH.HFQ5LMd5JvTGvo8i', NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -104,7 +116,7 @@ CREATE TABLE `payments` (
 CREATE TABLE `products` (
   `product_id` varchar(19) NOT NULL,
   `product_name` varchar(255) NOT NULL,
-  `category` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`category`)),
+  `category_name` varchar(255) NOT NULL,
   `price` float NOT NULL,
   `description` varchar(255) NOT NULL,
   `current_stock` int(11) NOT NULL,
@@ -154,6 +166,12 @@ CREATE TABLE `reviews` (
 --
 
 --
+-- Indexes for table `categories`
+--
+ALTER TABLE `categories`
+  ADD PRIMARY KEY (`category_name`);
+
+--
 -- Indexes for table `customers`
 --
 ALTER TABLE `customers`
@@ -185,7 +203,8 @@ ALTER TABLE `payments`
 -- Indexes for table `products`
 --
 ALTER TABLE `products`
-  ADD PRIMARY KEY (`product_id`);
+  ADD PRIMARY KEY (`product_id`),
+  ADD KEY `category_name` (`category_name`);
 
 --
 -- Indexes for table `promotions`
@@ -218,6 +237,12 @@ ALTER TABLE `payments`
   ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`),
   ADD CONSTRAINT `payments_ibfk_2` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
   ADD CONSTRAINT `payments_ibfk_3` FOREIGN KEY (`promo_id`) REFERENCES `promotions` (`promo_id`);
+
+--
+-- Constraints for table `products`
+--
+ALTER TABLE `products`
+  ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_name`) REFERENCES `categories` (`category_name`);
 
 --
 -- Constraints for table `reviews`

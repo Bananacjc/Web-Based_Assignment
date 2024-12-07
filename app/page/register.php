@@ -6,6 +6,7 @@ $_css = '../css/register.css';
 require '../_base.php';
 
 
+if (is_post()) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $msg = '';
     $isSuccess = false;

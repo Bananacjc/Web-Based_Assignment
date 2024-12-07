@@ -47,7 +47,7 @@ function req($key, $value = null)
 // Redirect to target url
 function redirect($url = null): null
 {
-    $url ??= $_SERVER['REQUEST_URL'];
+    $url ??= $_SERVER['REQUEST_URI'];
     header("Location: " . $url);
     exit();
 }
