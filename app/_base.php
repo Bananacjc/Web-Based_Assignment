@@ -7,6 +7,11 @@
 date_default_timezone_set('Asia/Kuala_Lumpur');
 session_start();
 
+$popup_message = temp('popup_message') ?? null;
+if ($popup_message) {
+    echo "<script>showPopup('{$popup_message['msg']}', {$popup_message['isSuccess']});</script>";
+}
+
 // ============================================================================
 // General Page Functions
 // ============================================================================

@@ -16,7 +16,7 @@ if (is_post()) {
 
     if ($password !== $confirmPassword && $password && $confirmPassword) {
         $msg = 'Passwords do not match.';
-    } else {
+    } else if ($username && $email) {
         $stmt = $_db->prepare("SELECT * FROM customers WHERE username = ? OR email = ?");
         $stmt->execute([$username, $email]);
         if ($stmt->rowCount() > 0) {
