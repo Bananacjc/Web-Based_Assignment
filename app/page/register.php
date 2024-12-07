@@ -5,48 +5,50 @@ $_title = 'Register';
 $_css = '../css/register.css';
 require '../_base.php';
 
-$error = '';
-$success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $msg = '';
+    $isSuccess = false;
+
     $username = post('username');
     $email = post('email');
     $password = post('password');
     $confirmPassword = post('confirm-password');
 
-    if ($password !== $confirmPassword) {
-        $error = 'Passwords do not match.';
+    if ($password !== $confirmPassword && $password && $confirmPassword) {
+        $msg = 'Passwords do not match.';
     } else {
         $stmt = $_db->prepare("SELECT * FROM customers WHERE username = ? OR email = ?");
         $stmt->execute([$username, $email]);
         if ($stmt->rowCount() > 0) {
-            $error = 'Username or Email already exists.';
+            $msg = 'Username or Email already exists.';
         } else {
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
             $customerId = generate_unique_id('CUS', 'customers', 'customer_id', $_db);
             $stmt = $_db->prepare("INSERT INTO customers (customer_id, username, email, password) VALUES (?, ?, ?, ?)");
             if ($stmt->execute([$customerId, $username, $email, $hashedPassword])) {
-                $success = 'Registration successful.';
+                $msg = 'Registration successful.';
+                $isSuccess = true;
             } else {
-                $error = 'Something went wrong during registration.';
+                $msg = 'Something went wrong during registration.';
             }
         }
     }
+
+    if ($msg) {
+        // $_SESSION['popup_message'] = ['msg' => $msg, 'isSuccess' => $isSuccess];
+        temp('popup_message', ['msg' => $msg, 'isSuccess' => $isSuccess]);
+        if ($isSuccess) {
+            header("Location: login.php");
+            exit();
+        }
+        echo "<script>showPopup('$msg', $isSuccess);</script>";
+    }
 }
+
 ?>
 
 <body>
-    <script src="../js/popup.js"></script>
-    <?php if ($error): ?>
-        <script>
-            showPopup('<?= $error ?>', 'error');
-        </script>
-    <?php endif; ?>
-    <?php if ($success): ?>
-        <script>
-            showPopup('<?= $success ?>', 'success');
-        </script>
-    <?php endif; ?>
     <div id="container">
         <div id="container-left">
             <p>Join us to make grocery shopping faster and easier than ever</p>

@@ -21,6 +21,7 @@ label input[type='checkbox'] {
     --color-grey: #666;
     --color-grey-light: #C8C8C8;
 
+    --color-red-light: #ff0a0a;
     --color-red: #F83232;
     --color-red-darker: #BE2525;
     --color-yellow-light: #FFF67E;
@@ -443,4 +444,71 @@ Source: https://stackoverflow.com/questions/54616139/how-to-animate-underline-fr
     from { background-position: 0% 50%; }
     to {background-position: 200% 50%; }
     
+}
+
+#popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    z-index: 999;
+}
+
+#popup.show {
+    display: flex;
+}
+
+#popup.hide {
+    display: none;
+}
+
+#popup #popup-content {
+    --bg-success: #D4EDDA;
+    --bg-failed: #F8D7DA;
+    --color-success: #155724;
+    --color-failed: #721C24;
+
+    background-color: var(--bg-success);
+    color: var(--color-success);
+    width: 300px;
+    height: 120px;
+    padding: 25px;
+    border-radius: 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#popup #popup-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+#popup #popup-msg {
+    margin: 10px 0;
+}
+
+#popup #popup-btn {
+    --bg-success: #28A745;
+    --bg-failed: #DC3545;
+    background-color: var(--bg-success);
+    padding: 10px 20px;
+    color: var(--color-white-pure);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#popup #popup-btn:hover {
+    --bg-success: #218838;
+    --bg-failed: #C82333;
+    background-color: var(--bg-success);
 }

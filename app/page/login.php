@@ -21,6 +21,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Invalid username/email or password';
     }
 }
+
+$popup_message = temp('popup_message');
+if ($popup_message) {
+    echo "<script>showPopup('{$popup_message['msg']}', {$popup_message['isSuccess']});</script>";
+}
 ?>
 
 <body>
