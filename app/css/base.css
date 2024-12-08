@@ -31,6 +31,8 @@ label input[type='checkbox'] {
     --color-green-darker: #0F9B58;
     --color-mint: #34A583;
     --color-mint-light: #5ce69b;
+    --color-mint-transparent: #dbffdd;
+    --color-mint-frost: #f5fff5;
     --color-blue: #0077CC;
     --color-blue-aqua: #82CFD0;
 }

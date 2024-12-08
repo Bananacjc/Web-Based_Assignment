@@ -38,13 +38,13 @@ try {
                 <i class="ti ti-search"></i>
                 <input type="text" placeholder="Search" id="searchbar">
             </div>
-            <h3>Categories</h3>
+            <h3 class="sidebar-title">Categories</h3>
             <ul id="sidebar-list" class="list-style-type-none p-0">
                 <?php foreach ($categories as $category): ?>
                     <li><a href="#<?= strtolower($category) ?>"><?= $category ?></a></li>
                 <?php endforeach; ?>
             </ul>
-            <h3>Filter by Price</h3>
+            <h3 class="sidebar-title">Filter by Price</h3>
             <input type="range" min="0" max="200" value="100" class="slider" id="price-slider">
             <span id="price-value">RM 0 - RM 200</span>
         </div>
@@ -80,6 +80,7 @@ try {
         <?php endforeach; ?>
     </div>
 </div>
+
 <div id="modal" style="display:block;">
     <div id="modal-content">
         <div id="product-detail-container" class="d-flex">
@@ -97,7 +98,7 @@ try {
                         <i class="ti ti-star"></i>
 
                     </p>
-                    <p id="rating-amount"></p>
+                    <p id="rating-amount">100</p>
                     <p id="amount-sold">0</p>
                 </div>
                 <p id="price">RM 0.00</p>
@@ -113,13 +114,9 @@ try {
                 <div id="comments-detail-container">
                     <p id="user-name">Customer Name</p>
                     <p id="rating-stars">
-
                         <i class="ti ti-star-filled"></i>
-
                         <i class="ti ti-star-half-filled"></i>
-
                         <i class="ti ti-star"></i>
-
                     </p>
                     <p id="date-time"></p>
                     <p id="comment"></p>
