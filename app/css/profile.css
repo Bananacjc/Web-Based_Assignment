@@ -110,11 +110,13 @@
     position: relative;
     overflow: hidden;
     display: inline-block;
-    padding-right: 80px;
+    margin-right: 80px;
 }
 
 .input-file {
     font-size: 100px;
+    width: 300px;
+    height: 300px;
     position: absolute;
     right: 0;
     top: 0;

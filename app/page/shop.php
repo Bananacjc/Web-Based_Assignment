@@ -20,7 +20,7 @@ try {
                p.product_image, p.status, COALESCE(AVG(r.rating), 0) as avg_rating, COUNT(r.rating) as review_count
         FROM products p
         LEFT JOIN reviews r ON p.product_id = r.product_id
-        WHERE p.status = 'AVAILABLE'
+        WHERE p.status IN ('AVAILABLE', 'OUT_OF_STOCK')
         GROUP BY p.product_id
     ");
     $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -52,36 +52,62 @@ try {
     <div id="main-content">
         <!-- Repeat this block for each product -->
         <?php foreach ($categories as $category): ?>
-            <h2 id="<?= strtolower($category) ?>" class="category-title"><?= $category ?></h2>
-            <?php foreach ($products as $product): ?>
-                <?php if ($product['category_name'] === $category): ?>
-                    <div class="product-card">
-                        <a href="product_detail.php?product_id=<?= $product['product_id'] ?>" class="text-decoration-none">
-                            <img src="../uploads/product_images/<?= $product['product_image'] ?>" alt="<?= $product['product_name'] ?>">
-                            <div class="product-info">
-                                <h4 class="product-name"><?= $product['product_name'] ?></h4>
-                                <p class="rating">
-                                    Rating: <?= str_repeat('★', floor($product['avg_rating'])) ?>
-                                    <?= str_repeat('☆', 5 - floor($product['avg_rating'])) ?>
-                                    (<?= $product['review_count'] ?> reviews)
-                                </p>
-                                <p class="price-tag">Price: RM <?= number_format($product['price'], 2) ?></p>
-                            </div>
-                        </a>
-                        <form action="OrderServlet" method="post">
-                            <input name="url" value="cart" type="hidden">
-                            <input type="hidden" name="productId" value="<?= htmlspecialchars($product['product_id']) ?>">
-                            <input type="hidden" name="action" value="add">
-                            <button class="cart-button">Add to Cart</button>
-                        </form>
-                    </div>
-                <?php endif; ?>
-            <?php endforeach; ?>
+            <div class="category-section">
+                <h2 id="<?= strtolower($category) ?>" class="category-title"><?= $category ?></h2>
+                <?php foreach ($products as $product): ?>
+                    <?php if ($product['category_name'] === $category): ?>
+                        <div class="product-card">
+                            <a href="product_detail.php?product_id=<?= $product['product_id'] ?>" class="text-decoration-none">
+                                <img src="../uploads/product_images/<?= $product['product_image'] ?>" alt="<?= $product['product_name'] ?>">
+                                <div class="product-info">
+                                    <h4 class="product-name"><?= $product['product_name'] ?></h4>
+                                    <p class="rating">
+                                        <?php
+                                        $fullStars = floor($product['avg_rating']); // Full stars
+                                        $halfStar = ($product['avg_rating'] - $fullStars >= 0.5) ? 1 : 0; // Half star
+                                        $emptyStars = 5 - $fullStars - $halfStar; // Remaining stars
+
+                                        // Output full stars
+                                        for ($i = 0; $i < $fullStars; $i++) {
+                                            echo '<i class="ti ti-star-filled"></i>';
+                                        }
+
+                                        // Output half star if applicable
+                                        if ($halfStar) {
+                                            echo '<i class="ti ti-star-half-filled"></i>';
+                                        }
+
+                                        // Output empty stars
+                                        for ($i = 0; $i < $emptyStars; $i++) {
+                                            echo '<i class="ti ti-star"></i>';
+                                        }
+                                        ?>
+                                        (<?= $product['review_count'] ?> reviews)
+                                    </p>
+                                    <p class="price-tag">Price: RM <?= number_format($product['price'], 2) ?></p>
+                                </div>
+                            </a>
+                            <?php if ($product['status'] === 'AVAILABLE'): ?>
+                                <form action="" method="post">
+                                    <input name="url" value="cart" type="hidden">
+                                    <input type="hidden" name="productId" value="<?= $product['product_id'] ?>">
+                                    <input type="hidden" name="action" value="add">
+                                    <button class="cart-button">Add to Cart</button>
+                                </form>
+                            <?php elseif ($product['status'] === 'OUT_OF_STOCK'): ?>
+                                <div class="out-of-stock">
+                                    <button class="out-of-stock-button" disabled>OUT OF STOCK</button>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
         <?php endforeach; ?>
     </div>
 </div>
 
-<div id="modal" style="display:block;">
+<!-- <div id="modal" style="display:block;">
     <div id="modal-content">
         <div id="product-detail-container" class="d-flex">
             <img src="data:image/jpeg;base64,<%= selectedProduct.getImage() %>" alt="<%= selectedProduct.getProductName() %>" width="250" height="250" />
@@ -128,7 +154,7 @@ try {
         <h4>No comment</h4>
 
     </div>
-</div>
+</div> -->
 
 
 <script src="../js/slider.js"></script>

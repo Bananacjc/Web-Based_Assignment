@@ -1,14 +1,18 @@
-let lastScrollTop = 0;
+$(document).ready(function () {
+    let lastScrollTop = 0;
 
-window.addEventListener("scroll", function() {
-    let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-    let header = document.getElementById("header");
+    $(window).on("scroll", function () {
+        let currentScroll = $(this).scrollTop();
+        let header = $("#header");
 
-    if (currentScroll > 80 && currentScroll > lastScrollTop) {
-        header.classList.add("hidden");
-    } else {
-        header.classList.remove("hidden");
-    }
+        if (currentScroll > lastScrollTop && currentScroll > 80) {
+            // Scrolling down
+            header.addClass("hidden");
+        } else if (currentScroll < lastScrollTop) {
+            // Scrolling up
+            header.removeClass("hidden");
+        }
 
-    lastScrollTop = currentScroll;
-}, false);
+        lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; // Prevent negative scroll
+    });
+});

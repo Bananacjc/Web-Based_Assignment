@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 06, 2024 at 11:38 AM
+-- Generation Time: Dec 08, 2024 at 10:46 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -31,6 +31,14 @@ CREATE TABLE `categories` (
   `category_name` varchar(255) NOT NULL,
   `category_image` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `categories`
+--
+
+INSERT INTO `categories` (`category_name`, `category_image`) VALUES
+('Breads', '6752d8a74a874.jpg'),
+('Fruits', '6752d67620f3a.jpg');
 
 -- --------------------------------------------------------
 
@@ -71,7 +79,7 @@ CREATE TABLE `employees` (
   `employee_name` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `role` enum('MANAGER','STAFF','DELIVERY_GUY') NOT NULL
+  `role` enum('MANAGER','STAFF','DELIVERY_GUY','RESTOCK_GUY') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -124,6 +132,15 @@ CREATE TABLE `products` (
   `product_image` varchar(255) NOT NULL,
   `status` enum('AVAILABLE','UNAVAILABLE','OUT_OF_STOCK') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`product_id`, `product_name`, `category_name`, `price`, `description`, `current_stock`, `amount_sold`, `product_image`, `status`) VALUES
+('PRO-20241206-q7m69G', 'Apple', 'Fruits', 1.5, 'This is apple', 2000, 0, '6752d6762b753.jpg', 'AVAILABLE'),
+('PRO-20241206-RC0FQX', 'Bagel', 'Breads', 4.5, 'This is a big big bagel', 20, 0, '6752d8a74db40.jpg', 'AVAILABLE'),
+('PRO-20241206-xTQb1p', 'Banana', 'Fruits', 100, 'This is a banana pro max', 1, 0, '6752d7a3034e1.jpg', 'AVAILABLE');
 
 -- --------------------------------------------------------
 

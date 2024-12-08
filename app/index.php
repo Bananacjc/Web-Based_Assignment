@@ -54,40 +54,40 @@ include '_head.php';
 </div>
 <div id="category-title-container">
     <h3 id="category-title">Product Category</h3>
-    <a href="RetrieveProduct" id="view-all" class="hover-underline-anim">View All</a>
+    <a href="/page/shop.php" id="view-all" class="hover-underline-anim">View All</a>
 </div>
 <div id="category-container">
-    <a href="RetrieveProduct#fruits" class="category-link hover-translate-y">
+    <a href="/page/shop.php#fruits" class="category-link hover-translate-y">
         <div id="fruits" class="category-img-container">
             <img src="images/c-img-1.webp" alt="Fruits" />
         </div>
         <p class="category-name">Fruits</p>
     </a>
-    <a href="RetrieveProduct#vegetables" class="category-link hover-translate-y">
+    <a href="/page/shop.php#vegetables" class="category-link hover-translate-y">
         <div id="vegetables" class="category-img-container">
             <img src="images/c-img-2.webp" alt="Vegetables" />
         </div>
         <p class="category-name">Vegetables</p>
     </a>
-    <a href="RetrieveProduct#juices" class="category-link hover-translate-y">
+    <a href="/page/shop.php#juices" class="category-link hover-translate-y">
         <div id="juices" class="category-img-container">
             <img src="images/c-img-3.webp" alt="Juices" />
         </div>
         <p class="category-name">Juices</p>
     </a>
-    <a href="RetrieveProduct#meat" class="category-link hover-translate-y">
+    <a href="/page/shop.php#meat" class="category-link hover-translate-y">
         <div id="meat" class="category-img-container">
             <img src="images/c-img-4.webp" alt="Meat" />
         </div>
         <p class="category-name">Meat</p>
     </a>
-    <a href="RetrieveProduct#cold-drinks" class="category-link hover-translate-y">
+    <a href="/page/shop.php#cold-drinks" class="category-link hover-translate-y">
         <div id="cold-drinks" class="category-img-container">
             <img src="images/c-img-5.webp" alt="Cold Drinks" />
         </div>
         <p class="category-name">Cold Drinks</p>
     </a>
-    <a href="RetrieveProduct#breads" class="category-link hover-translate-y">
+    <a href="/page/shop.php#breads" class="category-link hover-translate-y">
         <div id="breads" class="category-img-container">
             <img src="images/c-img-6.webp" alt="Breads" />
         </div>

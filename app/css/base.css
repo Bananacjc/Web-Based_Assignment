@@ -514,3 +514,8 @@ Source: https://stackoverflow.com/questions/54616139/how-to-animate-underline-fr
     --bg-failed: #C82333;
     background-color: var(--bg-success);
 }
+
+/* Remove the light blue background on autocomplete */
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px var(--color-white-pure) inset !important;
+}
