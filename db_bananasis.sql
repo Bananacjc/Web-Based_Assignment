@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 08, 2024 at 10:46 AM
+-- Generation Time: Dec 08, 2024 at 12:31 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -38,7 +38,8 @@ CREATE TABLE `categories` (
 
 INSERT INTO `categories` (`category_name`, `category_image`) VALUES
 ('Breads', '6752d8a74a874.jpg'),
-('Fruits', '6752d67620f3a.jpg');
+('Fruits', '6752d67620f3a.jpg'),
+('Vegetables', '6755771f882b8.jpg');
 
 -- --------------------------------------------------------
 
@@ -52,6 +53,7 @@ CREATE TABLE `customers` (
   `email` varchar(255) NOT NULL,
   `contact_num` varchar(19) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `remember_token` varchar(255) DEFAULT NULL,
   `banks` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `ewallets` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `addresses` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
@@ -64,9 +66,9 @@ CREATE TABLE `customers` (
 -- Dumping data for table `customers`
 --
 
-INSERT INTO `customers` (`customer_id`, `username`, `email`, `contact_num`, `password`, `banks`, `ewallets`, `addresses`, `cart`, `promotion_records`, `profile_image`) VALUES
-('CUS-20241205-h415YA', 'tanjc', 'haha@gmail.com', '', '$2y$10$3nqdhbNjYymK5NMZzWfQY.4tNlSXdDjYTyF57QK7vdnkVxwAt2Eu2', NULL, NULL, NULL, NULL, NULL, NULL),
-('CUS-20241206-rX31Kx', 'hahahaha', 'hahahaha@gmail.com', '', '$2y$10$SnLxrkeL/h2uU3hJ79ykeOK.SpsbXO.4XePH.HFQ5LMd5JvTGvo8i', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `customers` (`customer_id`, `username`, `email`, `contact_num`, `password`, `remember_token`, `banks`, `ewallets`, `addresses`, `cart`, `promotion_records`, `profile_image`) VALUES
+('CUS-20241205-h415YA', 'tanjc', 'haha@gmail.com', '', '$2y$10$3nqdhbNjYymK5NMZzWfQY.4tNlSXdDjYTyF57QK7vdnkVxwAt2Eu2', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('CUS-20241206-rX31Kx', 'hahahaha', 'hahahaha@gmail.com', '', '$2y$10$SnLxrkeL/h2uU3hJ79ykeOK.SpsbXO.4XePH.HFQ5LMd5JvTGvo8i', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -140,7 +142,8 @@ CREATE TABLE `products` (
 INSERT INTO `products` (`product_id`, `product_name`, `category_name`, `price`, `description`, `current_stock`, `amount_sold`, `product_image`, `status`) VALUES
 ('PRO-20241206-q7m69G', 'Apple', 'Fruits', 1.5, 'This is apple', 2000, 0, '6752d6762b753.jpg', 'AVAILABLE'),
 ('PRO-20241206-RC0FQX', 'Bagel', 'Breads', 4.5, 'This is a big big bagel', 20, 0, '6752d8a74db40.jpg', 'AVAILABLE'),
-('PRO-20241206-xTQb1p', 'Banana', 'Fruits', 100, 'This is a banana pro max', 1, 0, '6752d7a3034e1.jpg', 'AVAILABLE');
+('PRO-20241206-xTQb1p', 'Banana', 'Fruits', 100, 'This is a banana pro max', 1, 0, '6752d7a3034e1.jpg', 'AVAILABLE'),
+('PRO-20241208-2u0tPc', 'Carrot', 'Vegetables', 2, 'This is a orange carrot', 50, 0, '6755771f94f48.jpg', 'OUT_OF_STOCK');
 
 -- --------------------------------------------------------
 
