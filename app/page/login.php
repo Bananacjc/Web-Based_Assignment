@@ -9,6 +9,7 @@ $isSuccess = false;
 if (is_post()) {
     $usernameOrEmail = post('username-email');
     $password = post('password');
+    $rememberMe = post('remember_me'); // Check if "Remember Me" is checked
 
     // Fetch user from the database
     $stmt = $_db->prepare("SELECT * FROM customers WHERE username = ? OR email = ?");
@@ -16,14 +17,28 @@ if (is_post()) {
     $user = $stmt->fetch();
 
     if ($user && password_verify($password, $user->password)) {
-        login($user, "/index.php");
-    } else {
-        // Pass an error message to be displayed in a popup
-        $msg = 'Invalid username/email or password';
-    }
+        login($user); // Log the user in
 
-    if ($msg) {
-        echo "<script>showPopup('$msg', $isSuccess);</script>";
+        if ($rememberMe) {
+            // Generate a secure token
+            $token = bin2hex(random_bytes(32)); // 64-character secure token
+
+            // Store the token in the database
+            $updateStmt = $_db->prepare("UPDATE customers SET remember_token = ? WHERE customer_id = ?");
+            $updateStmt->execute([$token, $user->customer_id]);
+
+            // Set the token in a secure cookie
+            setcookie('remember_me', $token, [
+                'expires' => time() + (30 * 24 * 60 * 60), // 30 days
+                'path' => '/',
+                'secure' => true,    // Ensures the cookie is sent over HTTPS only
+                'httponly' => true,  // Prevents JavaScript access to the cookie
+                'samesite' => 'Strict',
+            ]);
+        }
+    } else {
+        $msg = 'Invalid username/email or password';
+        echo "<script>showPopup('$msg', false);</script>";
     }
 }
 

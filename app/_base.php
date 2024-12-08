@@ -7,6 +7,19 @@
 date_default_timezone_set('Asia/Kuala_Lumpur');
 session_start();
 
+if (!isset($_SESSION['user']) && isset($_COOKIE['remember_me'])) {
+    $token = $_COOKIE['remember_me'];
+
+    // Verify the token
+    $stmt = $_db->prepare("SELECT * FROM customers WHERE remember_token = ?");
+    $stmt->execute([$token]);
+    $user = $stmt->fetch();
+
+    if ($user) {
+        login($user); // Log the user in
+    }
+}
+
 $popup_message = temp('popup_message') ?? null;
 if ($popup_message) {
     echo "<script>showPopup('{$popup_message['msg']}', {$popup_message['isSuccess']});</script>";
@@ -380,8 +393,23 @@ function login($user, $url = '/')
 }
 
 // Logout user
-function logout($url = '/')
-{
+function logout($url = '/') {
+    if (isset($_COOKIE['remember_me'])) {
+        // Clear the token from the database
+        global $_db;
+        $stmt = $_db->prepare("UPDATE customers SET remember_token = NULL WHERE remember_token = ?");
+        $stmt->execute([$_COOKIE['remember_me']]);
+
+        // Clear the cookie
+        setcookie('remember_me', '', [
+            'expires' => time() - 3600,
+            'path' => '/',
+            'secure' => true,
+            'httponly' => true,
+            'samesite' => 'Strict',
+        ]);
+    }
+
     unset($_SESSION['user']);
     redirect($url);
 }
