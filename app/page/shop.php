@@ -5,6 +5,29 @@ $_title = 'Shop';
 $_css = '../css/shop.css';
 require '../_base.php';
 include '../_head.php';
+
+// Fetch categories and products
+$categories = [];
+$products = [];
+try {
+    // Fetch categories
+    $stmt = $_db->query("SELECT category_name FROM categories");
+    $categories = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+    // Fetch products
+    $stmt = $_db->query("
+        SELECT p.product_id, p.product_name, p.category_name, p.price, p.description, 
+               p.product_image, p.status, COALESCE(AVG(r.rating), 0) as avg_rating, COUNT(r.rating) as review_count
+        FROM products p
+        LEFT JOIN reviews r ON p.product_id = r.product_id
+        WHERE p.status = 'AVAILABLE'
+        GROUP BY p.product_id
+    ");
+    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    temp('error', "Error fetching products or categories: " . $e->getMessage());
+    redirect(); // Redirect to prevent further execution
+}
 ?>
 
 <h1 class="h1 header-banner">Shop</h1>
@@ -17,12 +40,9 @@ include '../_head.php';
             </div>
             <h3>Categories</h3>
             <ul id="sidebar-list" class="list-style-type-none p-0">
-                <li><a href="#fruits">Fruits</a></li>
-                <li><a href="#vegetables">Vegetables</a></li>
-                <li><a href="#juices">Juices</a></li>
-                <li><a href="#meat">Meat</a></li>
-                <li><a href="#cold-drinks">Cold Drinks</a></li>
-                <li><a href="#breads">Breads</a></li>
+                <?php foreach ($categories as $category): ?>
+                    <li><a href="#<?= strtolower($category) ?>"><?= $category ?></a></li>
+                <?php endforeach; ?>
             </ul>
             <h3>Filter by Price</h3>
             <input type="range" min="0" max="200" value="100" class="slider" id="price-slider">
@@ -31,29 +51,35 @@ include '../_head.php';
     </div>
     <div id="main-content">
         <!-- Repeat this block for each product -->
-
-        <h2 id="category-title" id="<%= category.toLowerCase() %>">Fruits</h2>
-
-        <div id="product-card">
-            <a href="ProductDetail?productId=<%= product.getProductId() %>" class="text-decoration-none">
-                <img src="../upload/product_image/apple.webp" alt="<%= product.getProductName() %>">
-                <div id="product-info">
-                    <h4 class="product-name">Apple</h4>
-                    <p class="rating">Rating: ★★★☆☆</p>
-                    <p class="price-tag">Price: RM </p>
-                </div>
-            </a>
-            <form action="OrderServlet" method="post">
-                <input name="url" value="cart" type="hidden">
-                <input type="hidden" name="productId" value="<%= product.getProductId() %>">
-                <input type="hidden" name="action" value="add">
-                <button id="cart-button" type="submit">Add to Cart</button>
-            </form>
-        </div>
-
+        <?php foreach ($categories as $category): ?>
+            <h2 id="<?= strtolower($category) ?>" class="category-title"><?= $category ?></h2>
+            <?php foreach ($products as $product): ?>
+                <?php if ($product['category_name'] === $category): ?>
+                    <div class="product-card">
+                        <a href="product_detail.php?product_id=<?= $product['product_id'] ?>" class="text-decoration-none">
+                            <img src="../uploads/product_images/<?= $product['product_image'] ?>" alt="<?= $product['product_name'] ?>">
+                            <div class="product-info">
+                                <h4 class="product-name"><?= $product['product_name'] ?></h4>
+                                <p class="rating">
+                                    Rating: <?= str_repeat('★', floor($product['avg_rating'])) ?>
+                                    <?= str_repeat('☆', 5 - floor($product['avg_rating'])) ?>
+                                    (<?= $product['review_count'] ?> reviews)
+                                </p>
+                                <p class="price-tag">Price: RM <?= number_format($product['price'], 2) ?></p>
+                            </div>
+                        </a>
+                        <form action="OrderServlet" method="post">
+                            <input name="url" value="cart" type="hidden">
+                            <input type="hidden" name="productId" value="<?= htmlspecialchars($product['product_id']) ?>">
+                            <input type="hidden" name="action" value="add">
+                            <button class="cart-button">Add to Cart</button>
+                        </form>
+                    </div>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        <?php endforeach; ?>
     </div>
 </div>
-
 <div id="modal" style="display:block;">
     <div id="modal-content">
         <div id="product-detail-container" class="d-flex">
