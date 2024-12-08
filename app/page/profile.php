@@ -28,15 +28,15 @@ include '../_head.php';
             </div>
             <div>
                 <div class="input-subcontainer">
-                    <input type="text" name="username" value="${empty customer ? '' : customer.username}" class="input-box" spellcheck="false" />
+                    <input type="text" name="username" value="tanjc" class="input-box" spellcheck="false" />
                     <label for="username" class="label">Username</label>
                 </div>
                 <div class="input-subcontainer">
-                    <input type="text" name="email" value="${empty customer ? '' : customer.email}" class="input-box" spellcheck="false" />
+                    <input type="text" name="email" value="haha@gmail.com" class="input-box" spellcheck="false" />
                     <label for="email" class="label">Email</label>
                 </div>
                 <div class="input-subcontainer">
-                    <input type="text" name="phone" value="${empty customer ? '' : customer.contactNumber}" class="input-box" spellcheck="false" />
+                    <input type="text" name="phone" value="+601163985186" class="input-box" spellcheck="false" />
                     <label for="phone" class="label">Phone</label>
                 </div>
                 <button class="btn" type="submit">Save</button>
@@ -50,20 +50,20 @@ include '../_head.php';
                 <div>
                     <h2>Bank</h2>
                     <div class="input-subcontainer">
-                        <input type="text" name="name" value="${empty bank ? '' : bank.name}" class="input-box" spellcheck="false" required />
+                        <input type="text" name="name" value="Public Bank" class="input-box" spellcheck="false" required />
                         <label for="name" class="label">Name</label>
                     </div>
                     <div class="input-subcontainer">
-                        <input type="text" name="acc-num" value="${empty bank ? '' : bank.accNum}" class="input-box" spellcheck="false" required />
+                        <input type="text" name="acc-num" value="1234567890" class="input-box" spellcheck="false" required />
                         <label for="acc-num" class="label">Account Number</label>
                     </div>
                     <div class="input-subcontainer">
-                        <input type="text" name="cvv" value="${empty bank ? '' : bank.cvv}" class="input-box" spellcheck="false" required />
+                        <input type="text" name="cvv" value="123" class="input-box" spellcheck="false" required />
                         <label for="cvv" class="label">CVV</label>
                     </div>
                     <div class="input-subcontainer">
                         <label for="expiry-date" class="normal-label">Expiry Date</label>
-                        <input type="month" name="expiry-date" value="${empty bank ? '' : bank.expiryDate}" spellcheck="false" id="expiry-date-input" required />
+                        <input type="month" name="expiry-date" value="" spellcheck="false" id="expiry-date-input" required />
                     </div>
                     <div class="input-subcontainer">
                         <label for="card-type" class="normal-label">Card Type</label>
@@ -81,11 +81,11 @@ include '../_head.php';
                 <div>
                     <h2>E-Wallet</h2>
                     <div class="input-subcontainer">
-                        <input type="text" name="name" value="${empty ewallet ? '' : ewallet.name}" class="input-box" spellcheck="false" required />
+                        <input type="text" name="name" value="TouchNGo" class="input-box" spellcheck="false" required />
                         <label for="name" class="label">Name</label>
                     </div>
                     <div class="input-subcontainer">
-                        <input type="text" name="phone" value="${empty ewallet ? '' : ewallet.phone}" class="input-box" spellcheck="false" required />
+                        <input type="text" name="phone" value="+601163985186" class="input-box" spellcheck="false" required />
                         <label for="phone" class="label">Phone</label>
                     </div>
                     <button class="btn" type="submit">Save</button>
@@ -97,7 +97,7 @@ include '../_head.php';
         <h2>Address</h2>
         <form id="address-container" action="AddressServlet" method="post">
             <div class="input-subcontainer" id="address-input-container">
-                <input type="text" name="address" value="${empty customer ? '' : customer.address}" class="input-box" spellcheck="false" />
+                <input type="text" name="address" value="Jalan Genting Kelang, Setapak, 53300 Kuala Lumpur, Federal Territory of Kuala Lumpur" class="input-box" spellcheck="false" />
                 <label for="address" class="label">Address</label>
             </div>
             <button class="btn" type="submit">Save</button>
@@ -117,53 +117,57 @@ include '../_head.php';
                 </tr>
             </thead>
             <tbody>
-                <% 
-                        for (OrderDetails details : orderDetailsList) {
-                            int status = details.getStatus();
-                            
-                        %>
                 <tr>
                     <td>
-                        <p class="order-id"><%= details.getOrderId() %></p>
+                        <p class="order-id">ORD-20241201-g9hsaP</p>
                     </td>
                     <td>
-                        <p class="date"><%= details.getPaidDate() %></p>
+                        <p class="date">1 Dec 2024</p>
                     </td>
                     <td>
-                        <p class="time"><%= details.getPaidTime() %></p>
+                        <p class="time">12.00pm</p>
                     </td>
-                    <td class="total-price"><%= String.format("%.2f", details.getTotal()) %></td>
-                    <td class="delivery-status">
-                        <% 
-                                switch(status) {
-                                    case 1:
-                                        out.print("Paid");
-                                        break;
-                                    case 2:
-                                        out.print("Packaging");
-                                        break;
-                                    case 3:
-                                        out.print("Shipping");
-                                        break;
-                                    case 4:
-                                        out.print("Delivery");
-                                        break;
-                                    default:
-                                        out.print("Unknown");
-                                }
-                                %>
-                    </td>
+                    <td class="total-price">123.45</td>
+                    <td class="delivery-status">Delivered</td>
                     <td class="action">
-
-                        <% if (details.getOrderReviewStatus() == ReviewStatus.NONE) {%>
                         <a class="reviewbtn" href="ReviewServlet?orderId=<%= details.getOrderId() %>"><span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i></a>
-                        <% } else { %>
-                        <a class="reviewbtn" href=""><span>Review&nbsp;&nbsp;</span><i class="ti ti-check"></i></a>
-                        <% } %>
+                        <!-- <a class="reviewbtn" href=""><span>Review&nbsp;&nbsp;</span><i class="ti ti-check"></i></a> -->
                     </td>
                 </tr>
-                <% 
-                        } %>
+                <tr>
+                    <td>
+                        <p class="order-id">ORD-20241201-g9hsaP</p>
+                    </td>
+                    <td>
+                        <p class="date">1 Dec 2024</p>
+                    </td>
+                    <td>
+                        <p class="time">12.00pm</p>
+                    </td>
+                    <td class="total-price">123.45</td>
+                    <td class="delivery-status">Delivered</td>
+                    <td class="action">
+                        <a class="reviewbtn" href="ReviewServlet?orderId=<%= details.getOrderId() %>"><span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i></a>
+                        <!-- <a class="reviewbtn" href=""><span>Review&nbsp;&nbsp;</span><i class="ti ti-check"></i></a> -->
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p class="order-id">ORD-20241201-g9hsaP</p>
+                    </td>
+                    <td>
+                        <p class="date">1 Dec 2024</p>
+                    </td>
+                    <td>
+                        <p class="time">12.00pm</p>
+                    </td>
+                    <td class="total-price">123.45</td>
+                    <td class="delivery-status">Delivered</td>
+                    <td class="action">
+                        <a class="reviewbtn" href="ReviewServlet?orderId=<%= details.getOrderId() %>"><span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i></a>
+                        <!-- <a class="reviewbtn" href=""><span>Review&nbsp;&nbsp;</span><i class="ti ti-check"></i></a> -->
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
