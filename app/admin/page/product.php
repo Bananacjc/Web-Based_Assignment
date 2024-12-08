@@ -25,7 +25,7 @@
     border-radius: 5px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     box-sizing: border-box;
-}
+} 
 .close-button {
     float: right;
     font-size: 28px;
@@ -51,35 +51,42 @@
             </select>
         </div>
 
-
+    <?php    
+    $arr = $_db->query('SELECT * FROM products')->fetchAll();
+?>
         <!-- Product Table -->
         <table id="productTable" class="data-table">
             <thead>
                 <tr>
-                    <th>Image</th>
+                    <th>Product Image</th>
                     <th>Product ID</th>
                     <th>Product Name</th>
-                    <th onclick="sortTable()">Category</th>
+                    <th>Category Image</th>
+                    <th>Category</th>
                     <th>Price (RM)</th>
                     <th>Description</th>
-                    <th>Quantity</th>
+                    <th>Current Stock</th>
                     <th>Amount Sold</th>
+                    <th>Status</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                <% for (Product product : products) { %>
-                <tr class="product-row" data-category="<%= product.getCategory() %>">
-                    <td><img src="data:image/jpeg;base64,<%= product.getImage() %>" alt="<%= product.getProductName() %>"></td>
-                    <td><%= product.getProductId() %></td>
-                    <td><%= product.getProductName() %></td>
-                    <td><%= product.getCategory() %></td>
-                    <td><%= product.getPrice() %></td>
-                    <td><%= product.getDescription() %></td>
-                    <td><%= product.getQuantity() %></td>
-                    <td><%= product.getAmountSold() %></td>
+                <tr class="product-row" data-category="">
+                    <?php foreach ($arr as $s): ?>
+                    <td><?= $s-> product_image?></td>
+                    <td><?= $s-> product_id?></td>
+                    <td><?= $s-> product_name?></td>
+                    <td><?= $s-> category_image?></td>
+                    <td><?= $s-> category_name?></td>
+                    <td><?= $s-> price?></td>
+                    <td><?= $s-> description?></td>
+                    <td><?= $s-> current_stock?></td>
+                    <td><?= $s-> amount_sold?></td>
+                    <td><?= $s-> status?></td>
+
                     <td>
-                        <button class="action-button" onclick="showUpdateProductForm('<%= product.getProductId() %>', '<%= product.getProductName() %>', '<%= product.getCategory() %>', '<%= product.getPrice() %>', '<%= product.getDescription() %>','<%= product.getQuantity() %>', '<%= product.getAmountSold() %>', '<%= product.getImage() %>')">Update</button>
+                        <button class="action-button" data-get="update.php?=<?= $s->$product_id?>" onclick="showUpdateProductForm('<%= product.getProductId() %>', '<%= product.getProductName() %>', '<%= product.getCategory() %>', '<%= product.getPrice() %>', '<%= product.getDescription() %>','<%= product.getQuantity() %>', '<%= product.getAmountSold() %>', '<%= product.getImage() %>')">Update</button>
                         <form action="../product" method="post" style="display: inline;">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="productId" value="<%= product.getProductId() %>">
@@ -87,12 +94,14 @@
                         </form>
                     </td>
                 </tr>
-                <% } %>
             </tbody>
+            <?php endforeach ?>
+
         </table>
         <div style="margin: 30px;">
             <button id="addProductBtn" class="action-button" onclick="showAddForm()">Add new product</button>
         </div>
+        
 
         <!-- Add Product Modal -->
         <div id="addProductModal" class="modal" style="margin-top: 80px;">
@@ -206,7 +215,7 @@
                 }
             }
 
-            function showUpdateProductForm(productId, productName, category, productPrice, productDescription, quantity, amountSold, imageUrl) {
+            function showUpdateProductForm(productImage,productId, productName, categcategory, price, productDescription, currentStock, amountSold) {
                 var modal = document.getElementById('updateModal');
                 var form = document.getElementById('updateForm');
                 modal.style.display = "block";

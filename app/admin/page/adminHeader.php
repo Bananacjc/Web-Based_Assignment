@@ -1,7 +1,9 @@
 <?php
 // Get the page title from the query parameter or set a default value
 $pageTitle = isset($_GET['title']) ? htmlspecialchars($_GET['title']) : 'Dashboard';
+require '../_base.php';
 ?>
+
 
 <!DOCTYPE html>
 <html>

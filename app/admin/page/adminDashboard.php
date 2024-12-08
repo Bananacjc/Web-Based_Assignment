@@ -3,9 +3,6 @@
 <?php 
 $_css ='../css/adminDashboard.css';
 $_title='Admin Dashboard';
-require '../_base.php';
-
-
 
 ?>
 
