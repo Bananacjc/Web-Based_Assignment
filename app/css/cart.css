@@ -13,7 +13,7 @@
     width: 90%;
     border-collapse: separate;
     border-spacing: 0;
-    border: 1px solid var(--color-green-light);
+    border: 1px solid var(--color-green);
     min-height: 300px;
     margin: 50px auto;
     border-radius: 8px;
@@ -30,7 +30,7 @@
 }
 
 .cart-table th {
-    background-color: #f0fff1;
+    background-color: var(--color-mint-transparent);
     font-weight: 700;
 }
 
@@ -39,7 +39,7 @@
 }
 
 .cart-table tr:hover {
-    background-color: #f5fff5;
+    background-color: var(--color-mint-frost);
 }
 
 .product-info img {

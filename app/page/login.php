@@ -3,9 +3,10 @@ $_css = '../css/login.css';
 $_title = 'Login';
 require '../_base.php';
 
-$error = '';
+$msg = '';
+$isSuccess = false;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if (is_post()) {
     $usernameOrEmail = post('username-email');
     $password = post('password');
 
@@ -18,9 +19,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         login($user, "/index.php");
     } else {
         // Pass an error message to be displayed in a popup
-        $error = 'Invalid username/email or password';
+        $msg = 'Invalid username/email or password';
+    }
+
+    if ($msg) {
+        echo "<script>showPopup('$msg', $isSuccess);</script>";
     }
 }
+
 ?>
 
 <body>

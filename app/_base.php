@@ -7,6 +7,11 @@
 date_default_timezone_set('Asia/Kuala_Lumpur');
 session_start();
 
+$popup_message = temp('popup_message') ?? null;
+if ($popup_message) {
+    echo "<script>showPopup('{$popup_message['msg']}', {$popup_message['isSuccess']});</script>";
+}
+
 // ============================================================================
 // General Page Functions
 // ============================================================================
@@ -530,3 +535,10 @@ function generate_unique_id($prefix, $table, $column, $pdo)
     <script src="/js/popup.js"></script>
     <script src="/js/custom.js"></script>
 </head>
+<div id="popup" class="hide">
+    <div id="popup-content">
+        <h3 id="popup-title">Title</h3>
+        <p id="popup-msg">Message</p>
+        <button id="popup-btn" type="button" >OK</button>
+    </div>
+</div>

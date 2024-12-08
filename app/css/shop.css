@@ -1,5 +1,9 @@
 @import url(base.css);
 
+html {
+    scroll-behavior: smooth;
+}
+
 #container {
     display: flex;
     flex-direction: row;
@@ -15,7 +19,7 @@
 
 #sidebar {
     width: 250px;
-    height: 600px;
+    min-height: 600px;
     position: sticky;
     top: 110px;
     left: 0;
@@ -24,8 +28,8 @@
     padding: 20px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    box-shadow: 0 0 10px var(--color-white-crystal);
+    box-shadow: 0 0 10px var(--color-grey-light);
+    border-radius: 10px;
     box-sizing: border-box;
     overflow: hidden;
 }
@@ -36,7 +40,7 @@
     display: flex;
     align-items: center;
     background-color: var(--color-white-pure);
-    border: 1px solid var(--color-grey);
+    border: 2px solid var(--color-white-crystal);
     margin-bottom: 20px;
     border-radius: 6px;
 }
@@ -48,6 +52,10 @@
     pointer-events: none;
 }
 
+.sidebar-title {
+    margin: 10px 0;
+}
+
 #searchbar {
     width: 100%;
     padding: 8px 8px 8px 40px;
@@ -56,9 +64,12 @@
     border-radius: 6px;
 }
 
+#sidebar-list {
+    margin:0;
+}
 
 #sidebar-list li {
-    padding: 8px;
+    padding: 4px 8px;
     cursor: pointer;
 }
 
@@ -68,12 +79,14 @@
     display: block;
     padding: 8px;
     border-radius: 6px;
+    box-shadow: 0 1px 6px var(--color-grey-light);
+    transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
 
 #sidebar a:hover {
-    background-color: var(--color-grey);
-    color: var(--color-white-crystal);
+    background-color: var(--color-mint-transparent);
+    box-shadow: 0 1px 6px var(--color-mint-light);
 }
 
 #sidebar a.active {
@@ -82,6 +95,7 @@
 }
 
 #price-slider {
+    margin: 10px 0;
     background: linear-gradient(to right, var(--color-mint) 0%,
             var(--color-mint) 50%,
             var(--color-white-pure) 50%,
@@ -129,6 +143,7 @@
 .product-card {
     width: calc(33% - 20px);
     box-shadow: 0 0 10px var(--color-grey-light);
+    border-radius: 10px;
     margin: 10px;
     display: inline-block;
     vertical-align: top;
@@ -140,7 +155,7 @@
 .product-card img {
     width: 200px;
     height: 200px;
-    display: block;
+    border-radius: 10px;
     margin: 50px auto 10px auto;
 }
 
@@ -162,7 +177,7 @@
     transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
     display: block;
     width: 80%;
-    margin: 10px auto;
+    margin: 10px auto 50px auto;
 }
 
 .cart-button:hover {
@@ -179,8 +194,7 @@
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
-    background-color: var(--color-black-pure);
+    overflow: auto; 
     background-color: rgba(0, 0, 0, 0.4);
 }
 
@@ -188,7 +202,6 @@
     background-color: var(--color-white-crystal);
     margin: 15% auto;
     padding: 50px;
-    border: 1px solid var(--color-grey);
     border-radius: 8px;
     width: 60%;
 }
