@@ -32,6 +32,5 @@ $userLoggedIn = isset($_SESSION['user']); // Check if user session exists
         <?php else: ?>
             <a href="/page/login.php" id="loginbtn">Login</a>
         <?php endif; ?>
-
-        <script src="../js/headerAnimation.js"></script>
+        <script src="/js/headerAnimation.js"></script>
     </header>
