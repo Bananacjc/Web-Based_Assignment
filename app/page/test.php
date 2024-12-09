@@ -69,8 +69,7 @@ if (is_post()) {
             try {
                 $stmt = $_db->prepare("
                     INSERT INTO products (product_id, product_name, category_name, price, description, current_stock, amount_sold, product_image, status)
-                    VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)
-                ");
+                    VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)");
                 $stmt->execute([$productId, $productName, $categoryName, $price, $description, $currentStock, $productImagePath, $status]);
                 temp('success', "Product added successfully!");
                 redirect();

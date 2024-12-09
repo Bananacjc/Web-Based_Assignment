@@ -78,11 +78,12 @@ if (is_post()) {
                     <p>Don't have an account?</p>
                     <a href="register.php" class="hover-underline-anim">Sign up here</a>
                 </div>
-
-            </form>
-            <div id="cont-guest-container" class="hover-translate-y">
+                <div id="cont-guest-container" class="hover-translate-y">
                 <a href="../index.php" id="cont-guest"><i class="ti ti-user-off position-relative"></i>Continue As Guest</a>
             </div>
+
+            </form>
+            
         </div>
         <div id="container-right">
             <p>Get all your groceries<br>with just a few clicks</p>
