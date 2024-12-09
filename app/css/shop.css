@@ -1,29 +1,30 @@
 @import url(base.css);
 
-html {
+html, body {
     scroll-behavior: smooth;
+    height: 100%;
 }
 
 #container {
     display: flex;
     flex-direction: row;
-    min-height: 100vh;
     position: relative;
+    height: auto;
 }
 
 #sidebar-container {
     width: 250px;
-    height: auto;
+    height: 100vh;
     margin: 20px;
+    overflow: visible;
+    position: sticky;
+    top: 110px;
 }
 
 #sidebar {
     width: 250px;
     min-height: 600px;
-    position: sticky;
-    top: 110px;
-    left: 0;
-    bottom: 900px;
+   
     background-color: var(--color-white-pure);
     padding: 20px;
     display: flex;
@@ -32,6 +33,7 @@ html {
     border-radius: 10px;
     box-sizing: border-box;
     overflow: hidden;
+    z-index: 10;
 }
 
 #searchbar-container {

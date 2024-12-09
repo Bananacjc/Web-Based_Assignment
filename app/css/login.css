@@ -189,8 +189,12 @@ input[type="checkbox"]:checked::after {
     color: var(--color-white-crystal);
 }
 
+#signup-container {
+    margin: 0 5px;
+}
+
 #signup-container p {
-    margin: 0 5px 0 0;
+    margin: 0 5px;
 }
 
 #signup-container a {
@@ -204,12 +208,12 @@ input[type="checkbox"]:checked::after {
 }
 
 #cont-guest-container {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
+    width: max-content;
+    margin: 10px auto;
 }
 
 #cont-guest{
+    margin: auto;
     padding: 10px;
     border: none;
     border-radius: 8px;
