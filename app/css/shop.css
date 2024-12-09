@@ -1,9 +1,5 @@
 @import url(base.css);
 
-html, body {
-    scroll-behavior: smooth;
-    height: 100%;
-}
 
 #container {
     display: flex;
@@ -16,7 +12,6 @@ html, body {
     width: 250px;
     height: 100vh;
     margin: 20px;
-    overflow: visible;
     position: sticky;
     top: 110px;
 }
@@ -24,7 +19,6 @@ html, body {
 #sidebar {
     width: 250px;
     min-height: 600px;
-   
     background-color: var(--color-white-pure);
     padding: 20px;
     display: flex;
@@ -33,7 +27,6 @@ html, body {
     border-radius: 10px;
     box-sizing: border-box;
     overflow: hidden;
-    z-index: 10;
 }
 
 #searchbar-container {
