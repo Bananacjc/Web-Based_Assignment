@@ -130,7 +130,7 @@ include '../_head.php';
                     <td class="total-price">123.45</td>
                     <td class="delivery-status">Delivered</td>
                     <td class="action">
-                        <a class="reviewbtn" href="ReviewServlet?orderId=<%= details.getOrderId() %>"><span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i></a>
+                        <a class="reviewbtn" href=""><span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i></a>
                         <!-- <a class="reviewbtn" href=""><span>Review&nbsp;&nbsp;</span><i class="ti ti-check"></i></a> -->
                     </td>
                 </tr>
@@ -147,7 +147,7 @@ include '../_head.php';
                     <td class="total-price">123.45</td>
                     <td class="delivery-status">Delivered</td>
                     <td class="action">
-                        <a class="reviewbtn" href="ReviewServlet?orderId=<%= details.getOrderId() %>"><span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i></a>
+                        <a class="reviewbtn" href=""><span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i></a>
                         <!-- <a class="reviewbtn" href=""><span>Review&nbsp;&nbsp;</span><i class="ti ti-check"></i></a> -->
                     </td>
                 </tr>
@@ -164,8 +164,7 @@ include '../_head.php';
                     <td class="total-price">123.45</td>
                     <td class="delivery-status">Delivered</td>
                     <td class="action">
-                        <a class="reviewbtn" href="ReviewServlet?orderId=<%= details.getOrderId() %>"><span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i></a>
-                        <!-- <a class="reviewbtn" href=""><span>Review&nbsp;&nbsp;</span><i class="ti ti-check"></i></a> -->
+                        <a class="reviewbtn" href=""><span>Review&nbsp;&nbsp;</span><i class="ti ti-check"></i></a>
                     </td>
                 </tr>
             </tbody>
