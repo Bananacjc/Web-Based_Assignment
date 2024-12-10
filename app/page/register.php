@@ -6,6 +6,7 @@ $_css = '../css/register.css';
 require '../_base.php';
 
 
+
 if (is_post()) {
     $msg = '';
     $isSuccess = false;
@@ -35,13 +36,12 @@ if (is_post()) {
     }
 
     if ($msg) {
-        // $_SESSION['popup_message'] = ['msg' => $msg, 'isSuccess' => $isSuccess];
-        temp('popup_message', ['msg' => $msg, 'isSuccess' => $isSuccess]);
+        temp('popup-msg', ['msg' => $msg, 'isSuccess' => $isSuccess]);
         if ($isSuccess) {
-            header("Location: login.php");
-            exit();
+            redirect('login.php');
+        } else {
+            popup($msg, $isSuccess);
         }
-        echo "<script>showPopup('$msg', $isSuccess);</script>";
     }
 }
 

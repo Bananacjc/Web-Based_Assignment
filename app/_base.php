@@ -20,14 +20,14 @@ if (!isset($_SESSION['user']) && isset($_COOKIE['remember_me'])) {
     }
 }
 
-$popup_message = temp('popup_message') ?? null;
-if ($popup_message) {
-    echo "<script>showPopup('{$popup_message['msg']}', {$popup_message['isSuccess']});</script>";
-}
-
 // ============================================================================
 // General Page Functions
 // ============================================================================
+
+function popup($msg, $isSuccess)
+{
+    echo "<script>showPopup('$msg', $isSuccess);</script>";
+}
 
 // Is GET request?
 function is_get(): bool
@@ -76,11 +76,12 @@ Get temp session variable with temp(key, null)
 */
 function temp($key, $value = null)
 {
+
     if ($value !== null) {
         $_SESSION['temp_' . $key] = $value;
     } else {
         $value = $_SESSION['temp_' . $key] ?? null;
-        unset($_SESSION['temp' . $key]); // Unset the session variable
+        unset($_SESSION['temp_' . $key]);
         return $value;
     }
 }
@@ -393,7 +394,8 @@ function login($user, $url = '/')
 }
 
 // Logout user
-function logout($url = '/') {
+function logout($url = '/')
+{
     if (isset($_COOKIE['remember_me'])) {
         // Clear the token from the database
         global $_db;
@@ -560,13 +562,27 @@ function generate_unique_id($prefix, $table, $column, $pdo)
     <link href="<?= $_css ?>" rel="stylesheet" type="text/css">
     <title><?= $_title ?? 'Untitled' ?></title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="/js/popup.js"></script>
+
     <script src="/js/custom.js"></script>
 </head>
-<div id="popup" class="hide">
-    <div id="popup-content">
-        <h3 id="popup-title">Title</h3>
-        <p id="popup-msg">Message</p>
-        <button id="popup-btn" type="button" >OK</button>
+
+<body>
+    <div id="popup" class="hide">
+        <div id="popup-content">
+            <h3 id="popup-title">Title</h3>
+            <p id="popup-msg">Message</p>
+            <button id="popup-btn" type="button">OK</button>
+        </div>
     </div>
-</div>
+    <script src="/js/popup.js"></script>
+</body>
+
+<?php
+$popup_message = temp('popup-msg') ?? null;
+if ($popup_message) {
+    $msg = $popup_message['msg'];
+    $isSuccess = $popup_message['isSuccess'];
+    popup($msg, $isSuccess);
+}
+
+?>
