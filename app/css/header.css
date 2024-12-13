@@ -1,3 +1,5 @@
+@import url(base.css);
+
 body{
     margin: 0;
     padding: 0;
@@ -9,59 +11,32 @@ body{
 #header{
     height: 80px;
     width: 100%;
-    background-color: #34A853;
+    background-color: var(--color-green-darker);
     display: flex;
     justify-content: space-between;
     position: fixed;
     top: 0;
-    z-index: 1000;
+    z-index: 999;
     transition: transform 0.3s ease;
 }
 
 #header.hidden {
     transform: translateY(-100%);
+    transition: transform 0.3s ease;
 }
 
-#navbar{
-    display: flex;
-}
-
-#logo {
-    display: flex;
-    align-items: center;
-    margin: auto 50px;
-    text-decoration: none;
-    transition: transform 0.3s ease-in-out;
-}
-
-#banana, #sis {
-    font-family: "League Spartan", sans-serif;
-    font-weight: 700;
-    letter-spacing: 2px;
-    font-size: 22px;
-}
-
-#banana {
-    color: #FFF67E;
-}
-
-#sis {
-    color: #BFEA7C;
-}
-
-#logo:hover{
-    transform: scale(1.1);
-}
 
 .navlink{
     margin: auto 20px;
     text-decoration: none;
-    color: #EFEFEF;
+    color: var(--color-white-crystal);
     transition: color 0.3s ease-in-out;
+    font-weight: 400;
+    font-size: 18px;
 }
 
 .navlink:hover {
-    color: #000000;
+    color: var(--color-black-pure);
 }
 
 #loginbtn{
@@ -73,14 +48,43 @@ body{
     font-weight: 600;
     font-style: normal;
     font-size: 16px;
-    background-color: #FFBB38;
+    background-color: var(--color-gold);
     text-align: center;
     text-decoration: none;
-    color: #000000;
+    color: var(--color-black-pure);
     transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 #loginbtn:hover {
-    background-color: #000000;
+    background-color: var(--color-black-pure);
+    color: var(--color-white-crystal);
+}
+
+#user-features a:hover,
+#user-features a:hover i {
+    color: #000000;
+}
+
+#user-features {
+    width: auto;
+    display: flex;
+    align-items: center;
+}
+
+#user-features a {
+    padding: 5px;
+    margin: auto 15px;
+    text-decoration: none;
     color: #EFEFEF;
+    transition: color 0.3s ease-in-out;
+    display: flex;
+    align-items: center;
+}
+
+#user-features i {
+    margin: auto 5px;
+    text-decoration: none;
+    color: #EFEFEF;
+    transition: color 0.3s ease-in-out;
+    font-size: 24px;
 }

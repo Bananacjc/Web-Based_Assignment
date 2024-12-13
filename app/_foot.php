@@ -1,7 +1,7 @@
 <head>
     <link rel="stylesheet" href="../css/footer.css" />
 </head>
-<footer>
+<footer class="w-100">
     <svg
         id="footer-wave-svg"
         xmlns="http://www.w3.org/2000/svg"
@@ -13,13 +13,11 @@
 
     </svg>
     <div id="footer-container">
-        <div id="footer-top">
-            <div id="logo-footer">
-                <img src="../images/logo.png" alt="Logo" width="60" height="60" />
-                <p id="banana">BANANA</p>
-                <p id="sis">SIS</p>
+        <div id="footer-top" class="d-flex justify-content-space-evenly">
+            <div class="d-flex justify-content-center align-items-center"> 
+                <?= html_logo(80, 80);?>
             </div>
-            <div id="menu">
+            <div class="d-flex h-100 flex-direction-column justify-content-flex-start align-items-flex-start">
                 <p class="footer-contact-heading">Useful Links</p>
                 <div class="menu-item"><a class="menu-link" href="index.php">Home</a></div>
                 <div class="menu-item"><a class="menu-link" href="shop.php">Shop</a></div>
@@ -34,7 +32,7 @@
                     <div>
                         <p class="footer-contact-title">Address:</p>
                         <p class="footer-contact-content">
-                        Jalan Genting Kelang, Setapak, 53300 Kuala Lumpur, Federal Territory of Kuala Lumpur
+                            Jalan Genting Kelang, Setapak, 53300 Kuala Lumpur, Federal Territory of Kuala Lumpur
                         </p>
                     </div>
                 </div>
@@ -57,10 +55,10 @@
         <div id="divider"></div>
         <div id="footer-bottom">
             <div id="copyright">
-                <p id="copyright1">©2024</p>
-                <p id="copyright2">&nbsp;Banana</p>
-                <p id="copyright3">SIS</p>
-                <p id="copyright4">&nbsp;All rights reserved</p>
+                <p>&copy;2024</p>
+                <p class="text-yellow-light">&nbsp;Banana</p>
+                <p class="text-green-light">SIS</p>
+                <p>&nbsp;All rights reserved</p>
             </div>
             <div id="payment-service">
                 <img src="../images/visa.png" alt="Visa" width="50" height="50" />
@@ -71,4 +69,5 @@
     </div>
 </footer>
 </body>
+
 </html>

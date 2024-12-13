@@ -1,14 +1,23 @@
-let lastScrollTop = 0;
+$(() => {
+    
+    /**
+     * Allow header to stay 'hidden' when body is scrolled beyond the header height
+     * Header will stay 'hidden' when scrolled down, and appear when scrolled up
+     */
+    let header = $('#header');
+    let body = $(document.body);
+    let lastScrollTop = 0;
+    $(body).on("scroll", () => {
+        let currentScroll = body.scrollTop();
 
-window.addEventListener("scroll", function() {
-    let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-    let header = document.getElementById("header");
+        if (currentScroll > lastScrollTop && currentScroll > header.height()) {
+            header.addClass('hidden');
+            console.log('added')
+        } else if (currentScroll < lastScrollTop) {
+            header.removeClass('hidden');
+        }
 
-    if (currentScroll > 80 && currentScroll > lastScrollTop) {
-        header.classList.add("hidden");
-    } else {
-        header.classList.remove("hidden");
-    }
+        lastScrollTop = Math.abs(currentScroll);
+    });
 
-    lastScrollTop = currentScroll;
-}, false);
+})

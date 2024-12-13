@@ -1,0 +1,164 @@
+h1 {
+    margin-top: 160px;
+    color: #333;
+    text-align: center;
+}
+.data-table {
+    width: 95%;
+    border-collapse: collapse;
+    margin: 20px auto;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.data-table th, .data-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.data-table th {
+    background-color: #34A853; /* Changed blue to green */
+    color: white;
+}
+
+.data-table tr:hover {
+    background-color: #f5f5f5;
+}
+
+.data-table img {
+    height: 50px;
+    width: auto;
+    max-width: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+form button.delete-action-button, button.cancel-button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+
+.action-button {
+    background-color: #007BFF; /* Retained original button color */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.action-button:hover {
+    background-color: #0056b3; /* Retained original button hover color */
+}
+
+.update-form, .add-form {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-width: 600px;
+    margin: 20px auto;
+    width: 90%;
+}
+
+.update-form label, .add-form label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333333;
+    font-size: 14px;
+}
+
+.update-form input, .update-form select, .update-form textarea,
+.add-form input, .add-form select, .add-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.update-form img, .add-form img {
+    margin-top: 10px;
+    border-radius: 4px;
+}
+
+.update-form input[type="submit"], .add-form input[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
+.update-form input[type="submit"]:hover, .add-form input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+.category-filter {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #f8f9fa; /* Light grey background */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 10px; /* Adjust as needed */
+}
+
+.category-filter label {
+    font-weight: bold;
+    margin-right: 10px;
+    color: #333; /* Dark grey color for the text */
+}
+
+.category-filter select {
+    padding: 8px 16px;
+    border: 2px solid #ccc; /* Light grey border */
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.category-filter select:hover,
+.category-filter select:focus {
+    border-color: #007bff; /* Blue color on hover/focus */
+}
+
+/* Optional: style for options in the dropdown */
+.category-filter option {
+    padding: 10px; /* Adds padding inside the dropdown */
+}
+
+/* Adjust the layout when the sidebar is toggled */
+#nav-toggle:checked~.main {
+    margin-left: 70px;
+
+}
+
+
+.main {
+    margin-left: 250px;
+    padding-left: 20px;
+
+}
+

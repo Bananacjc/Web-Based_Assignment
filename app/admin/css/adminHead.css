@@ -1,0 +1,270 @@
+/* General Reset */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background-color: #343a40;
+    color: #ffffff;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    transition: width 0.3s ease;
+}
+
+.sidebar-logo {
+    font-size: 24px;
+    text-align: center;
+    padding: 20px 0;
+    background-color: #212529;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-logo img {
+    margin-right: 10px;
+}
+
+.sidebar-logo a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.sidebar-nav {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex-grow: 1;
+}
+
+.sidebar-header {
+    font-size: 16px;
+    font-weight: bold;
+    padding: 15px 20px;
+    background-color: #495057;
+    text-transform: uppercase;
+}
+
+.sidebar-item {
+    margin: 0;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: #ffffff;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar-link .icon {
+    margin-right: 10px;
+    font-size: 18px;
+    min-width: 30px; /* Ensures icons remain aligned */
+    text-align: center;
+}
+
+.sidebar-link .label {
+    white-space: nowrap; /* Prevents label text from wrapping */
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-link:hover {
+    background-color: #495057;
+}
+
+/* Nested Menu Styles */
+.nested-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 20px; /* Indent nested items */
+    display: none; /* Hidden by default */
+    background-color: #495057;
+}
+
+.nested-item {
+    margin: 0;
+}
+
+.nested-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.nested-link:hover {
+    background-color: #6c757d; /* Slightly lighter hover effect */
+}
+
+.sidebar-item:hover .nested-menu {
+    display: block; /* Show menu on hover */
+}
+
+/* Main Content Styles */
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+    transition: margin-left 300ms;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
+    background-color: #ffffff;
+    position: fixed;
+    top: 0;
+    left: 250px;
+    width: calc(100% - 250px);
+    z-index: 100;
+    align-items: center;
+    transition: left 300ms;
+}
+
+header h1 {
+    font-size: 1.5rem;
+    color: #222;
+    margin: 0;
+}
+
+header label span {
+    font-size: 1.7rem;
+    padding-left: 1rem;
+}
+
+.search-wrapper {
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+.search-wrapper span {
+    display: inline-block;
+    padding: 0rem 1rem;
+    font-size: 1.5rem;
+    color: #777;
+}
+
+.search-wrapper input {
+    height: 100%;
+    padding: 0.5rem;
+    border: none;
+    outline: none;
+    flex-grow: 1;
+    font-size: 1rem;
+}
+
+.user-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-right: 50px;
+}
+
+.user-wrapper img {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+}
+
+.user-wrapper h4 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.user-wrapper small {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+/* Collapsible Sidebar Styles */
+#nav-toggle:checked + .sidebar {
+    width: 70px;
+}
+
+#nav-toggle:checked + .sidebar .label {
+    opacity: 0;
+    visibility: hidden; 
+}
+
+
+#nav-toggle:checked + .sidebar-logo {
+    opacity: 0;
+    visibility: hidden;
+}
+
+#nav-toggle:checked + .sidebar .icon {
+    margin-right: 0;
+}
+
+#nav-toggle:checked ~ .main-content {
+    margin-left: 70px;
+}
+
+#nav-toggle:checked ~ .main-content header{
+    left: 70px;
+    width: calc(100% - 70px);
+}
+
+
+.table-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin: 20px;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.table-container h2 {
+    margin-bottom: 15px;
+    font-size: 20px;
+    color: #333;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead tr {
+    background-color: #343a40;
+    color: #ffffff;
+}
+
+th, td {
+    text-align: left;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tbody tr:hover {
+    background-color: #e9ecef;
+}
+
+td {
+    font-size: 14px;
+}
+
+th {
+    font-size: 16px;
+    font-weight: bold;
+}

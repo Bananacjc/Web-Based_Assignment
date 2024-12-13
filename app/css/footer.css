@@ -1,6 +1,4 @@
-footer {
-    width: 100%;
-}
+@import url(base.css);
 
 #footer-wave-svg {
     background-color: transparent;
@@ -9,50 +7,26 @@ footer {
     margin-bottom: -5px;
 }
 #footer-wave-path {
-    fill: #212529;
+    /* fill: #212529; */
+    fill: var(--color-black-carbon);
 }
 
 #footer-container{
-    background: #212529;
+    /* background: #212529; */
+    background-color: var(--color-black-carbon);
 }
 
 #footer-top{
     padding-top: 50px;
-    display: flex;
-    justify-content: space-evenly;
 }
 
 #footer-top > *{
     width: 25%;
 }
 
-#logo-footer {
-    display: flex;
-    text-decoration: none;
-}
-
-#banana-footer, #sis-footer {
-    font-family: "League Spartan", sans-serif;
-    font-weight: 700;
-    letter-spacing: 2px;
-    font-size: 44px;
-}
-
-#banana-footer {
-    color: #FFF67E;
-}
-
-#sis-footer {
-    color: #BFEA7C;
-}
-
-#menu{
-    display: flex;
-    flex-direction: column;
-}
 
 .footer-contact-heading{
-    color: #EFEFEF;
+    color: var(--color-white-crystal);
     font-family: "League Spartan", sans-serif;
     font-size: 24px;
     font-weight: 700;
@@ -60,18 +34,18 @@ footer {
 }
 
 .menu-item{
-    margin: 10px 0;
+    margin: 5% 0;
 }
 
 .menu-link{
     text-decoration: none;
     font-size: 18px;
-    color: #C8C8C8;
+    color: var(--color-grey-light);
     transition: color 0.3s ease-in-out, text-decoration 0.3s ease-in-out;
 }
 
 .menu-link:hover {
-    color: #34A853;
+    color: var(--color-green);
     text-decoration: underline;
 }
 
@@ -83,15 +57,15 @@ footer {
 
 .footer-contact-icon > *{
     font-size: 30px;
-    border: #454545 solid 1px;
-    color: #EFEFEF;
+    border: var(--color-black-carbon) solid 1px;
+    color: var(--color-white-crystal);
     padding: 8px;
     border-radius: 50%;
     margin-right: 20px;
 }
 
 .footer-contact-title{
-    color: #EFEFEF;
+    color: var(--color-white-crystal);
     font-family: "League Spartan", sans-serif;
     font-size: 20px;
     font-weight: 700;
@@ -99,7 +73,7 @@ footer {
 }
 
 .footer-contact-content{
-    color: #C8C8C8;
+    color: var(--color-grey-light);
     margin: 10px 0 10px 0;
 }
 
@@ -118,16 +92,8 @@ footer {
     height: 100px;
     display: flex;
     align-items: center;
-    color: #C8C8C8;
+    color: var(--color-grey-light);
     font-size: 18px;
-}
-
-#copyright2{
-    color: #FFF67E;
-}
-
-#copyright3{
-    color: #BFEA7C;
 }
 
 #payment-service{

@@ -4,8 +4,8 @@ $_css = '../css/payment.css';
 require '../_base.php';
 include '../_head.php';
 ?>
-<h1 id="payment-title">Payment</h1>
-<div id="payment-container">
+<h1 class="h1 header-banner">Payment</h1>
+<div class="d-flex justify-content-space-evenly">
     <div id="billing-details-container">
         <h3>Billing Details</h3>
         <select class="flex-item payment-method-select" name="selectPayment">

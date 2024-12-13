@@ -1,41 +1,8 @@
-.blog {
-    padding: 4rem 0;
-    margin-top: 80px;
-    margin-bottom: 50px;
-    background: linear-gradient(rgba(239, 239, 239, 0.97), rgba(239, 239, 239, 0.97)), url("../img/doodleart.jpg");
-    background-size: 100% auto;
-
-}
-
-.blog::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 312px;
-    background: rgba(30, 255, 0, 0.03);
-}
-
-.a1 .heading{
-    text-align:center;
-    z-index: 99999;
-}
-
-.a1 > h1{
-    color: #1d1d1d;
-    font-family: "League Spartan", sans-serif;
-    font-weight: 700;
-    font-size: 2.5rem;
-}
+@import url("base.css");
 
 .container2{
     margin: 20px 30px 50px 100px;
     width:100%;
-}
-
-.bigB{
-    display:flex;
 }
 
 .b1b{
@@ -67,26 +34,11 @@
     margin:20px;
 }
 
-.content{
-    display:flex;
-}
-
-
 .container3{
    margin: 20px 100px 50px 30px;
-   
    width:100%;
    background-color: #ffffff;
    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 10px 10px;
-}
-
-.review-form{
-    
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    padding:0px;
 }
 
 .comment-title{
@@ -118,10 +70,6 @@ h5{
     border: 1px solid #34a853;
     padding:10px;
     
-}
-
-.b2{
-    display:flex;
 }
 
 .bb2{
@@ -216,6 +164,7 @@ input, button {
     outline: none;
     background: transparent;
 }
+
 button, input, optgroup, select, textarea {
     margin: 0;
     font-family: inherit;
@@ -230,19 +179,19 @@ button, input, optgroup, select, textarea {
 .c1{
     padding:20px;
     margin-top:30px;
-    
 }
 
 .send-btn {
-    padding: 1.2rem 18.4rem;
+    padding: 1.2rem;
+    width: 100%;
     margin: 2rem 0;
     text-align: center;
     border-radius: 0.4rem;
     display: inline-block;
-    background: #34a853;
+    background: var(--color-green-darker);
     font-size: 1.0rem;
     font-weight: 500;
-    color: #EFEFEF;
+    color: var(--color-white-crystal);
     font-family: "Inter", sans-serif;
     z-index: 1;
     text-decoration: none;
@@ -250,5 +199,5 @@ button, input, optgroup, select, textarea {
 }
 
 .send-btn:hover{
-    background-color: #000000;
+    background-color: var(--color-black-pure);
 }

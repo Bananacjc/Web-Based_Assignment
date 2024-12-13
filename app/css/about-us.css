@@ -1,15 +1,4 @@
-.blog{
-    padding: 4rem 0;
-    margin-top: 80px;
-}
-
-.heading{
-    color: #1d1d1d;
-    font-family: "League Spartan", sans-serif;
-    font-weight: 700;
-    font-size: 2.5rem;
-    text-align:center;
-}
+@import url('base.css');
 
 .container{
     display:flex;
@@ -31,6 +20,7 @@
     line-height: 3rem;
     margin-bottom: 1rem;
     display: -webkit-box;
+    line-clamp: 2;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
@@ -108,7 +98,7 @@
     text-align: center;
     border-radius: 0.4rem;
     display: inline-block;
-    background: #34a853;
+    background-color: #34a853;
     font-size: 1.0rem;
     font-weight: 500;
     position: relative;
@@ -117,19 +107,21 @@
     overflow: hidden;
     z-index: 1;
     text-decoration: none;
+    
 }
 
 .contact-btn:hover{
     animation-name: btnanimation;
     animation-duration: 1s;
-    background-color: #000000;
-    color: #EFEFEF;
+    background-color: var(--color-black-pure);
+    color: var(--color-white-crystal);
 }
 
 @keyframes btnanimation{
-    0%{background-color: #34a583;}
+    0%{background-color: var(--color-mint);}
     50%{background-image: linear-gradient(to up, #34a583 , #000000);}
-    100%{background-color: #000000;}
+    100%{background-color: var(--color-black-pure);}
+
 }
 
 /* Initial state */
