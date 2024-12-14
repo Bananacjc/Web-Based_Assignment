@@ -2,15 +2,6 @@
 require '../_base.php'; // Include base functions and database connection
 
 // Fetch existing categories
-$categories = [];
-try {
-    $stmt = $_db->query("SELECT category_name, category_image FROM categories");
-    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    temp('error', "Error fetching categories: " . $e->getMessage());
-    redirect(); // Redirect to prevent further execution
-}
-
 // Handle POST request for adding products
 if (is_post()) {
     global $_err;
@@ -36,6 +27,8 @@ if (is_post()) {
     } elseif (!str_starts_with($productImage->type, 'image/')) {
         $_err['product_image'] = 'Invalid image file.';
     }
+
+    
 
     // Handle new category
     if (post('new_category_name')) {
@@ -72,7 +65,7 @@ if (is_post()) {
             ");
             $stmt->execute([$productId, $productName, $categoryName, $price, $description, $currentStock, $productImagePath, $status]);
             temp('success', "Product added successfully!");
-            redirect();
+            redirect('product.php');
         } catch (PDOException $e) {
             temp('error', "Error adding product: " . $e->getMessage());
             redirect();
@@ -81,63 +74,3 @@ if (is_post()) {
 }
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add Product</title>
-    <style>
-        .error { color: red; font-size: 0.9em; }
-        .success { color: green; font-size: 1em; }
-    </style>
-</head>
-<body>
-    <h1>Add Product</h1>
-
-    <?php if (temp('success')): ?>
-        <p class="success"><?= temp('success'); ?></p>
-    <?php endif; ?>
-
-    <form method="POST" action="" enctype="multipart/form-data">
-        <label for="product_name">Product Name:</label>
-        <?php html_text('product_name', 'required'); ?>
-        <span class="error"><?php err('product_name'); ?></span><br><br>
-
-        <label for="categories">Existing Categories:</label>
-        <?php html_select('category_name', array_column($categories, 'category_name', 'category_name'), '- Select Category -'); ?>
-        <span class="error"><?php err('category_name'); ?></span><br><br>
-
-        <label for="new_category_name">New Category Name:</label>
-        <?php html_text('new_category_name'); ?><br><br>
-
-        <label for="new_category_image">New Category Image:</label>
-        <?php html_file('new_category_image', 'image/*'); ?>
-        <span class="error"><?php err('new_category_image'); ?></span><br><br>
-
-        <label for="price">Price:</label>
-        <?php html_number('price', '0', '', '0.01', 'required'); ?>
-        <span class="error"><?php err('price'); ?></span><br><br>
-
-        <label for="description">Description:</label>
-        <?php html_textarea('description', 'required'); ?>
-        <span class="error"><?php err('description'); ?></span><br><br>
-
-        <label for="current_stock">Current Stock:</label>
-        <?php html_number('current_stock', '0', '', '1', 'required'); ?>
-        <span class="error"><?php err('current_stock'); ?></span><br><br>
-
-        <label for="product_image">Product Image:</label>
-        <?php html_file('product_image', 'image/*', 'required'); ?>
-        <span class="error"><?php err('product_image'); ?></span><br><br>
-
-        <label for="status">Status:</label>
-        <?php html_select('status', [
-            'AVAILABLE' => 'Available',
-            'UNAVAILABLE' => 'Unavailable',
-            'OUT_OF_STOCK' => 'Out of Stock'
-        ], '- Select Status -', 'required'); ?>
-        <span class="error"><?php err('status'); ?></span><br><br>
-
-        <button type="submit">Add Product</button>
-    </form>
-</body>
-</html>

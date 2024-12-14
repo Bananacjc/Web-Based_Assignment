@@ -162,3 +162,8 @@ form button.delete-action-button, button.cancel-button {
 
 }
 
+.resized-image {
+    width: 100px; 
+    height: auto; 
+}
+
