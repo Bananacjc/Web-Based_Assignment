@@ -38,7 +38,7 @@ if (is_post()) {
         }
     } else {
         $msg = 'Invalid username/email or password';
-        echo "<script>showPopup('$msg', false);</script>";
+        popup($msg, false);
     }
 }
 
