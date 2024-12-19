@@ -12,8 +12,11 @@ require '../_base.php';
     <link rel="stylesheet" href="../css/adminHead.css" />
     <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
     <title><?php echo $pageTitle; ?></title> <!-- Set the page title -->
-</head>
 
+</head>
+<?php
+$userRole =['MANAGER','STAFF'];
+?>
 <body>
     <input type="checkbox" id="nav-toggle" hidden>
 
@@ -39,7 +42,7 @@ require '../_base.php';
                 </li>
                 <li class="sidebar-item">
 
-                    <?php if ($_user?->role == 'MANAGER'): ?>
+                    <?php if (in_array($_user?->role,$userRole)): ?>
                         <a href="product.php?title=Product" class="sidebar-link">
                             <span class="icon">🏷️</span>
                             <span class="label">Product</span>
@@ -74,7 +77,7 @@ require '../_base.php';
                             <a href="account.php?title=Account" class="nested-link">Account</a>
                         </li>
                         <li class="nested-item">
-                            <a href="logout.php?title=Log Out" class="nested-link">Log Out</a>
+                            <a href="logout.php" class="nested-link">Log Out</a>
                         </li>
                     </ul>
                 </li>
