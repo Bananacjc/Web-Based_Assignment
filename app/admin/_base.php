@@ -368,14 +368,14 @@ function err($key)
 $_user = $_SESSION['user'] ?? null;
 
 // Login user
-function login($user, $url = '/')
+function login($user, $url = 'adminDashboard.php')
 {
     $_SESSION['user'] = $user;
     redirect($url);
 }
 
 // Logout user
-function logout($url = '/')
+function logout($url = 'adminLogin.php')
 {
     unset($_SESSION['user']);
     redirect($url);

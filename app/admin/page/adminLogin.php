@@ -1,45 +1,39 @@
 <?php
-require '../_base.php';
-
-// Start session to track user state
-// Check if the form is submitted
+include '../_base.php';
 if (is_post()) {
-    // Retrieve and sanitize input
-    $userId = post('userId');
-    $password = post('userPassword');
+    $email    = req('email');
+    $password = req('password');
 
-    // Validate input
-    if (empty($userId) || empty($password)) {
-        $_err['error'] = 'Please fill in all fields.';
-    } else {
-        // Prepare and execute the query securely
-        try {
-            $stmt = $_db->prepare('SELECT * FROM employees WHERE employee_id = :userId');
-            $stmt->bindParam(':userId', $userId, PDO::PARAM_STR);
-            $stmt->execute();
+    // Validate: email
+    if ($email == '') {
+        $_err['email'] = 'Required';
+    } else if (!is_email($email)) {
+        $_err['email'] = 'Invalid email';
+    }
 
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    // Validate: password
+    if ($password == '') {
+        $_err['password'] = 'Required';
+    }
 
-            if ($user && password_verify($password, $user['password'])) {
-                // Successful login
-                $_SESSION['user_id'] = $user['employee_id'];
-                $_SESSION['role'] = $user['role']; // Store the user role in session
+    // Login user
+    if (!$_err) {
+        // TODO
+        $stm = $_db->prepare('
+            SELECT * FROM employees
+            WHERE email = ? AND password= ?
+        ');
+        $stm->execute([$email, $password]);
+        $u = $stm->fetch();
 
-                // Redirect to the dashboard based on role
-                if ($user['role'] == 'admin') {
-                    redirect('adminDashboard.php');
-                } else {
-                    redirect('userDashboard.php');
-                }
-            } else {
-                $_err['error'] = 'Invalid username or password.';
-            }
-        } catch (PDOException $e) {
-            $_err['error'] = 'An error occurred while processing your request. Please try again later.';
+        if ($u) {
+            temp('info', 'Login successfully');
+            login($u);
+        } else {
+            $_err['password'] = 'Not matched';
         }
     }
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -66,15 +60,20 @@ if (is_post()) {
                 </div>
                 <div id="input-container">
                     <div class="input-subcontainer">
-                        <input type="text" name="userId" id="userId" class="input-box" required />
-                        <label for="userId" class="label">UserId</label>
+
+                        <label for="email">Email</label>
+                        <?= html_text('email', 'maxlength="100"') ?>
+                        <?= err('email') ?>
                     </div>
                     <div class="input-subcontainer">
-                        <input type="password" name="userPassword" id="userPassword" class="input-box" required />
-                        <label for="userPassword" class="label">Password</label>
+                        <label for="password">Password</label>
+                        <?= html_password('password', 'maxlength="100"') ?>
+                        <?= err('password') ?>
+
                         <i class="ti ti-eye-off" id="togglePassword"></i>
                     </div>
                 </div>
+
                 <?php err('error'); ?>
                 <button id="loginbtn" type="submit">Login</button>
             </form>

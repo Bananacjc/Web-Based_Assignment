@@ -135,11 +135,31 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
                     <td><?= $s->status ?></td>
 
                     <td>
-                        <button class="action-button" data-get="update.php?=<?= $s->$product_id ?>" onclick="showUpdateProductForm('<%= product.getProductId() %>', '<%= product.getProductName() %>', '<%= product.getCategory() %>', '<%= product.getPrice() %>', '<%= product.getDescription() %>','<%= product.getQuantity() %>', '<%= product.getAmountSold() %>', '<%= product.getImage() %>')">Update</button>
-                        <form action="delete.php" method="post" style="display: inline;">
-                            <input type="hidden" name="product_id" value="<?= $s->product_id ?>">
-                            <button type="submit" class="delete-action-button" onclick="return confirmDelete();">Delete</button>
-                        </form>
+
+
+                        <?php if ($_user?->role=='MAR'): ?>
+                            <!-- Allowed roles: Display Update and Delete buttons -->
+                            <button class="action-button" data-get="update.php?=<?= $s->$product_id ?>"
+                                onclick="showUpdateProductForm('<%= product.getProductId() %>', '<%= product.getProductName() %>', '<%= product.getCategory() %>', '<%= product.getPrice() %>', '<%= product.getDescription() %>','<%= product.getQuantity() %>', '<%= product.getAmountSold() %>', '<%= product.getImage() %>')">
+                                Update
+                            </button>
+                            <form action="delete.php" method="post" style="display: inline;">
+                                <input type="hidden" name="product_id" value="<?= $s->product_id ?>">
+                                <button type="submit" class="delete-action-button" onclick="return confirmDelete();">Delete</button>
+                            </form>
+                            <?php else: ?>
+                                <!-- Denied roles: Show specific denied message -->
+                            <div style="margin: 30px;">
+                                <button id="updateProductBtn" class="action-button" onclick="showAccessDenied()">Update</button>
+                            </div>
+                            <div id="accessDeniedMessage" class="modal" style="margin-top: 80px; display: none;">
+                                <div class="modal-content">
+                                    <span class="close-button" onclick="hideAccessDenied()">&times;</span>
+                                    <p>You do not have the necessary permissions to update or delete products. Your role is restricted.</p>
+                                </div>
+                            </div>
+                        
+                        <?php endif; ?>
 
                     </td>
             </tr>
@@ -147,10 +167,10 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
     <?php endforeach ?>
 
     </table>
-    <div style="margin: 30px;">
-        <button id="addProductBtn" class="action-button" onclick="showAddForm()">Add new product</button>
-    </div>
-    <?php $_categories = [];
+
+    <?php
+    $roles = ['MANAGER', 'STAFF']; //define the role for access
+    $_categories = [];
     try {
         $stmt = $_db->query("SELECT category_name, category_image FROM categories");
         $_categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -159,56 +179,85 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
         redirect(); // Redirect to prevent further execution
     }
     ?>
+
+
     <!-- Add Product Modal -->
-    <div id="addProductModal" class="modal" style="margin-top: 80px;">
-        <div class="modal-content">
-            <span class="close-button" onclick="hideAddForm()">&times;</span>
-            <form id="addForm" action="addProduct.php" method="POST" enctype="multipart/form-data" class="add-form">
-                <input type="hidden" name="action" value="add">
-                <label for="product_name">Product Name:</label>
-                <?php html_text('product_name', 'required'); ?>
-                <span class="error"><?php err('product_name'); ?></span><br><br>
-
-                <label for="categories">Existing Categories:</label>
-                <?php html_select('category_name', array_column($_categories, 'category_name', 'category_name'), '- Select Category -'); ?>
-                <span class="error"><?php err('category_name'); ?></span><br><br>
-
-                <label for="new_category_name">New Category Name:</label>
-                <?php html_text('new_category_name'); ?><br><br>
-
-                <label for="new_category_image">New Category Image:</label>
-                <?php html_file('new_category_image', 'image/*'); ?>
-                <span class="error"><?php err('new_category_image'); ?></span><br><br>
-
-                <label for="price">Price:</label>
-                <?php html_number('price', '0', '', '0.01', 'required'); ?>
-                <span class="error"><?php err('price'); ?></span><br><br>
-
-                <label for="description">Description:</label>
-                <?php html_textarea('description', 'required'); ?>
-                <span class="error"><?php err('description'); ?></span><br><br>
-
-                <label for="current_stock">Current Stock:</label>
-                <?php html_number('current_stock', '0', '', '1', 'required'); ?>
-                <span class="error"><?php err('current_stock'); ?></span><br><br>
-
-                <label for="product_image">Product Image:</label>
-                <?php html_file('product_image', 'image/*', 'required'); ?>
-                <span class="error"><?php err('product_image'); ?></span><br><br>
-
-                <label for="status">Status:</label>
-                <?php html_select('status', [
-                    'AVAILABLE' => 'Available',
-                    'UNAVAILABLE' => 'Unavailable',
-                    'OUT_OF_STOCK' => 'Out of Stock'
-                ], '- Select Status -', 'required'); ?>
-                <span class="error"><?php err('status'); ?></span><br><br>
-
-                <input type="submit" value="Add Product">
-                <button type="button" class="cancel-button" onclick="hideAddForm()">Cancel</button>
-            </form>
+    <?php if (in_array($_user?->role, $roles)): ?>
+        <div style="margin: 30px;">
+            <button id="addProductBtn" class="action-button" onclick="showAddForm()">Add new product</button>
         </div>
-    </div>
+
+        <div id="addProductModal" class="modal" style="margin-top: 80px;">
+            <div class="modal-content">
+                <span class="close-button" onclick="hideAddForm()">&times;</span>
+                <form id="addForm" action="addProduct.php" method="POST" enctype="multipart/form-data" class="add-form">
+                    <input type="hidden" name="action" value="add">
+                    <label for="product_name">Product Name:</label>
+                    <?php html_text('product_name', 'required'); ?>
+                    <span class="error"><?php err('product_name'); ?></span><br><br>
+
+                    <label for="categories">Existing Categories:</label>
+                    <?php html_select('category_name', array_column($_categories, 'category_name', 'category_name'), '- Select Category -'); ?>
+                    <span class="error"><?php err('category_name'); ?></span><br><br>
+
+                    <label for="new_category_name">New Category Name:</label>
+                    <?php html_text('new_category_name'); ?><br><br>
+
+                    <label for="new_category_image">New Category Image:</label>
+                    <?php html_file('new_category_image', 'image/*'); ?>
+                    <span class="error"><?php err('new_category_image'); ?></span><br><br>
+
+                    <label for="price">Price:</label>
+                    <?php html_number('price', '0', '', '0.01', 'required'); ?>
+                    <span class="error"><?php err('price'); ?></span><br><br>
+
+                    <label for="description">Description:</label>
+                    <?php html_textarea('description', 'required'); ?>
+                    <span class="error"><?php err('description'); ?></span><br><br>
+
+                    <label for="current_stock">Current Stock:</label>
+                    <?php html_number('current_stock', '0', '', '1', 'required'); ?>
+                    <span class="error"><?php err('current_stock'); ?></span><br><br>
+
+                    <label for="product_image">Product Image:</label>
+                    <?php html_file('product_image', 'image/*', 'required'); ?>
+                    <span class="error"><?php err('product_image'); ?></span><br><br>
+
+                    <label for="status">Status:</label>
+                    <?php html_select('status', [
+                        'AVAILABLE' => 'Available',
+                        'UNAVAILABLE' => 'Unavailable',
+                        'OUT_OF_STOCK' => 'Out of Stock'
+                    ], '- Select Status -', 'required'); ?>
+                    <span class="error"><?php err('status'); ?></span><br><br>
+
+                    <input type="submit" value="Add Product">
+                    <button type="button" class="cancel-button" onclick="hideAddForm()">Cancel</button>
+                </form>
+            </div>
+        </div>
+    <?php else: ?>
+        <div style="margin: 30px;">
+            <button id="addProductBtn" class="action-button" onclick="showAccessDenied()">Add new product</button>
+        </div>
+        <div id="accessDeniedMessage" class="modal" style="margin-top: 80px; display: none;">
+            <div class="modal-content">
+                <span class="close-button" onclick="hideAccessDenied()">&times;</span>
+                <p>You do not have the necessary permissions to add a product.</p>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <script>
+        function showAccessDenied() {
+            document.getElementById('accessDeniedMessage').style.display = 'block';
+        }
+
+        function hideAccessDenied() {
+            document.getElementById('accessDeniedMessage').style.display = 'none';
+        }
+    </script>
+
 
 
 
@@ -265,6 +314,7 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
         </div>
     </div>
 </div>
+
 
 <script>
     function filterByCategory() {

@@ -38,10 +38,13 @@ require '../_base.php';
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a href="product.php?title=Product" class="sidebar-link">
-                        <span class="icon">🏷️</span>
-                        <span class="label">Product</span>
-                    </a>
+
+                    <?php if ($_user?->role == 'MANAGER'): ?>
+                        <a href="product.php?title=Product" class="sidebar-link">
+                            <span class="icon">🏷️</span>
+                            <span class="label">Product</span>
+                        </a>
+                    <?php endif ?>
                 </li>
                 <li class="sidebar-item">
                     <a href="orderStatus.php?title=Order Status" class="sidebar-link">
@@ -92,11 +95,12 @@ require '../_base.php';
                 <input type="search" placeholder="Search Here" />
             </div>
             <div class="user-wrapper">
-                <img src="" width="40px" height="40px" alt="">
-                <div>
-                    <h4>Chuntian</h4>
-                    <small>SuperAdmin</small>
-                </div>
+                <?php if ($_user): ?>
+                    <div>
+                        <?= $_user->employee_name ?><br>
+                        <?= $_user->role ?>
+                    </div>
+                <?php endif ?>
             </div>
         </header>
     </div>
