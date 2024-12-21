@@ -17,8 +17,7 @@ $(() => {
 
 function showPopup(msg, isSuccess) {
 
-    const bg = isSuccess ? 'var(--bg-success)' : 'var(--bg-failed)';
-    const color = isSuccess ? 'var(--color-success)' : 'var(--color-failed)';
+    const status = isSuccess ? 'success' : 'failed';
 
     const popup = $('#popup');
     const popupContent = $('#popup-content');
@@ -27,10 +26,8 @@ function showPopup(msg, isSuccess) {
     const popupBtn = $('#popup-btn');
 
     // Change color
-    popupContent.css('background-color', bg);
-    popupContent.css('color', color);
-    popupBtn.css('background-color', bg);
-    popupBtn.css('color', color);
+    popupContent.addClass(status)
+    popupBtn.addClass(status);
 
     popupBtn.on('hover', function() {
         popupBtn.css('background-color', bg);

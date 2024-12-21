@@ -12,7 +12,6 @@ $(() => {
 
         if (currentScroll > lastScrollTop && currentScroll > header.height()) {
             header.addClass('hidden');
-            console.log('added')
         } else if (currentScroll < lastScrollTop) {
             header.removeClass('hidden');
         }

@@ -6,42 +6,28 @@ include '../_head.php';
 
 $orderItems = [];
 if (is_post()) {
-    
-    // TODO
 
+    $btn = req('btn');
+
+    if ($btn == 'clear'){
+        set_cart();
+        temp('popup-msg', ['msg' => 'Cart Cleared Successfully', 'isSuccess' => true]);
+        redirect('?');
+    } else if (count(get_cart())){
+        redirect('?');
+    } else {
+        temp('popup-msg', ['msg' => 'Cart is Empty', 'isSuccess' => false]);
+        redirect('?');
+    }
 }
-
-$orderItems = [
-    [
-        'orderItemID' => 1,
-        'productName' => 'Apple',
-        'productImage' => 'img/Apple.webp',
-        'price' => 10,
-        'quantity' => 12,
-        'totalPrice' => 0
-    ],
-    [
-        'orderItemID' => 2,
-        'productName' => 'Banana',
-        'productImage' => 'img/Banana.webp',
-        'price' => 8,
-        'quantity' => 5,
-        'totalPrice' => 0
-    ]
-
-
-]
 
 
 ?>
 <h1 class="h1 header-banner">Cart</h1>
 <div class="d-flex flex-direction-row justify-content-center">
-    <button id="paymentbtn">Proceed to Payment</button>
-    <form action="" method="POST">
-        <input name="url" value="cart" type="hidden">
-        <input name="action" value="clear" type="hidden">
-        <button id="clearbtn" type="submit">Clear Cart</button>
-    </form>
+    <button id="paymentbtn" data-post="payment.php">Proceed to Payment</button>
+    <button id="clearbtn" data-post="?btn=clear">Clear Cart</button>
+    
 </div>
 <table class="rounded-table cart-table">
     <thead>
@@ -54,45 +40,73 @@ $orderItems = [
         </tr>
     </thead>
     <tbody>
+        <?php
+        $count = 0;
+        $total = 0;
 
-        <?php foreach ($orderItems as $orderItem): ?>
-            <tr class='unavailable-product'>
+        $cart = get_cart();
+        $stmt = $_db->prepare('SELECT * FROM products WHERE product_id = ?');
+        ?>
+        <?php foreach ($cart as $id => $unit): ?>
+            <?php
+            $stmt->execute([$id]);
+            $p = $stmt->fetch();
+
+            $pID    = $p->product_id;
+            $pImage = $p->product_image;
+            $pName  = $p->product_name;
+            $pPrice = $p->price;
+
+            $subtotal = $p->price * $unit;
+            $count += $unit;
+            $total += $subtotal;
+            ?>
+            <tr class="available-product">
+                <!-- Product Image + Name -->
                 <td>
-                    <!-- Image and name of the product -->
-                    <div class='text-left d-flex align-items-center'>
-                        <img src='<?= $orderItem[' productImage'] ?>' alt='Product Image' />
-                        <span class='product-name'><?= $orderItem['productName'] ?></span>
+                    <div class="text-left d-flex align-items-center">
+                        <img class="product-img" src="../uploads/product_images/<?= $pImage ?>" alt="<?= $pName ?>">
+                        <span class="product-name"><?= $pName ?></span>
                     </div>
                 </td>
-                <td class='price'><?= $orderItem['price'] ?></td>
-                <td class='quantity'>
-                    <!-- Quantity control -->
+                <!-- Product Price -->
+                <td class="price">
+                    <?= $pPrice ?>
+                </td>
+                <!-- Product Qty + Modify Qty -->
+                <td class="quantity">
                     <div class='d-flex align-items-center justify-content-space-around'>
-                        <form id='minusForm<?= $orderItem['orderItemId'] ?>' action='OrderServlet' method='POST'>
+                        <form id='minusForm<?= $pID ?>' action='OrderServlet' method='POST'>
                             <input name='url' value='cart' type='hidden'>
                             <input name='action' value='update' type='hidden'>
-                            <input name='orderItemId' value='<?= $orderItem[' orderItemId'] ?>' type='hidden'>
+                            <input name='orderItemId' value='<?= $pID ?>' type='hidden'>
                             <input name='m' value='minus' type='hidden'>
-                            <i class='ti ti-minus cursor-pointer' onclick='submitForm("minusForm<?= $orderItem["orderItemId"] ?>")'></i>
+                            <i class='ti ti-minus cursor-pointer' onclick='submitForm("minusForm<?= $pID  ?>")'></i>
                         </form>
-                        <span class='quantity-value'><?= $orderItem['quantity'] ?></span>
-                        <form id='plusForm<?= $orderItem['orderItemId'] ?>' action='OrderServlet' method='POST'>
+                        <span class='quantity-value'><?= $unit ?></span>
+                        <form id='plusForm<?= $pID  ?>' action='OrderServlet' method='POST'>
                             <input name='url' value='cart' type='hidden'>
                             <input name='action' value='update' type='hidden'>
-                            <input name='orderItemId' value='<?= $orderItem[' orderItemId'] ?>' type='hidden'>
+                            <input name='orderItemId' value='<?= $pID ?>' type='hidden'>
                             <input name='m' value='plus' type='hidden'>
-                            <i class='ti ti-plus cursor-pointer' onclick='submitForm("minusForm<?= $orderItem["orderItemId"] ?>")'></i>
+                            <i class='ti ti-plus cursor-pointer' onclick='submitForm("minusForm<?= $pID  ?>")'></i>
                         </form>
                     </div>
                 </td>
-                <td class='total-price'><?= $orderItem['price'] * $orderItem['quantity'] ?></td>
-                <td class='action'>
-                    <!-- Remove icon for action -->
-                    <form id='removeForm<?= $orderItem['orderItemId'] ?>' action='OrderServlet' method='POST'>
+                <!-- Sub-total -->
+                <td class='total-price'>
+                    <?= $subtotal ?>
+                </td>
+                <!-- Remove -->
+                <td class="action">
+                    <form id='removeForm<?= $pID ?>' action='OrderServlet' method='POST'>
                         <input name='url' value='cart' type='hidden'>
                         <input name='action' value='delete' type='hidden'>
-                        <input name='orderItemId' value='<?= $orderItem[' orderItemId'] ?>' type='hidden'>
-                        <i class='ti ti-x cursor-pointer' onclick='submitForm("minusForm<?= $orderItem["orderItemId"] ?>")'></i>
+                        <input name='orderItemId' value='<?= $pID ?>' type='hidden'>
+                        <button class="cart-remove-btn" type="button">
+                            Remove from Cart
+                        </button>
+
                     </form>
                 </td>
             </tr>

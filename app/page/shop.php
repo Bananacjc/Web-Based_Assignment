@@ -6,6 +6,17 @@ $_css = '../css/shop.css';
 require '../_base.php';
 include '../_head.php';
 
+if (is_post()){
+    $id     = req('pID');
+    $cart = get_cart();
+
+    update_cart($id, $cart[$id] ?? 1);
+
+    // Popup add to cart
+
+    redirect();
+}
+
 // Fetch categories and products
 $categories = [];
 $products = [];
@@ -15,8 +26,7 @@ try {
     $categories = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
     // Fetch products
-    $stmt = $_db->query("
-        SELECT p.product_id, p.product_name, p.category_name, p.price, p.description, 
+    $stmt = $_db->query("SELECT p.product_id, p.product_name, p.category_name, p.price, p.description, 
                p.product_image, p.status, COALESCE(AVG(r.rating), 0) as avg_rating, COUNT(r.rating) as review_count
         FROM products p
         LEFT JOIN reviews r ON p.product_id = r.product_id
@@ -50,21 +60,31 @@ try {
         </div>
     </div>
     <div id="main-content">
-        <!-- Repeat this block for each product -->
         <?php foreach ($categories as $category): ?>
             <div class="category-section">
                 <h2 id="<?= strtolower($category) ?>" class="category-title"><?= $category ?></h2>
                 <?php foreach ($products as $product): ?>
-                    <?php if ($product['category_name'] === $category): ?>
+                    <?php 
+                        $pID= $product['product_id'];
+                        $pCategory = $product['category_name'];
+                        $pImage = $product['product_image'];
+                        $pName = $product['product_name'];
+                        $pRating = $product['avg_rating'];
+                        $pReviewCount = $product['review_count'];
+                        $pPrice = $product['price'];
+                        $pStatus = $product['status'];
+
+                    ?>
+                    <?php if ($pCategory=== $category): ?>
                         <div class="product-card">
-                            <a href="product_detail.php?product_id=<?= $product['product_id'] ?>" class="text-decoration-none">
-                                <img src="../uploads/product_images/<?= $product['product_image'] ?>" alt="<?= $product['product_name'] ?>">
+                            <a href="product_detail.php?product_id=<?= $pID ?>" class="text-decoration-none">
+                                <img src="../uploads/product_images/<?= $pImage ?>" alt="<?= $pName ?>">
                                 <div class="product-info">
-                                    <h4 class="product-name"><?= $product['product_name'] ?></h4>
+                                    <h4 class="product-name"><?= $pName?></h4>
                                     <p class="rating">
                                         <?php
-                                        $fullStars = floor($product['avg_rating']); // Full stars
-                                        $halfStar = ($product['avg_rating'] - $fullStars >= 0.5) ? 1 : 0; // Half star
+                                        $fullStars = floor($pRating); // Full stars
+                                        $halfStar = ($pRating - $fullStars >= 0.5) ? 1 : 0; // Half star
                                         $emptyStars = 5 - $fullStars - $halfStar; // Remaining stars
 
                                         // Output full stars
@@ -82,19 +102,20 @@ try {
                                             echo '<i class="ti ti-star"></i>';
                                         }
                                         ?>
-                                        (<?= $product['review_count'] ?> reviews)
+                                        (<?=  $pReviewCount ?> reviews)
                                     </p>
-                                    <p class="price-tag">Price: RM <?= number_format($product['price'], 2) ?></p>
+                                    <p class="price-tag">Price: RM <?= number_format($pPrice, 2) ?></p>
                                 </div>
                             </a>
-                            <?php if ($product['status'] === 'AVAILABLE'): ?>
+                            <?php if ($pStatus === 'AVAILABLE'): ?>
                                 <form action="" method="post">
+                                    <?= html_hidden('pID');?>
                                     <input name="url" value="cart" type="hidden">
-                                    <input type="hidden" name="productId" value="<?= $product['product_id'] ?>">
+                                    <input type="hidden" name="productId" value="<?= $pID ?>">
                                     <input type="hidden" name="action" value="add">
                                     <button class="cart-button">Add to Cart</button>
                                 </form>
-                            <?php elseif ($product['status'] === 'OUT_OF_STOCK'): ?>
+                            <?php elseif ($pStatus === 'OUT_OF_STOCK'): ?>
                                 <div class="out-of-stock">
                                     <button class="out-of-stock-button" disabled>OUT OF STOCK</button>
                                 </div>
@@ -107,64 +128,14 @@ try {
     </div>
 </div>
 
-<!-- <div id="modal" style="display:block;">
-    <div id="modal-content">
-        <div id="product-detail-container" class="d-flex">
-            <img src="data:image/jpeg;base64,<%= selectedProduct.getImage() %>" alt="<%= selectedProduct.getProductName() %>" width="250" height="250" />
-            <div id="product-detail-subcontainer">
-                <span id="close" onclick="closeModal();"><i class="ti ti-x"></i></span>
-                <h4 id="selected-product-name"></h4>
-                <div id="rating-and-sold" class="d-flex">
-                    <p id="average-rating-stars">
-
-                        <i class="ti ti-star-filled"></i>
-
-                        <i class="ti ti-star-half-filled"></i>
-
-                        <i class="ti ti-star"></i>
-
-                    </p>
-                    <p id="rating-amount">100</p>
-                    <p id="amount-sold">0</p>
-                </div>
-                <p id="price">RM 0.00</p>
-                <p id="description">Description</p>
-            </div>
-        </div>
-        <div id="comment-container">
-            <h4 id="comments-title">Comments</h4>
-
-
-            <div id="comments">
-                <img id="profile-pic" src="data:image/jpeg;base64,<%= comment.getImage() %>" alt="<%= comment.getCustomerName() %>" width="50px" height="50px" />
-                <div id="comments-detail-container">
-                    <p id="user-name">Customer Name</p>
-                    <p id="rating-stars">
-                        <i class="ti ti-star-filled"></i>
-                        <i class="ti ti-star-half-filled"></i>
-                        <i class="ti ti-star"></i>
-                    </p>
-                    <p id="date-time"></p>
-                    <p id="comment"></p>
-                </div>
-            </div>
-
-        </div>
-
-        <h4>No comment</h4>
-
-    </div>
-</div> -->
-
 
 <script src="../js/slider.js"></script>
 <script src="../js/searchproducts.js"></script>
 <script src="../js/categoryFilter.js"></script>
 <script type="text/javascript">
-    function closeModal() {
-        var modal = document.getElementById('modal');
-        modal.style.display = 'none';
-    }
+    $('#cart-button').on('click', e => {
+        e.target.form.submit();
+    })
 </script>
 
 <?php include '../_foot.php'; ?>

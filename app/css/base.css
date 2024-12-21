@@ -450,6 +450,7 @@ Source: https://stackoverflow.com/questions/54616139/how-to-animate-underline-fr
     
 }
 
+/* Custom Popup Window */
 #popup {
     position: fixed;
     top: 0;
@@ -458,7 +459,7 @@ Source: https://stackoverflow.com/questions/54616139/how-to-animate-underline-fr
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     justify-content: center;
-    z-index: 999;
+    z-index: 9999;
 }
 
 #popup.show {
@@ -470,13 +471,6 @@ Source: https://stackoverflow.com/questions/54616139/how-to-animate-underline-fr
 }
 
 #popup #popup-content {
-    --bg-success: #D4EDDA;
-    --bg-failed: #F8D7DA;
-    --color-success: #155724;
-    --color-failed: #721C24;
-
-    background-color: var(--bg-success);
-    color: var(--color-success);
     width: 300px;
     height: 120px;
     padding: 25px;
@@ -487,6 +481,16 @@ Source: https://stackoverflow.com/questions/54616139/how-to-animate-underline-fr
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#popup #popup-content.success {
+    background-color: #D4EDDA;
+    color: #155724;
+}
+
+#popup #popup-content.failed {
+    background-color: #F8D7DA;
+    color: #721C24;
 }
 
 #popup #popup-title {
@@ -500,9 +504,6 @@ Source: https://stackoverflow.com/questions/54616139/how-to-animate-underline-fr
 }
 
 #popup #popup-btn {
-    --bg-success: #28A745;
-    --bg-failed: #DC3545;
-    background-color: var(--bg-success);
     padding: 10px 20px;
     color: var(--color-white-pure);
     border: none;
@@ -511,11 +512,22 @@ Source: https://stackoverflow.com/questions/54616139/how-to-animate-underline-fr
     font-size: 14px;
 }
 
-#popup #popup-btn:hover {
-    --bg-success: #218838;
-    --bg-failed: #C82333;
-    background-color: var(--bg-success);
+#popup #popup-btn.success {
+    background-color: #28A745;
 }
+
+#popup #popup-btn.success:hover {
+    background-color: #218838;
+}
+
+#popup #popup-btn.failed {
+    background-color: #DC3545;
+}
+
+#popup #popup-btn.failed:hover {
+    background-color: #C82333;
+}
+
 
 /* Remove the light blue background on autocomplete */
 input:-webkit-autofill {

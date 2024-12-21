@@ -484,7 +484,7 @@ function update_cart($id, $unit)
 {
     $cart = get_cart();
 
-    if ($unit >= 1 && $unit <= 10 && is_exists($id, 'product', 'id')) {
+    if ($unit >= 1 && $unit <= 10 && is_exists($id, 'products', 'product_id')) {
         $cart[$id] = $unit;
         ksort($cart);
     } else {
@@ -544,6 +544,8 @@ function generate_unique_id($prefix, $table, $column, $pdo)
 // ============================================================================
 // Global Constants and Variables
 // ============================================================================
+
+
 
 ?>
 
