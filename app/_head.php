@@ -24,12 +24,18 @@ $userLoggedIn = isset($_SESSION['user']); // Check if user session exists
 
         <!-- User Features or Login Button -->
         <?php if ($userLoggedIn): ?>
-            <?php 
-                $cart = get_cart();
-                $count = count($cart);    
+            <?php
+            $cart = get_cart();
+            $count = count($cart);
             ?>
             <div id="user-features">
-                <a href="/page/cart.php"><i class="ti ti-shopping-cart"></i> Cart (<?= $count ? $count : ''?>)</a>
+                <a href="/page/cart.php" class="position-relative">
+                    <i class="ti ti-shopping-cart"></i>Cart <?= $count ? "(" . $count . ")" : '' ?>
+                    <div id='cart-popup'>
+                        <img id='cart-popup-img' src="" width="inherit" height="inherit">
+                    </div>
+                </a>
+
                 <a href="/page/profile.php"><i class="ti ti-user"></i> Profile</a>
                 <a href="?logout=true"><i class="ti ti-logout"></i> Logout</a>
             </div>
@@ -38,3 +44,10 @@ $userLoggedIn = isset($_SESSION['user']); // Check if user session exists
         <?php endif; ?>
         <script src="/js/headerAnimation.js"></script>
     </header>
+
+    <?php
+    $cartPopupImage = temp('cart-popup-image') ?? null;
+    if ($cartPopupImage) {
+        cartPopup($cartPopupImage);
+    }
+    ?>

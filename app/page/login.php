@@ -56,18 +56,18 @@ if (is_post()) {
                 <?= html_logo(60, 60, true) ?>
                 <div id="input-container" class="w-100 d-flex flex-direction-column justify-content-center align-items-center">
                     <div class="input-subcontainer">
-                        <?= html_text('username-email', "class='input-box' spellcheck='false' required")?>
+                        <?= html_text('username-email', "class='input-box' spellcheck='false' required") ?>
                         <label for="username-email" class="label">Username or email</label>
                     </div>
                     <div class="input-subcontainer">
-                        <?= html_password('password', "class='input-box' spellcheck='false' required")?>
+                        <?= html_password('password', "class='input-box' spellcheck='false' required") ?>
                         <label for="password" class="label">Password</label>
                         <i class="ti ti-eye-off" id="togglePassword"></i>
                     </div>
                 </div>
                 <div id="login-helper-container" class="d-flex justify-content-space-between align-items-center">
                     <div class="d-flex align-items-center">
-                        <?= html_checkbox('remember_me', 'Remember Me', '', "id='remember-me'")?>
+                        <?= html_checkbox('remember_me', 'Remember Me', '', "id='remember-me'") ?>
                     </div>
                     <div>
                         <a href="ForgetPassword.php" id="forgotpass" class="hover-underline-anim">Forgot your password?</a>
@@ -79,11 +79,11 @@ if (is_post()) {
                     <a href="register.php" class="hover-underline-anim">Sign up here</a>
                 </div>
                 <div id="cont-guest-container" class="hover-translate-y">
-                <a href="../index.php" id="cont-guest"><i class="ti ti-user-off position-relative"></i>Continue As Guest</a>
-            </div>
+                    <a href="../index.php" id="cont-guest"><i class="ti ti-user-off position-relative"></i>Continue As Guest</a>
+                </div>
 
             </form>
-            
+
         </div>
         <div id="container-right">
             <p>Get all your groceries<br>with just a few clicks</p>

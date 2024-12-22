@@ -21,7 +21,6 @@ if (is_post()) {
     }
 }
 
-
 ?>
 <h1 class="h1 header-banner">Cart</h1>
 <div class="d-flex flex-direction-row justify-content-center">
