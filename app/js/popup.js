@@ -15,7 +15,7 @@ $(() => {
 });
 
 
-function showPopup(msg, isSuccess) {
+function showAlertPopup(msg, isSuccess) {
 
     const status = isSuccess ? 'success' : 'failed';
 
@@ -26,19 +26,26 @@ function showPopup(msg, isSuccess) {
     const popupBtn = $('#popup-btn');
 
     // Change color
-    popupContent.addClass(status)
+    popupContent.addClass(status);
     popupBtn.addClass(status);
-
-    popupBtn.on('hover', function() {
-        popupBtn.css('background-color', bg);
-    })
 
     popupTitle.text(isSuccess ? 'Success' : 'Failed');
     popupMsg.text(msg);
 
-
     // Show popup
     popup.removeClass('hide');
+    popup.addClass('show');
+
+}
+
+function showCartPopup(imagePath) {
+    
+    const popup = $('#cart-popup');
+    const popupImg = $('#cart-popup-img');
+
+    // Change img
+    popupImg.attr('src', "../uploads/product_images/" + imagePath);
+
     popup.addClass('show');
 
 }

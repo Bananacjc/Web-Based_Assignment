@@ -26,7 +26,12 @@ if (!isset($_SESSION['user']) && isset($_COOKIE['remember_me'])) {
 
 function popup($msg, $isSuccess)
 {
-    echo "<script>showPopup('$msg', $isSuccess);</script>";
+    echo "<script>showAlertPopup('$msg', $isSuccess);</script>";
+}
+
+function cartPopup($imagePath)
+{
+    echo "<script>showCartPopup('$imagePath');</script>";
 }
 
 // Is GET request?
@@ -483,28 +488,93 @@ function get_mail()
 // Get shopping cart
 function get_cart()
 {
-    return $_SESSION['cart'] ?? [];
+    global $_db;
+    global $_user;
+
+    // Prepare query
+    $stmt = $_db->prepare('SELECT cart FROM customers WHERE customer_id = ?');
+    $stmt->execute([$_user->customer_id]);
+    $currentUser = $stmt->fetch();
+
+    // If user exist and cart no empty
+    if ($currentUser && $currentUser->cart) {
+        $cart = json_decode($currentUser->cart, true);  // Decode json into array
+        set_cart($cart);
+        return $_SESSION['cart'];
+    } 
+
+    if (!isset($_SESSION['cart'])) {
+        $_SESSION['cart'] = [];
+    }
+
+    return $_SESSION['cart'];
 }
 
 // Set shopping cart
 function set_cart($cart = [])
 {
+    global $_db;
+    global $_user;
+
+    // Set cart to whatever it was given
     $_SESSION['cart'] = $cart;
+
+    // Prepare query
+    $stmt = $_db->prepare('UPDATE customers SET cart = ? WHERE customer_id = ?');
+
+    // Encode cart into json
+    $cart_json = json_encode($cart);
+
+    try {
+        $stmt->execute([$cart_json, $_user->customer_id]);
+    } catch (PDOException $e) {
+        throw new PDOException("Database Error: " . $e->getMessage(), (int)$e->getCode());
+    }
 }
 
 // Update shopping cart
+// function update_cart($id, $unit)
+// {
+//     $cart = get_cart();
+
+//     if ($unit >= 1 && $unit <= 10 && is_exists($id, 'products', 'product_id')) {
+//         $cart[$id] = $unit;
+//         ksort($cart);
+//     } else {
+//         unset($cart[$id]);
+//     }
+
+//     set_cart($cart);
+// }
+
 function update_cart($id, $unit)
 {
-    $cart = get_cart();
+    global $_db;
+    global $_user;
 
+    $cart = get_cart();     // Get cart
+    $stmt = $_db->prepare('UPDATE customers SET cart = ? WHERE customer_id = ?');  // Prepare update query
+
+    // Update local cart if valid
     if ($unit >= 1 && $unit <= 10 && is_exists($id, 'products', 'product_id')) {
         $cart[$id] = $unit;
-        ksort($cart);
     } else {
         unset($cart[$id]);
     }
 
-    set_cart($cart);
+    // Convert to json
+    try {
+        $cart_json = json_encode($cart, JSON_THROW_ON_ERROR);
+    } catch (JsonException $e) {
+        throw new JsonException("Encoding Cart Failed: " . $e->getMessage(), $e->getCode(), $e);
+    }
+
+    // Write to db
+    try {
+        $stmt->execute([$cart_json, $_user->customer_id]);
+    } catch (PDOException $e) {
+        throw new PDOException("Database Error: " . $e->getMessage(), (int)$e->getCode());
+    }
 }
 
 // ============================================================================

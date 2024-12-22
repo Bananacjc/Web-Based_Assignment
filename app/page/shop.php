@@ -7,12 +7,13 @@ require '../_base.php';
 include '../_head.php';
 
 if (is_post()){
-    $id     = req('pID');
-    $cart = get_cart();
+    $id         = req('pID');
+    $imagePath  = req('pImage');
+    $cart       = get_cart();
 
     update_cart($id, $cart[$id] ?? 1);
 
-    // Popup add to cart
+    temp('cart-popup-image', $imagePath);
 
     redirect();
 }
@@ -109,7 +110,8 @@ try {
                             </a>
                             <?php if ($pStatus === 'AVAILABLE'): ?>
                                 <form action="" method="post">
-                                    <?= html_hidden('pID');?>
+                                    <?= html_hidden('pID'); ?>
+                                    <?= html_hidden('pImage'); ?>
                                     <input name="url" value="cart" type="hidden">
                                     <input type="hidden" name="productId" value="<?= $pID ?>">
                                     <input type="hidden" name="action" value="add">
