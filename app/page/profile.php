@@ -19,12 +19,14 @@ include '../_head.php';
     <div class="content" id="personal-info-content" style="display: block;">
         <h2>Personal Info</h2>
         <form id="personal-info-container" action="ProfileModify" method="post" enctype="multipart/form-data">
-            <div class="input-file-container">
+            <div class="input-file-container" id="drop-zone">
                 <div class="image-preview-container">
-                    <img id="image-preview" src="data:image/jpeg;base64,${customer.image}" alt="">
+                    <img id="image-preview" src="data:image/jpeg;base64,${customer.image}" alt="" />
                 </div>
-                <input type="file" name="profile-pic" id="profile-pic" class="input-file" onchange="previewFile()" />
-                <label for="profile-pic" class="input-label">Upload Profile Picture</label>
+                <input type="file" name="profile-pic" id="profile-pic" class="input-file" accept="image/*" onchange="previewFile()" />
+                <div class="drag-overlay" id="drag-overlay">
+                    <p>Drop your image here</p>
+                </div>
             </div>
             <div>
                 <div class="input-subcontainer">

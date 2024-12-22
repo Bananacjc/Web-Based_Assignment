@@ -386,6 +386,19 @@ function err($key)
 // Global user object
 $_user = $_SESSION['user'] ?? null;
 
+function get_default_profile_image()
+{
+    return '/images/default-profile.png';
+}
+
+function require_login()
+{
+    global $_user;
+    if (!$_user) {
+        redirect('/login.php');
+    }
+}
+
 // Login user
 function login($user, $url = '/')
 {
