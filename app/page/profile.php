@@ -3,6 +3,71 @@ $_title = 'Profile';
 $_css = '../css/profile.css';
 require '../_base.php';
 include '../_head.php';
+
+require_login();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $formType = post('form_type'); // Fetch the hidden input field
+
+    if ($formType === 'personal_info') {
+        // Handle personal info update
+        $username = trim($_POST['username']);
+        $email = trim($_POST['email']);
+        $phone = trim($_POST['phone']);
+        $profilePic = get_file('profile-pic');
+
+        if (!$username || !$email || !$phone) {
+            temp('popup-msg', ['msg' => 'All fields are required.', 'isSuccess' => false]);
+            redirect();
+        }
+        if (!is_email($email)) {
+            temp('popup-msg', ['msg' => 'Invalid email format.', 'isSuccess' => false]);
+            redirect();
+        }
+
+        $profileImage = $_user->profile_image;
+        if ($profilePic) {
+            $newProfileImage = save_photo($profilePic, '../uploads/customer_images');
+            if ($profileImage && $profileImage !== 'guest.png') {
+                $oldImagePath = "../uploads/customer_images/$profileImage";
+                if (file_exists($oldImagePath)) unlink($oldImagePath);
+            }
+            $profileImage = $newProfileImage;
+        }
+
+        $stmt = $_db->prepare("UPDATE customers SET username = ?, email = ?, contact_num = ?, profile_image = ? WHERE customer_id = ?");
+        $success = $stmt->execute([$username, $email, $phone, $profileImage, $_user->customer_id]);
+
+        if ($success) {
+            $_user->username = $username;
+            $_user->email = $email;
+            $_user->contact_num = $phone;
+            $_user->profile_image = $profileImage;
+
+            temp('popup-msg', ['msg' => 'Profile updated successfully.', 'isSuccess' => true]);
+        } else {
+            temp('popup-msg', ['msg' => 'Failed to update profile.', 'isSuccess' => false]);
+        }
+        redirect();
+    } elseif ($formType === 'address_management') {
+        // Handle address management
+        $newAddress = trim(post('address'));
+        if ($newAddress) {
+            $addresses = json_decode($_user->addresses ?? '[]', true);
+            $addresses[] = $newAddress;
+            $addressesJson = json_encode($addresses);
+
+            $stmt = $_db->prepare("UPDATE customers SET addresses = ? WHERE customer_id = ?");
+            $stmt->execute([$addressesJson, $_user->customer_id]);
+
+            $_user->addresses = $addressesJson;
+            temp('popup-msg', ['msg' => 'Address added successfully.', 'isSuccess' => true]);
+        } else {
+            temp('popup-msg', ['msg' => 'Address cannot be empty.', 'isSuccess' => false]);
+        }
+        redirect();
+    }
+}
 ?>
 <h1 class="h1 header-banner">Profile</h1>
 <div id="profile-container">
@@ -18,10 +83,11 @@ include '../_head.php';
     </div>
     <div class="content" id="personal-info-content" style="display: block;">
         <h2>Personal Info</h2>
-        <form id="personal-info-container" action="ProfileModify" method="post" enctype="multipart/form-data">
+        <form id="personal-info-container" action="" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="form_type" value="personal_info" />
             <div class="input-file-container" id="drop-zone">
                 <div class="image-preview-container">
-                    <img id="image-preview" src="data:image/jpeg;base64,${customer.image}" alt="" />
+                    <img id="image-preview" src="../uploads/customer_images/<?= $_user->profile_image ?>" alt="Profile Picture" />
                 </div>
                 <input type="file" name="profile-pic" id="profile-pic" class="input-file" accept="image/*" onchange="previewFile()" />
                 <div class="drag-overlay" id="drag-overlay">
@@ -30,15 +96,15 @@ include '../_head.php';
             </div>
             <div>
                 <div class="input-subcontainer">
-                    <input type="text" name="username" value="tanjc" class="input-box" spellcheck="false" />
+                    <input type="text" name="username" value="<?= $_user->username ?? '' ?>" class="input-box" spellcheck="false" />
                     <label for="username" class="label">Username</label>
                 </div>
                 <div class="input-subcontainer">
-                    <input type="text" name="email" value="haha@gmail.com" class="input-box" spellcheck="false" />
+                    <input type="text" name="email" value="<?= $_user->email ?? '' ?>" class="input-box" spellcheck="false" />
                     <label for="email" class="label">Email</label>
                 </div>
                 <div class="input-subcontainer">
-                    <input type="text" name="phone" value="+601163985186" class="input-box" spellcheck="false" />
+                    <input type="text" name="phone" value="<?= $_user->contact_num ?? '' ?>" class="input-box" spellcheck="false" />
                     <label for="phone" class="label">Phone</label>
                 </div>
                 <button class="btn" type="submit">Save</button>
@@ -96,15 +162,51 @@ include '../_head.php';
         </div>
     </div>
     <div class="content" id="address-content" style="display: none;">
-        <h2>Address</h2>
-        <form id="address-container" action="AddressServlet" method="post">
-            <div class="input-subcontainer" id="address-input-container">
-                <input type="text" name="address" value="Jalan Genting Kelang, Setapak, 53300 Kuala Lumpur, Federal Territory of Kuala Lumpur" class="input-box" spellcheck="false" />
-                <label for="address" class="label">Address</label>
-            </div>
-            <button class="btn" type="submit">Save</button>
-        </form>
-    </div>
+    <h2>Addresses</h2>
+    <table class="history-table" id="address-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Address</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            $addresses = json_decode($_user->addresses ?? '[]', true);
+            foreach ($addresses as $index => $address) {
+                echo "<tr data-index='$index'>
+                <td>" . ($index + 1) . "</td>
+                <td class='address-text'>$address</td>
+                <td>
+                    <button class='btn edit-address-btn' data-index='$index' title='Edit Address'>
+                        <i class='ti ti-edit'></i>
+                    </button>
+                    <button class='btn delete-address-btn' data-index='$index' title='Delete Address'>
+                        <i class='ti ti-trash'></i>
+                    </button>
+                </td>
+            </tr>";
+            }
+            ?>
+        </tbody>
+    </table>
+    <form id="address-form" action="" method="post">
+        <input type="hidden" name="form_type" value="address_management" />
+        <input type="hidden" name="action" id="action" value="save-address" />
+        <input type="hidden" name="index" id="address-index" value="" />
+        <div class="input-subcontainer" id="address-input-container">
+            <input type="text" name="address" id="address-input" class="input-box" spellcheck="false" />
+            <label for="address" class="label">New Address</label>
+        </div>
+        <button class="btn" type="submit" id="save-address-btn">Add Address</button>
+    </form>
+    <div id="map" style="height: 400px; width: 100%;"></div>
+    <input type="text" id="autocomplete" placeholder="Type your address" class="input-box" />
+    <input type="hidden" id="latitude" name="latitude">
+    <input type="hidden" id="longitude" name="longitude">
+    <button class="btn" id="confirm-address-btn">Confirm Address</button>
+</div>
     <div class="content" id="order-history-content" style="display: none;">
         <h2>Order History</h2>
         <table class="history-table">
@@ -194,42 +296,37 @@ include '../_head.php';
 <script src="../js/imagePreview.js"></script>
 <script src="../js/inputHasContent.js"></script>
 <script src="../js/showPassword.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script type="text/javascript">
-    let status = document.getElementById("status").value;
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const addressInput = document.getElementById("address-input");
+        const addressIndexInput = document.getElementById("address-index");
+        const actionInput = document.getElementById("action");
+        const saveButton = document.getElementById("save-address-btn");
 
-    if (status === "personalSuccess") {
-        swal.fire("Congratulations", "Personal info submitted successfully.", "success");
-    }
-    if (status === "bankSuccess") {
-        swal.fire("Congratulations", "Bank details submitted successfully.", "success");
-    }
-    if (status === "ewalletSuccess") {
-        swal.fire("Congratulations", "E-wallet details submitted successfully.", "success");
-    }
-    if (status === "addressSuccess") {
-        swal.fire("Congratulations", "Address submitted successfully.", "success");
-    }
-    if (status === "passwordChanged") {
-        swal.fire("Congratulations", "Password changed successfully.", "success");
-    }
-    if (status === "incompleteForm") {
-        swal.fire("Sorry", "Incomplete Form.", "error");
-    }
-    if (status === "personalProcessFail") {
-        swal.fire("Sorry", "Personal info submit failed.", "error");
-    }
-    if (status === "bankProcessFail") {
-        swal.fire("Sorry", "Bank Processing Failure.", "error");
-    }
-    if (status === "ewalletProcessFail") {
-        swal.fire("Sorry", "E-wallet Processing Failure.", "error");
-    }
-    if (status === "addressProcessFail") {
-        swal.fire("Sorry", "Address submit failed.", "error");
-    }
-    if (status === "invalidConfirmPassword") {
-        swal.fire("Sorry", "Invalid Confirm Password.", "error");
-    }
+        // Handle edit button clicks
+        document.querySelectorAll(".edit-address-btn").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                const row = btn.closest("tr");
+                const index = btn.getAttribute("data-index");
+                const address = row.querySelector(".address-text").innerText;
+
+                // Populate the input fields
+                addressInput.value = address;
+                addressIndexInput.value = index;
+                actionInput.value = "edit-address";
+                saveButton.textContent = "Update Address";
+            });
+        });
+
+        // Handle add button reset after edit
+        saveButton.addEventListener("click", () => {
+            setTimeout(() => {
+                saveButton.textContent = "Add Address";
+                actionInput.value = "save-address";
+                addressIndexInput.value = "";
+            }, 500); // Reset the form after submission
+        });
+    });
 </script>
 <?php include '../_foot.php'; ?>

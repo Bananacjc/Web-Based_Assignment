@@ -14,6 +14,7 @@ if (is_post()) {
     $email = post('email');
     $password = post('password');
     $confirmPassword = post('confirm-password');
+    $profileImage = 'guest.png';
 
     if ($password !== $confirmPassword && $password && $confirmPassword) {
         $msg = 'Passwords do not match.';
@@ -25,8 +26,8 @@ if (is_post()) {
         } else {
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
             $customerId = generate_unique_id('CUS', 'customers', 'customer_id', $_db);
-            $stmt = $_db->prepare("INSERT INTO customers (customer_id, username, email, password) VALUES (?, ?, ?, ?)");
-            if ($stmt->execute([$customerId, $username, $email, $hashedPassword])) {
+            $stmt = $_db->prepare("INSERT INTO customers (customer_id, username, email, password, profile_image) VALUES (?, ?, ?, ?, ?)");
+            if ($stmt->execute([$customerId, $username, $email, $hashedPassword, $profileImage])) {
                 $msg = 'Registration successful.';
                 $isSuccess = true;
             } else {

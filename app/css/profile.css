@@ -239,6 +239,18 @@
     width: 100%;
 }
 
+.edit-address-btn{
+    margin: 5px;
+    padding: 10px;
+    background-color: var(--color-blue-aqua);
+}
+
+.delete-address-btn{
+    margin: 5px;
+    padding: 10px;
+    background-color: var(--color-red-light);
+}
+
 /* Order History */
 
 .history-table {
