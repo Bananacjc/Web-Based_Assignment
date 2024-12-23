@@ -1,5 +1,3 @@
-// imagePreview.js
-
 function previewFile() {
     const preview = document.getElementById('image-preview');
     const fileInput = document.getElementById('profile-pic');
@@ -17,9 +15,6 @@ function previewFile() {
         preview.src = "data:image/jpeg;base64,${customer.image}";
     }
 }
-
-
-// dragAndDrop.js
 
 document.addEventListener('DOMContentLoaded', () => {
     const dropZone = document.getElementById('drop-zone');

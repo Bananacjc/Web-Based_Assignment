@@ -253,16 +253,16 @@
 
 /* Order History */
 
-.history-table {
-    width: 90%;
+.table {
+    width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     border: 1px solid #cce7cc;
-    margin: 50px auto;
+    margin: 50px 0;
     border-radius: 8px;
 }
 
-.history-table th, .history-table td {
+.table th, .table td {
     padding: 10px;
     border-left: none;
     border-right: none;
@@ -271,17 +271,30 @@
     font-weight: 500;
 }
 
-.history-table tr:first-child th:first-child {
+.table tr:first-child th:first-child {
     border-top-left-radius: 8px;
 }
-.history-table tr:first-child th:last-child {
+.table tr:first-child th:last-child {
     border-top-right-radius: 8px;
 }
-.history-table tr:last-child td:first-child {
+.table tr:last-child td:first-child {
     border-bottom-left-radius: 8px;
 }
-.history-table tr:last-child td:last-child {
+.table tr:last-child td:last-child {
     border-bottom-right-radius: 8px;
+}
+
+.table th {
+    background-color: #f0fff1;
+    font-weight: 700;
+}
+
+.table tr {
+    transition: background-color 0.3s ease-in-out;
+}
+
+.table tr:hover {
+    background-color: #f5fff5;
 }
 
 .order-id-header,
@@ -302,19 +315,6 @@
 .total-price-header,
 .total-price {
     text-align: right;
-}
-
-.history-table th {
-    background-color: #f0fff1;
-    font-weight: 700;
-}
-
-.history-table tr {
-    transition: background-color 0.3s ease-in-out;
-}
-
-.history-table tr:hover {
-    background-color: #f5fff5;
 }
 
 .action {

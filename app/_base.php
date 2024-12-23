@@ -399,6 +399,16 @@ function require_login()
     }
 }
 
+function reset_user()
+{
+    global $_user;
+    global $_db;
+    $stmt = $_db->prepare("SELECT * FROM customers WHERE customer_id = ?");
+    $stmt->execute([$_user->customer_id]);
+    $_user = $stmt->fetch();
+    $_SESSION['user'] = $_user;
+}
+
 // Login user
 function login($user, $url = '/')
 {
@@ -496,7 +506,7 @@ function get_cart(): array
         $cart = json_decode($currentUser->cart, true);  // Decode json into array
         set_cart($cart);
         return $cart;
-    } 
+    }
 
     return [];
 }

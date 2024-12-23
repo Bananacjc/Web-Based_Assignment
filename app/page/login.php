@@ -9,7 +9,7 @@ $isSuccess = false;
 if (is_post()) {
     $usernameOrEmail = post('username-email');
     $password = post('password');
-    $rememberMe = post('remember_me'); // Check if "Remember Me" is checked
+    $rememberMe = post('remember_me') === '1';
 
     // Fetch user from the database
     $stmt = $_db->prepare("SELECT * FROM customers WHERE username = ? OR email = ?");
@@ -17,8 +17,6 @@ if (is_post()) {
     $user = $stmt->fetch();
 
     if ($user && password_verify($password, $user->password)) {
-        login($user); // Log the user in
-
         if ($rememberMe) {
             // Generate a secure token
             $token = bin2hex(random_bytes(32)); // 64-character secure token
@@ -36,6 +34,7 @@ if (is_post()) {
                 'samesite' => 'Strict',
             ]);
         }
+        login($user); // Log the user in
     } else {
         $msg = 'Invalid username/email or password';
         popup($msg, false);
@@ -91,6 +90,7 @@ if (is_post()) {
         </div>
     </div>
     <script src="../js/showPassword.js"></script>
+    </script>
 </body>
 
 </html>

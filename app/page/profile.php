@@ -5,6 +5,7 @@ require '../_base.php';
 include '../_head.php';
 
 require_login();
+reset_user();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $formType = post('form_type'); // Fetch the hidden input field
@@ -50,22 +51,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         redirect();
     } elseif ($formType === 'address_management') {
-        // Handle address management
-        $newAddress = trim(post('address'));
-        if ($newAddress) {
-            $addresses = json_decode($_user->addresses ?? '[]', true);
-            $addresses[] = $newAddress;
-            $addressesJson = json_encode($addresses);
+        $action = post('action');
+        $index = post('index');
+        $addresses = json_decode($_user->addresses ?? '[]', true);
 
-            $stmt = $_db->prepare("UPDATE customers SET addresses = ? WHERE customer_id = ?");
-            $stmt->execute([$addressesJson, $_user->customer_id]);
+        if ($action === 'save-address') {
+            // Add a new address
+            $newAddress = trim(post('address'));
+            if ($newAddress) {
+                $addresses[] = $newAddress;
+                $addressesJson = json_encode($addresses);
 
-            $_user->addresses = $addressesJson;
-            temp('popup-msg', ['msg' => 'Address added successfully.', 'isSuccess' => true]);
-        } else {
-            temp('popup-msg', ['msg' => 'Address cannot be empty.', 'isSuccess' => false]);
+                $stmt = $_db->prepare("UPDATE customers SET addresses = ? WHERE customer_id = ?");
+                $stmt->execute([$addressesJson, $_user->customer_id]);
+
+                $_user->addresses = $addressesJson;
+                temp('popup-msg', ['msg' => 'Address added successfully.', 'isSuccess' => true]);
+            } else {
+                temp('popup-msg', ['msg' => 'Address cannot be empty.', 'isSuccess' => false]);
+            }
+        } elseif ($action === 'edit-address' && is_numeric($index)) {
+            // Edit an existing address
+            $newAddress = trim(post('address'));
+            if ($newAddress && isset($addresses[$index])) {
+                $addresses[$index] = $newAddress;
+                $addressesJson = json_encode($addresses);
+
+                $stmt = $_db->prepare("UPDATE customers SET addresses = ? WHERE customer_id = ?");
+                $stmt->execute([$addressesJson, $_user->customer_id]);
+
+                $_user->addresses = $addressesJson;
+                temp('popup-msg', ['msg' => 'Address updated successfully.', 'isSuccess' => true]);
+            } else {
+                temp('popup-msg', ['msg' => 'Invalid address update.', 'isSuccess' => false]);
+            }
+        } elseif ($action === 'delete-address' && is_numeric($index)) {
+            // Delete an address
+            if (isset($addresses[$index])) {
+                unset($addresses[$index]);
+                $addresses = array_values($addresses); // Re-index the array
+                $addressesJson = json_encode($addresses);
+
+                $stmt = $_db->prepare("UPDATE customers SET addresses = ? WHERE customer_id = ?");
+                $stmt->execute([$addressesJson, $_user->customer_id]);
+
+                $_user->addresses = $addressesJson;
+                temp('popup-msg', ['msg' => 'Address deleted successfully.', 'isSuccess' => true]);
+            } else {
+                temp('popup-msg', ['msg' => 'Invalid address deletion.', 'isSuccess' => false]);
+            }
         }
-        redirect();
+
+        redirect(); // Reload the page to reflect changes
     }
 }
 ?>
@@ -162,54 +199,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
     <div class="content" id="address-content" style="display: none;">
-    <h2>Addresses</h2>
-    <table class="history-table" id="address-table">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Address</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            $addresses = json_decode($_user->addresses ?? '[]', true);
-            foreach ($addresses as $index => $address) {
-                echo "<tr data-index='$index'>
-                <td>" . ($index + 1) . "</td>
-                <td class='address-text'>$address</td>
-                <td>
-                    <button class='btn edit-address-btn' data-index='$index' title='Edit Address'>
-                        <i class='ti ti-edit'></i>
-                    </button>
-                    <button class='btn delete-address-btn' data-index='$index' title='Delete Address'>
-                        <i class='ti ti-trash'></i>
-                    </button>
-                </td>
-            </tr>";
-            }
-            ?>
-        </tbody>
-    </table>
-    <form id="address-form" action="" method="post">
-        <input type="hidden" name="form_type" value="address_management" />
-        <input type="hidden" name="action" id="action" value="save-address" />
-        <input type="hidden" name="index" id="address-index" value="" />
-        <div class="input-subcontainer" id="address-input-container">
-            <input type="text" name="address" id="address-input" class="input-box" spellcheck="false" />
-            <label for="address" class="label">New Address</label>
-        </div>
-        <button class="btn" type="submit" id="save-address-btn">Add Address</button>
-    </form>
-    <div id="map" style="height: 400px; width: 100%;"></div>
-    <input type="text" id="autocomplete" placeholder="Type your address" class="input-box" />
-    <input type="hidden" id="latitude" name="latitude">
-    <input type="hidden" id="longitude" name="longitude">
-    <button class="btn" id="confirm-address-btn">Confirm Address</button>
-</div>
+        <h2>Addresses</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="text-left">#</th>
+                    <th class="text-left">ADDRESS</th>
+                    <th class="text-center">ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $addresses = json_decode($_user->addresses ?? '[]', true);
+                foreach ($addresses as $index => $address) {
+                    echo "<tr data-index='$index'>
+            <td>" . ($index + 1) . "</td>
+            <td class='address-text'>$address</td>
+            <td class='text-center'>
+                <button class='btn edit-address-btn' data-index='$index' title='Edit Address'>
+                    <i class='ti ti-edit'></i>
+                </button>
+                <button class='btn delete-address-btn' data-index='$index' title='Delete Address'>
+                    <i class='ti ti-trash'></i>
+                </button>
+            </td>
+        </tr>";
+                }
+                ?>
+            </tbody>
+        </table>
+        <form id="address-form" action="" method="post">
+            <input type="hidden" name="form_type" value="address_management" />
+            <input type="hidden" name="action" id="action" value="save-address" />
+            <input type="hidden" name="index" id="address-index" value="" />
+            <div class="input-subcontainer" id="address-input-container">
+                <input type="text" name="address" id="address-input" class="input-box" spellcheck="false" />
+                <label for="address" class="label">New Address</label>
+            </div>
+            <button class="btn" type="submit" id="save-address-btn">Add Address</button>
+        </form>
+        <div id="map" style="height: 400px; width: 100%;"></div>
+        <input type="text" id="autocomplete" placeholder="Type your address" class="input-box" />
+        <input type="hidden" id="latitude" name="latitude">
+        <input type="hidden" id="longitude" name="longitude">
+        <button class="btn" id="confirm-address-btn">Confirm Address</button>
+    </div>
     <div class="content" id="order-history-content" style="display: none;">
         <h2>Order History</h2>
-        <table class="history-table">
+        <table class="table">
             <thead>
                 <tr>
                     <th class="order-id-header">ORDER ID</th>
@@ -235,40 +272,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <td class="delivery-status">Delivered</td>
                     <td class="action">
                         <a class="reviewbtn" href=""><span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i></a>
-                        <!-- <a class="reviewbtn" href=""><span>Review&nbsp;&nbsp;</span><i class="ti ti-check"></i></a> -->
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <p class="order-id">ORD-20241201-g9hsaP</p>
-                    </td>
-                    <td>
-                        <p class="date">1 Dec 2024</p>
-                    </td>
-                    <td>
-                        <p class="time">12.00pm</p>
-                    </td>
-                    <td class="total-price">123.45</td>
-                    <td class="delivery-status">Delivered</td>
-                    <td class="action">
-                        <a class="reviewbtn" href=""><span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i></a>
-                        <!-- <a class="reviewbtn" href=""><span>Review&nbsp;&nbsp;</span><i class="ti ti-check"></i></a> -->
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <p class="order-id">ORD-20241201-g9hsaP</p>
-                    </td>
-                    <td>
-                        <p class="date">1 Dec 2024</p>
-                    </td>
-                    <td>
-                        <p class="time">12.00pm</p>
-                    </td>
-                    <td class="total-price">123.45</td>
-                    <td class="delivery-status">Delivered</td>
-                    <td class="action">
-                        <a class="reviewbtn" href=""><span>Review&nbsp;&nbsp;</span><i class="ti ti-check"></i></a>
                     </td>
                 </tr>
             </tbody>
@@ -293,40 +296,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Add other content divs similarly with display: none; -->
 </div>
 <script src="../js/profileSidebar.js"></script>
-<script src="../js/imagePreview.js"></script>
+<script src="../js/imageDragAndDrop.js"></script>
 <script src="../js/inputHasContent.js"></script>
 <script src="../js/showPassword.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const addressInput = document.getElementById("address-input");
-        const addressIndexInput = document.getElementById("address-index");
-        const actionInput = document.getElementById("action");
-        const saveButton = document.getElementById("save-address-btn");
+<script src="../js/addressManagement.js"></script>
 
-        // Handle edit button clicks
-        document.querySelectorAll(".edit-address-btn").forEach((btn) => {
-            btn.addEventListener("click", (e) => {
-                e.preventDefault();
-                const row = btn.closest("tr");
-                const index = btn.getAttribute("data-index");
-                const address = row.querySelector(".address-text").innerText;
-
-                // Populate the input fields
-                addressInput.value = address;
-                addressIndexInput.value = index;
-                actionInput.value = "edit-address";
-                saveButton.textContent = "Update Address";
-            });
-        });
-
-        // Handle add button reset after edit
-        saveButton.addEventListener("click", () => {
-            setTimeout(() => {
-                saveButton.textContent = "Add Address";
-                actionInput.value = "save-address";
-                addressIndexInput.value = "";
-            }, 500); // Reset the form after submission
-        });
-    });
-</script>
 <?php include '../_foot.php'; ?>
