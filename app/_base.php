@@ -481,7 +481,7 @@ function get_mail()
 // ============================================================================
 
 // Get shopping cart
-function get_cart()
+function get_cart(): array
 {
     global $_db;
     global $_user;
@@ -495,14 +495,10 @@ function get_cart()
     if ($currentUser && $currentUser->cart) {
         $cart = json_decode($currentUser->cart, true);  // Decode json into array
         set_cart($cart);
-        return $_SESSION['cart'];
+        return $cart;
     } 
 
-    if (!isset($_SESSION['cart'])) {
-        $_SESSION['cart'] = [];
-    }
-
-    return $_SESSION['cart'];
+    return [];
 }
 
 // Set shopping cart
@@ -510,9 +506,6 @@ function set_cart($cart = [])
 {
     global $_db;
     global $_user;
-
-    // Set cart to whatever it was given
-    $_SESSION['cart'] = $cart;
 
     // Prepare query
     $stmt = $_db->prepare('UPDATE customers SET cart = ? WHERE customer_id = ?');

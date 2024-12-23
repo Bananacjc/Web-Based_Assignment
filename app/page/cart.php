@@ -6,14 +6,13 @@ include '../_head.php';
 
 $orderItems = [];
 if (is_post()) {
-
     $btn = req('btn');
 
-    if ($btn == 'clear'){
+    if ($btn == 'clear') {
         set_cart();
         temp('popup-msg', ['msg' => 'Cart Cleared Successfully', 'isSuccess' => true]);
         redirect('?');
-    } else if (count(get_cart())){
+    } else if (count(get_cart())) {
         redirect('?');
     } else {
         temp('popup-msg', ['msg' => 'Cart is Empty', 'isSuccess' => false]);
@@ -22,11 +21,11 @@ if (is_post()) {
 }
 
 ?>
+
 <h1 class="h1 header-banner">Cart</h1>
 <div class="d-flex flex-direction-row justify-content-center">
     <button id="paymentbtn" data-post="payment.php">Proceed to Payment</button>
     <button id="clearbtn" data-post="?btn=clear">Clear Cart</button>
-    
 </div>
 <table class="rounded-table cart-table">
     <thead>
@@ -46,7 +45,7 @@ if (is_post()) {
         $cart = get_cart();
         $stmt = $_db->prepare('SELECT * FROM products WHERE product_id = ?');
         ?>
-        <?php foreach ($cart as $id => $unit): ?>
+        <?php foreach ($cart as $id => $quantity): ?>
             <?php
             $stmt->execute([$id]);
             $p = $stmt->fetch();
@@ -56,8 +55,8 @@ if (is_post()) {
             $pName  = $p->product_name;
             $pPrice = $p->price;
 
-            $subtotal = $p->price * $unit;
-            $count += $unit;
+            $subtotal = $p->price * $quantity;
+            $count += $quantity;
             $total += $subtotal;
             ?>
             <tr class="available-product">
@@ -70,31 +69,19 @@ if (is_post()) {
                 </td>
                 <!-- Product Price -->
                 <td class="price">
-                    <?= $pPrice ?>
+                    <?= number_format($pPrice, 2) ?>
                 </td>
                 <!-- Product Qty + Modify Qty -->
                 <td class="quantity">
                     <div class='d-flex align-items-center justify-content-space-around'>
-                        <form id='minusForm<?= $pID ?>' action='OrderServlet' method='POST'>
-                            <input name='url' value='cart' type='hidden'>
-                            <input name='action' value='update' type='hidden'>
-                            <input name='orderItemId' value='<?= $pID ?>' type='hidden'>
-                            <input name='m' value='minus' type='hidden'>
-                            <i class='ti ti-minus cursor-pointer' onclick='submitForm("minusForm<?= $pID  ?>")'></i>
-                        </form>
-                        <span class='quantity-value'><?= $unit ?></span>
-                        <form id='plusForm<?= $pID  ?>' action='OrderServlet' method='POST'>
-                            <input name='url' value='cart' type='hidden'>
-                            <input name='action' value='update' type='hidden'>
-                            <input name='orderItemId' value='<?= $pID ?>' type='hidden'>
-                            <input name='m' value='plus' type='hidden'>
-                            <i class='ti ti-plus cursor-pointer' onclick='submitForm("minusForm<?= $pID  ?>")'></i>
-                        </form>
+                        <i class="ti ti-minus cursor-pointer" data-product-id="<?= $pID ?>" data-action="decrease"></i>
+                        <span class="quantity-value" id="quantity-<?= $pID?>"><?= $quantity ?></span>
+                        <i class="ti ti-plus cursor-pointer" data-product-id="<?= $pID ?>" data-action="increase"></i>
                     </div>
                 </td>
                 <!-- Sub-total -->
-                <td class='total-price'>
-                    <?= $subtotal ?>
+                <td class='total-price' id="subtotal-<?= $pID ?>">
+                    <?= number_format($subtotal, 2) ?>
                 </td>
                 <!-- Remove -->
                 <td class="action">
@@ -110,9 +97,7 @@ if (is_post()) {
                 </td>
             </tr>
         <?php endforeach ?>
-
     </tbody>
-
 </table>
-
+<script src="../js/cart.js"></script>
 <?php include '../_foot.php'; ?>

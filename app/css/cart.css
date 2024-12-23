@@ -13,9 +13,9 @@
     padding: 20px;
     text-align: center;
     border-left: none;
-    border-right: 1px solid var(--color-grey);
+    border-right: 1px solid var(--color-white-lighthouse);
     border-top: 1px solid var(--color-white-crystal);
-    border-bottom: 1px solid var(--color-black-carbon);
+    border-bottom: 1px solid var(--color-white-lighthouse);
     font-weight: 500;
 }
 
@@ -41,6 +41,13 @@
     margin-right: 30px;
 }
 
+.ti {
+    font-size: 25px;
+}
+
+.ti:hover {
+    box-shadow: 0 0 1px 1px var(--color-black-carbon);
+}
 
 .quantity-value {
     font-weight: 400;

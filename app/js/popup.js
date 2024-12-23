@@ -48,4 +48,8 @@ function showCartPopup(imagePath) {
 
     popup.addClass('show');
 
+    setTimeout(function() {
+        popup.removeClass('show');
+    }, 300);
+
 }

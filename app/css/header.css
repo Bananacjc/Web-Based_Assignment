@@ -103,19 +103,14 @@ body{
     top: 0;
 }
 
-#cart-popup.show {
-    display: block;
-    animation: add-to-cart 0.5s linear;
+#cart-popup.show{
+    display: flex;
+    animation: add-to-cart 0.3s linear;
 }
 
 @keyframes add-to-cart {
     0% {top:100px; opacity: 1;}
     100% {top: 0; opacity: 0;}
-}
-
-#cart-popup-img {
-    width: inherit;
-    height: inherit;
 }
 
 
