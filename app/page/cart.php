@@ -6,14 +6,13 @@ include '../_head.php';
 
 $orderItems = [];
 if (is_post()) {
-
     $btn = req('btn');
 
-    if ($btn == 'clear'){
+    if ($btn == 'clear') {
         set_cart();
         temp('popup-msg', ['msg' => 'Cart Cleared Successfully', 'isSuccess' => true]);
         redirect('?');
-    } else if (count(get_cart())){
+    } else if (count(get_cart())) {
         redirect('?');
     } else {
         temp('popup-msg', ['msg' => 'Cart is Empty', 'isSuccess' => false]);
@@ -22,11 +21,11 @@ if (is_post()) {
 }
 
 ?>
+<script src="../js/cart.js"></script>
 <h1 class="h1 header-banner">Cart</h1>
 <div class="d-flex flex-direction-row justify-content-center">
     <button id="paymentbtn" data-post="payment.php">Proceed to Payment</button>
     <button id="clearbtn" data-post="?btn=clear">Clear Cart</button>
-    
 </div>
 <table class="rounded-table cart-table">
     <thead>
@@ -75,21 +74,9 @@ if (is_post()) {
                 <!-- Product Qty + Modify Qty -->
                 <td class="quantity">
                     <div class='d-flex align-items-center justify-content-space-around'>
-                        <form id='minusForm<?= $pID ?>' action='OrderServlet' method='POST'>
-                            <input name='url' value='cart' type='hidden'>
-                            <input name='action' value='update' type='hidden'>
-                            <input name='orderItemId' value='<?= $pID ?>' type='hidden'>
-                            <input name='m' value='minus' type='hidden'>
-                            <i class='ti ti-minus cursor-pointer' onclick='submitForm("minusForm<?= $pID  ?>")'></i>
-                        </form>
+                        <i class='ti ti-minus cursor-pointer' data-product-id='<?= $pID ?>'></i>
                         <span class='quantity-value'><?= $unit ?></span>
-                        <form id='plusForm<?= $pID  ?>' action='OrderServlet' method='POST'>
-                            <input name='url' value='cart' type='hidden'>
-                            <input name='action' value='update' type='hidden'>
-                            <input name='orderItemId' value='<?= $pID ?>' type='hidden'>
-                            <input name='m' value='plus' type='hidden'>
-                            <i class='ti ti-plus cursor-pointer' onclick='submitForm("minusForm<?= $pID  ?>")'></i>
-                        </form>
+                        <i class='ti ti-plus cursor-pointer' data-product-id='<?= $pID ?>'></i>
                     </div>
                 </td>
                 <!-- Sub-total -->
@@ -110,9 +97,6 @@ if (is_post()) {
                 </td>
             </tr>
         <?php endforeach ?>
-
     </tbody>
-
 </table>
-
 <?php include '../_foot.php'; ?>
