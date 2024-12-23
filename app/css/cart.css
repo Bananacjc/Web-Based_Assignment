@@ -41,6 +41,13 @@
     margin-right: 30px;
 }
 
+.ti {
+    font-size: 25px;
+}
+
+.ti:hover {
+    box-shadow: 0 0 1px 1px var(--color-black-carbon);
+}
 
 .quantity-value {
     font-weight: 400;
