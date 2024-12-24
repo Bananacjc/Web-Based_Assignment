@@ -294,6 +294,10 @@ label input[type='checkbox'] {
     text-align: left !important;
 }
 
+.text-right {
+    text-align: right !important;
+}
+
 /* cursor */
 .cursor-pointer {
     cursor: pointer !important;

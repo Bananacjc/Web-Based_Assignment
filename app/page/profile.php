@@ -50,6 +50,130 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             temp('popup-msg', ['msg' => 'Failed to update profile.', 'isSuccess' => false]);
         }
         redirect();
+    } elseif ($formType === 'bank_management') {
+        $action = post('action');
+        $index = post('index');
+        $banks = json_decode($_user->banks ?? '[]', true);
+
+        if ($action === 'save-bank') {
+            // Add a new bank
+            $bankData = [
+                'name' => trim(post('name')),
+                'accNum' => trim(post('acc-num')),
+                'cvv' => trim(post('cvv')),
+                'expiry' => trim(post('expiry-date')),
+                'cardType' => trim(post('card-type'))
+            ];
+
+            if (in_array('', $bankData)) {
+                temp('popup-msg', ['msg' => 'All fields are required for adding a bank.', 'isSuccess' => false]);
+                redirect();
+            }
+
+            $banks[] = $bankData;
+            $banksJson = json_encode($banks);
+
+            $stmt = $_db->prepare("UPDATE customers SET banks = ? WHERE customer_id = ?");
+            $stmt->execute([$banksJson, $_user->customer_id]);
+
+            $_user->banks = $banksJson;
+            temp('popup-msg', ['msg' => 'Bank added successfully.', 'isSuccess' => true]);
+        } elseif ($action === 'edit-bank' && is_numeric($index)) {
+            // Edit an existing bank
+            if (isset($banks[$index])) {
+                $banks[$index] = [
+                    'name' => trim(post('name')),
+                    'accNum' => trim(post('acc-num')),
+                    'cvv' => trim(post('cvv')),
+                    'expiry' => trim(post('expiry-date')),
+                    'cardType' => trim(post('card-type'))
+                ];
+
+                $banksJson = json_encode($banks);
+                $stmt = $_db->prepare("UPDATE customers SET banks = ? WHERE customer_id = ?");
+                $stmt->execute([$banksJson, $_user->customer_id]);
+
+                $_user->banks = $banksJson;
+                temp('popup-msg', ['msg' => 'Bank updated successfully.', 'isSuccess' => true]);
+            } else {
+                temp('popup-msg', ['msg' => 'Invalid bank update.', 'isSuccess' => false]);
+            }
+        } elseif ($action === 'delete-bank' && is_numeric($index)) {
+            // Delete a bank
+            if (isset($banks[$index])) {
+                unset($banks[$index]);
+                $banks = array_values($banks); // Re-index the array
+                $banksJson = json_encode($banks);
+
+                $stmt = $_db->prepare("UPDATE customers SET banks = ? WHERE customer_id = ?");
+                $stmt->execute([$banksJson, $_user->customer_id]);
+
+                $_user->banks = $banksJson;
+                temp('popup-msg', ['msg' => 'Bank deleted successfully.', 'isSuccess' => true]);
+            } else {
+                temp('popup-msg', ['msg' => 'Invalid bank deletion.', 'isSuccess' => false]);
+            }
+        }
+        redirect(); // Reload the page to reflect changes
+    } elseif ($formType === 'ewallet_management') {
+        $action = post('action');
+        $index = post('index');
+        $ewallets = json_decode($_user->ewallets ?? '[]', true);
+
+        if ($action === 'save-ewallet') {
+            // Add a new e-wallet
+            $walletData = [
+                'name' => trim(post('name')),
+                'phone' => trim(post('phone'))
+            ];
+
+            if (in_array('', $walletData)) {
+                temp('popup-msg', ['msg' => 'All fields are required for adding an e-wallet.', 'isSuccess' => false]);
+                redirect();
+            }
+
+            $ewallets[] = $walletData;
+            $ewalletsJson = json_encode($ewallets);
+
+            $stmt = $_db->prepare("UPDATE customers SET ewallets = ? WHERE customer_id = ?");
+            $stmt->execute([$ewalletsJson, $_user->customer_id]);
+
+            $_user->ewallets = $ewalletsJson;
+            temp('popup-msg', ['msg' => 'E-wallet added successfully.', 'isSuccess' => true]);
+        } elseif ($action === 'edit-ewallet' && is_numeric($index)) {
+            // Edit an existing e-wallet
+            if (isset($ewallets[$index])) {
+                $ewallets[$index] = [
+                    'name' => trim(post('name')),
+                    'phone' => trim(post('phone'))
+                ];
+
+                $ewalletsJson = json_encode($ewallets);
+                $stmt = $_db->prepare("UPDATE customers SET ewallets = ? WHERE customer_id = ?");
+                $stmt->execute([$ewalletsJson, $_user->customer_id]);
+
+                $_user->ewallets = $ewalletsJson;
+                temp('popup-msg', ['msg' => 'E-wallet updated successfully.', 'isSuccess' => true]);
+            } else {
+                temp('popup-msg', ['msg' => 'Invalid e-wallet update.', 'isSuccess' => false]);
+            }
+        } elseif ($action === 'delete-ewallet' && is_numeric($index)) {
+            // Delete an e-wallet
+            if (isset($ewallets[$index])) {
+                unset($ewallets[$index]);
+                $ewallets = array_values($ewallets); // Re-index the array
+                $ewalletsJson = json_encode($ewallets);
+
+                $stmt = $_db->prepare("UPDATE customers SET ewallets = ? WHERE customer_id = ?");
+                $stmt->execute([$ewalletsJson, $_user->customer_id]);
+
+                $_user->ewallets = $ewalletsJson;
+                temp('popup-msg', ['msg' => 'E-wallet deleted successfully.', 'isSuccess' => true]);
+            } else {
+                temp('popup-msg', ['msg' => 'Invalid e-wallet deletion.', 'isSuccess' => false]);
+            }
+        }
+        redirect(); // Reload the page to reflect changes
     } elseif ($formType === 'address_management') {
         $action = post('action');
         $index = post('index');
@@ -149,48 +273,109 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
     <div class="content" id="payment-method-content" style="display: none;">
-        <div id="payment-method-container" style="display: flex;">
-            <!-- Bank form -->
-            <form id="bank-container" action="BankServlet" method="post">
+        <div id="payment-method-container">
+            <!-- Bank Section -->
+            <h2>Bank</h2>
+            <table class="table" id="bank-table">
+                <thead>
+                    <tr>
+                        <th class="text-left">#</th>
+                        <th class="text-left">Name</th>
+                        <th class="text-left">Account Number</th>
+                        <th class="text-left">CVV</th>
+                        <th class="text-left">Expiry Date</th>
+                        <th class="text-left">Card Type</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $banks = json_decode($_user->banks ?? '[]', true);
+                    foreach ($banks as $index => $bank) {
+                        echo "<tr>
+                        <td>" . ($index + 1) . "</td>
+                        <td class='bank-name'>{$bank['name']}</td>
+                        <td class='bank-account'>{$bank['accNum']}</td>
+                        <td class='bank-cvv'>{$bank['cvv']}</td>
+                        <td class='bank-expiry'>{$bank['expiry']}</td>
+                        <td class='bank-card-type'>{$bank['cardType']}</td>
+                        <td class='text-center'>
+                            <button class='btn edit-bank-btn' data-index='{$index}'>Edit</button>
+                            <button class='btn delete-bank-btn' data-index='{$index}'>Delete</button>
+                        </td>
+                    </tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+            <form id="bank-container" action="" class="d-flex" method="post">
                 <div>
-                    <h2>Bank</h2>
                     <div class="input-subcontainer">
-                        <input type="text" name="name" value="Public Bank" class="input-box" spellcheck="false" required />
+                        <input type="text" name="name" class="input-box" required />
                         <label for="name" class="label">Name</label>
                     </div>
                     <div class="input-subcontainer">
-                        <input type="text" name="acc-num" value="1234567890" class="input-box" spellcheck="false" required />
+                        <input type="text" name="acc-num" class="input-box" required />
                         <label for="acc-num" class="label">Account Number</label>
                     </div>
                     <div class="input-subcontainer">
-                        <input type="text" name="cvv" value="123" class="input-box" spellcheck="false" required />
+                        <input type="text" name="cvv" class="input-box" required />
                         <label for="cvv" class="label">CVV</label>
                     </div>
+                    <button class="btn" type="submit">Save</button>
+                </div>
+                <div>
                     <div class="input-subcontainer">
                         <label for="expiry-date" class="normal-label">Expiry Date</label>
                         <input type="month" name="expiry-date" value="" spellcheck="false" id="expiry-date-input" required />
                     </div>
                     <div class="input-subcontainer">
                         <label for="card-type" class="normal-label">Card Type</label>
-                        <select name="card-type" id="card-type">
+                        <select name="card-type" id="card-type" class="input-box">
                             <option value="">Select a card type</option>
-                            <option value="visa" ${bank !=null && 'visa' .equals(bank.cardType) ? 'selected' : '' }>Visa</option>
-                            <option value="mastercard" ${bank !=null && 'mastercard' .equals(bank.cardType) ? 'selected' : '' }>MasterCard</option>
+                            <option value="visa">Visa</option>
+                            <option value="mastercard">MasterCard</option>
                         </select>
                     </div>
-                    <button class="btn" type="submit">Save</button>
                 </div>
             </form>
-            <!-- E-Wallet form -->
-            <form id="e-wallet-container" style="margin-left: 50px;" action="EwalletServlet" method="post">
+
+            <!-- E-Wallet Section -->
+            <h2 style="margin-top: 30px;">E-Wallet</h2>
+            <table class="table" id="ewallet-table">
+                <thead>
+                    <tr>
+                        <th class="text-left">#</th>
+                        <th class="text-left">Name</th>
+                        <th class="text-left">Phone</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $ewallets = json_decode($_user->ewallets ?? '[]', true);
+                    foreach ($ewallets as $index => $wallet) {
+                        echo "<tr>
+                        <td>" . ($index + 1) . "</td>
+                        <td class='wallet-name'>{$wallet['name']}</td>
+                        <td class='wallet-phone'>{$wallet['phone']}</td>
+                        <td class='text-center'>
+                            <button class='btn edit-wallet-btn' data-index='{$index}'>Edit</button>
+                            <button class='btn delete-wallet-btn' data-index='{$index}'>Delete</button>
+                        </td>
+                    </tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+            <form id="e-wallet-container" style="margin-left: 0;" action="" method="post">
                 <div>
-                    <h2>E-Wallet</h2>
                     <div class="input-subcontainer">
-                        <input type="text" name="name" value="TouchNGo" class="input-box" spellcheck="false" required />
+                        <input type="text" name="name" class="input-box" required />
                         <label for="name" class="label">Name</label>
                     </div>
                     <div class="input-subcontainer">
-                        <input type="text" name="phone" value="+601163985186" class="input-box" spellcheck="false" required />
+                        <input type="text" name="phone" class="input-box" required />
                         <label for="phone" class="label">Phone</label>
                     </div>
                     <button class="btn" type="submit">Save</button>
@@ -198,6 +383,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
         </div>
     </div>
+
     <div class="content" id="address-content" style="display: none;">
         <h2>Addresses</h2>
         <table class="table">
@@ -299,6 +485,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script src="../js/imageDragAndDrop.js"></script>
 <script src="../js/inputHasContent.js"></script>
 <script src="../js/showPassword.js"></script>
+<script src="../js/paymentMethodManagement.js"></script>
 <script src="../js/addressManagement.js"></script>
 
 <?php include '../_foot.php'; ?>

@@ -6,13 +6,13 @@ Have fun coding!
 # Task for each person
 
 1. Jee Cheng
-  - [x] Login / Logout
+  - [ ] Login / Logout
   - [ ] Shop
   - [ ] Profile
 
 2. Jau Chun
   - [ ] Promotion
-  - [ ] Cart
+  - [x] Cart
   - [ ] Payment
 
 3. Chun Tian
@@ -34,17 +34,17 @@ Have fun coding!
   - [ ] Temporary Login Blocking
   - [ ] Block + Unblock User Account (Admin ban/unban member)
   - [ ] Remember Me
-  - [ ] Permanent Shopping Cart
+  - [x] Permanent Shopping Cart
   - [ ] Filtering, Sorting and Paging
   - [ ] Top Selling Products
-  - [ ] AJAX Integration
+  - [x] AJAX Integration (Currently on cart.php)
   - [ ] Fake Payment (can be replaced by Real Payment in [feasible function](#feasible-function)
   - [ ] SMS Integration
 
 ## Feasible function
   - [ ] Real Payment using [Stripe API](stripe.com)
   - [ ] E-receipt sent to e-mail or in PDF
-  - [ ] Drag-and-Drop Photo Upload
+  - [x] Drag-and-Drop Photo Upload
   - [ ] Webcam Integration
   - [ ] Image Processing (Flip, Rotate, etc.)
   - [ ] Batch Insertion (Import from Text / CSV files)

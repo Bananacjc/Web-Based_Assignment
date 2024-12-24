@@ -6,14 +6,19 @@ include '../_head.php';
 
 $orderItems = [];
 if (is_post()) {
-    $btn = req('btn');
+    $btn    = req('btn');
+    $target = req('target');
+    $count  = count(get_cart());
 
-    if ($btn == 'clear') {
-        set_cart();
-        temp('popup-msg', ['msg' => 'Cart Cleared Successfully', 'isSuccess' => true]);
-        redirect('?');
-    } else if (count(get_cart())) {
-        redirect('?');
+
+    if ($count > 0) {
+        if ($btn == 'clear') {
+            set_cart();
+            temp('popup-msg', ['msg' => 'Cart Cleared Successfully', 'isSuccess' => true]);
+            redirect('?');
+        } else if ($btn == 'payment') {
+            redirect('payment.php');
+        }
     } else {
         temp('popup-msg', ['msg' => 'Cart is Empty', 'isSuccess' => false]);
         redirect('?');
@@ -24,7 +29,7 @@ if (is_post()) {
 
 <h1 class="h1 header-banner">Cart</h1>
 <div class="d-flex flex-direction-row justify-content-center">
-    <button id="paymentbtn" data-post="payment.php">Proceed to Payment</button>
+    <button id="paymentbtn" data-post="?btn=payment">Proceed to Payment</button>
     <button id="clearbtn" data-post="?btn=clear">Clear Cart</button>
 </div>
 <table class="rounded-table cart-table">
@@ -33,7 +38,7 @@ if (is_post()) {
             <th class="text-left">PRODUCT</th>
             <th>PRICE (RM)</th>
             <th>QUANTITY</th>
-            <th>TOTAL (RM)</th>
+            <th>SUB-TOTAL (RM)</th>
             <th>ACTION</th>
         </tr>
     </thead>
@@ -45,6 +50,7 @@ if (is_post()) {
         $cart = get_cart();
         $stmt = $_db->prepare('SELECT * FROM products WHERE product_id = ?');
         ?>
+
         <?php foreach ($cart as $id => $quantity): ?>
             <?php
             $stmt->execute([$id]);
@@ -59,7 +65,7 @@ if (is_post()) {
             $count += $quantity;
             $total += $subtotal;
             ?>
-            <tr class="available-product">
+            <tr class="available-product" id="product-<?= $pID ?>">
                 <!-- Product Image + Name -->
                 <td>
                     <div class="text-left d-flex align-items-center">
@@ -75,7 +81,9 @@ if (is_post()) {
                 <td class="quantity">
                     <div class='d-flex align-items-center justify-content-space-around'>
                         <i class="ti ti-minus cursor-pointer" data-product-id="<?= $pID ?>" data-action="decrease"></i>
-                        <span class="quantity-value" id="quantity-<?= $pID?>"><?= $quantity ?></span>
+                        <?php $GLOBALS['quantity-' . $pID] = $quantity; ?>
+                        <?= html_number('quantity-' . $pID, 1, '', 1, "class='quantity-value' data-product-id='$pID' data-action='change'") ?>
+                        <!-- <span class="quantity-value" id="quantity-<?= $pID ?>"><?= $quantity ?></span> -->
                         <i class="ti ti-plus cursor-pointer" data-product-id="<?= $pID ?>" data-action="increase"></i>
                     </div>
                 </td>
@@ -85,18 +93,34 @@ if (is_post()) {
                 </td>
                 <!-- Remove -->
                 <td class="action">
-                    <form id='removeForm<?= $pID ?>' action='OrderServlet' method='POST'>
-                        <input name='url' value='cart' type='hidden'>
-                        <input name='action' value='delete' type='hidden'>
-                        <input name='orderItemId' value='<?= $pID ?>' type='hidden'>
-                        <button class="cart-remove-btn" type="button">
-                            Remove from Cart
-                        </button>
 
-                    </form>
+                    <button class="cart-remove-btn" type="button" data-product-id="<?= $pID ?>" data-action="remove">
+                        Remove from Cart
+                    </button>
+
+
                 </td>
             </tr>
         <?php endforeach ?>
+        <?php if ($total): ?>
+            <tr>
+                <td colspan="3" class="text-right">TOTAL:</td>
+                <td id="cart-total">
+                    <?= number_format($total, 2) ?>
+                </td>
+                <td></td>
+            </tr>
+        <?php endif ?>
+
+        <tr id="nothing-to-show">
+        <?php if (!$cart): ?>
+            <td colspan="5">
+                <h3>Nothing is here, Try add <a href="../page/shop.php" class='text-decoration-none text-green-darker hover-underline-anim'>something</a>!</h3>
+            </td>
+        <?php endif ?>
+        </tr>
+
+
     </tbody>
 </table>
 <script src="../js/cart.js"></script>

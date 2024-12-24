@@ -31,4 +31,16 @@ $(() => {
         e.preventDefault();
         location = location;
     });
+
 });
+
+// Kudos to this stackoverflow solution
+// https://stackoverflow.com/questions/14075014/jquery-function-to-to-format-number-with-commas-and-decimal
+function ReplaceNumberWithCommas(yourNumber) {
+    //Seperates the components of the number
+    var n= yourNumber.toString().split(".");
+    //Comma-fies the first part
+    n[0] = n[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    //Combines the two sections
+    return n.join(".");
+}
