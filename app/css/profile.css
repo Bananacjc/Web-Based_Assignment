@@ -189,16 +189,12 @@
 
 /* payment */
 
-#payment-method-container {
-    display: flex;
-}
-
 #e-wallet-container {
     margin-left: 50px;;
 }
 
 .normal-label {
-    margin: 20px;
+    margin: 0 20px;
     color: #888;
 }
 
