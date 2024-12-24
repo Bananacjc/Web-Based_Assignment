@@ -61,6 +61,7 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
 
 <div class="main">
     <h1>PRODUCTS</h1>
+    
     <form>
         <?= html_search('product_name', 'Search Product Name', $product_name) ?>
         <?= html_select('category_name', $_categoryName, 'All Categories', $category_name) ?>
@@ -114,7 +115,9 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
 
 
                         <?php if ($_user?->role == 'MANAGER'): ?>
-                            <button class="action-button" data-get="update.php?=<?= $s->product_id ?>" onclick="showUpdateProductForm(
+
+
+                            <button class="action-button"  onclick="showUpdateProductForm(
     '<?= $s->product_image ?>', 
     '<?= $s->product_id ?>', 
     '<?= $s->product_name ?>', 

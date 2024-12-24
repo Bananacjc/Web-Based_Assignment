@@ -1,11 +1,62 @@
 <?php
 $_title = 'Profile';
 $_css = '../css/accountProfile.css';
-include '../_base.php';
+$_css1 = '../css/_base.css';
+require '../_base.php';
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $formType = post('form_type'); // Fetch the hidden input field
+
+    if ($formType === 'personal_info') {
+        // Handle personal info update
+        $username = trim($_POST['employee_name']);
+        $email = trim($_POST['email']);
+        $role = trim($_POST['role']);
+        $profilePic = get_file('profile-pic');
+
+        if (!$username || !$email || !$role) {
+            temp('popup-msg', ['msg' => 'All fields are required.', 'isSuccess' => false]);
+            redirect();
+        }
+        if (!is_email($email)) {
+            temp('popup-msg', ['msg' => 'Invalid email format.', 'isSuccess' => false]);
+            redirect();
+        }
+
+        $profileImage = $_user->profile_image;
+        if ($profilePic) {
+            $newProfileImage = save_photo($profilePic, '../uploads/profile_images');
+            if ($profileImage && $profileImage !== 'guest.png') {
+                $oldImagePath = "../uploads/profile_images/$profileImage";
+                if (file_exists($oldImagePath)) unlink($oldImagePath);
+            }
+            $profileImage = $newProfileImage;
+        }
+
+        $stmt = $_db->prepare("UPDATE employees SET employee_name = ?, email = ?,  role= ?, profile_image = ? WHERE employee_id = ?");
+        $success = $stmt->execute([$username, $email, $role, $profileImage, $_user->employee_id]);
+
+        if ($success) {
+            $_user->employee_name = $username;
+            $_user->email = $email;
+            $_user->role = $role;
+            $_user->profile_image = $profileImage;
+
+            temp('popup-msg', ['msg' => 'Profile updated successfully.', 'isSuccess' => true]);
+        } else {
+            temp('popup-msg', ['msg' => 'Failed to update profile.', 'isSuccess' => false]);
+        }
+        redirect();
+    }
+}
 ?>
-<h1 class="h1 header-banner">Profile</h1>
 <div id="profile-container">
     <div class="sidebar">
+    <a href="adminDashboard.php" class="back-button">
+    <i class="fa fa-arrow-left"></i> Back
+</a>
+
         <ul>
             <li id="personal-info-btn"><i class="ti ti-user"></i> Personal Info</li>
             <li id="change-password-btn"><i class="ti ti-lock"></i> Change Password</li>
@@ -14,32 +65,36 @@ include '../_base.php';
     </div>
     <div class="content" id="personal-info-content" style="display: block;">
         <h2>Personal Info</h2>
-        <form id="personal-info-container" action="ProfileModify" method="post" enctype="multipart/form-data">
-            <div class="input-file-container">
+        <form id="personal-info-container" action="" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="form_type" value="personal_info" />
+            <div class="input-file-container" id="drop-zone">
                 <div class="image-preview-container">
-                    <img id="image-preview" src="data:image/jpeg;base64,${customer.image}" alt="">
+                    <img id="image-preview" src="../uploads/profile_images/<?= $_user->profile_image ?>" alt="Profile Picture" />
                 </div>
-                <input type="file" name="profile-pic" id="profile-pic" class="input-file" onchange="previewFile()" />
-                <label for="profile-pic" class="input-label">Upload Profile Picture</label>
+                <input type="file" name="profile-pic" id="profile-pic" class="input-file" accept="image/*" onchange="previewFile()" />
+                <div class="drag-overlay" id="drag-overlay">
+                    <p>Drop your image here</p>
+                </div>
             </div>
             <div>
                 <div class="input-subcontainer">
-                    <input type="text" name="username" value="tanjc" class="input-box" spellcheck="false" />
-                    <label for="username" class="label">Username</label>
+                    <input type="text" name="employee_name" value="<?= $_user->employee_name ?? '' ?>" class="input-box" spellcheck="false" />
+                    <label for="employee_name" class="label">Username</label>
                 </div>
                 <div class="input-subcontainer">
-                    <input type="text" name="email" value="haha@gmail.com" class="input-box" spellcheck="false" />
+                    <input type="text" name="email" value="<?= $_user->email ?? '' ?>" class="input-box" spellcheck="false" />
                     <label for="email" class="label">Email</label>
                 </div>
                 <div class="input-subcontainer">
-                    <input type="text" name="phone" value="+601163985186" class="input-box" spellcheck="false" />
-                    <label for="phone" class="label">Phone</label>
+                    <input name="role" value="<?= $_user->role ?? '' ?>" class="input-box" spellcheck="false" readonly />
+                    <label for="role" class="label">Role</label>
                 </div>
+
                 <button class="btn" type="submit">Save</button>
             </div>
         </form>
     </div>
-   
+
     <div class="content" id="change-password-content" style="display: none;">
         <h2>Change Password</h2>
         <form id="change-password-container" action="ChangePassword" method="post">
@@ -59,28 +114,6 @@ include '../_base.php';
     <!-- Add other content divs similarly with display: none; -->
 </div>
 <script src="../js/profileSidebar.js"></script>
-<script src="../js/imagePreview.js"></script>
+<script src="../js/imageDragAndDrop.js"></script>
 <script src="../js/inputHasContent.js"></script>
 <script src="../js/showPassword.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script type="text/javascript">
-    let status = document.getElementById("status").value;
-
-    if (status === "personalSuccess") {
-        swal.fire("Congratulations", "Personal info submitted successfully.", "success");
-    }
-    
-    if (status === "passwordChanged") {
-        swal.fire("Congratulations", "Password changed successfully.", "success");
-    }
-    if (status === "incompleteForm") {
-        swal.fire("Sorry", "Incomplete Form.", "error");
-    }
-    if (status === "personalProcessFail") {
-        swal.fire("Sorry", "Personal info submit failed.", "error");
-    }
-
-    if (status === "invalidConfirmPassword") {
-        swal.fire("Sorry", "Invalid Confirm Password.", "error");
-    }
-</script>

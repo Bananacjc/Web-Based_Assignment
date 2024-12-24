@@ -59,6 +59,7 @@ if (is_post()) {
         $_err['product_image'] = 'Invalid image file. Please upload an image.';
     }
 
+    // Handle new category image if category is being created
     if (post('new_category_name')) {
         $newCategoryName = post('new_category_name');
         $categoryImage = get_file('new_category_image');
@@ -66,6 +67,7 @@ if (is_post()) {
         if (!$categoryImage || !str_starts_with($categoryImage->type, 'image/')) {
             $_err['new_category_image'] = 'Invalid or missing category image.';
         } else {
+            // Assuming save_photo function handles saving and returning the path
             $categoryImagePath = save_photo($categoryImage, '../uploads/category_images');
         }
 

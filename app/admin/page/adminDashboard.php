@@ -10,7 +10,7 @@ $_title='Admin Dashboard';
 
 <body>
 
-    <?php include "adminHeader.php" ?>
+    <?php include "adminHeader.php"; ?>
 
     <div class="wrapper">
         <div class="main">

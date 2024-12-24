@@ -40,37 +40,36 @@ if (is_post()) {
         $_err['contact_num'] = 'Contact number must be numeric.';
     }
 
-    // Validate optional fields
-    if ($cart && json_decode($cart, true) === null) {
-        $_err['cart'] = 'Invalid JSON format for cart.';
+    // Validate and decode JSON fields
+    if ($cart) {
+        $decodedCart = json_decode($cart, true);  // Decode as an associative array
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $_err['cart'] = 'Invalid JSON format for cart.';
+        } else {
+            $cart = $decodedCart;  // Only assign if valid
+        }
     }
-    if ($promotionRecords && json_decode($promotionRecords, true) === null) {
-        $_err['promotion_records'] = 'Invalid JSON format for promotion records.';
+
+    if ($promotionRecords) {
+        $decodedPromotionRecords = json_decode($promotionRecords, true);  // Decode as an associative array
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $_err['promotion_records'] = 'Invalid JSON format for promotion records.';
+        } else {
+            $promotionRecords = $decodedPromotionRecords;  // Only assign if valid
+        }
     }
 
     // Handle profile image upload
     $profileImagePath = null;
     $profileImage = get_file('profile_image');
-    if ($profileImage) {
-        if ($profileImage['error'] === UPLOAD_ERR_OK) {
-            $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            $fileMimeType = mime_content_type($profileImage['tmp_name']);
-
-            if (!in_array($fileMimeType, $allowedMimeTypes)) {
-                $_err['profile_image'] = 'Invalid image type. Only JPG, PNG, and GIF are allowed.';
-            } elseif ($profileImage['size'] > 2 * 1024 * 1024) {
-                $_err['profile_image'] = 'Profile image exceeds 2MB limit.';
-            } else {
-                $profileImagePath = save_photo($profileImage, '../uploads/profile_images');
-            }
-        } else {
-            $_err['profile_image'] = 'Error uploading profile image.';
-        }
+    if (!$profileImage) {
+        $_err['profile_image'] = 'Product image is required.';
+    } elseif (!str_starts_with($profileImage->type, 'image/')) {
+        $_err['profile_image'] = 'Invalid image file. Please upload an image.';
     }
+    if(empty($_err)){
+        $profileImagePath= save_photo($profileImage, '../uploads/profile_images');
 
-    // If no errors, insert customer data
-    if (!$_err) {
-        try {
             $customerId = generate_unique_id('CUS', 'customers', 'customer_id', $_db);
 
             $stmt = $_db->prepare("
@@ -82,19 +81,18 @@ if (is_post()) {
                 $username,
                 $email,
                 $contactNum,
-                $banks ?: null,
-                $ewallets ?: null,
-                $addresses ?: null,
-                $cart ?: null,
-                $promotionRecords ?: null,
+                $banks ?: null, // handle case when banks is empty or null
+                $ewallets ?: null, // handle case when ewallets is empty or null
+                $addresses ?: null, // handle case when addresses is empty or null
+                $cart ? json_encode($cart) : null, // Save as JSON if it is not empty
+                $promotionRecords ? json_encode($promotionRecords) : null, // Save as JSON if it is not empty
                 $profileImagePath
             ]);
 
             temp('success', "Customer added successfully!");
             redirect('customer.php');
-        } catch (PDOException $e) {
-            temp('error', "Error adding customer: " . $e->getMessage());
-            redirect();
-        }
+        } 
     }
-}
+        
+    
+

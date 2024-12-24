@@ -16,25 +16,37 @@ if (is_post()) {
     $stmt->execute([$usernameOrEmail, $usernameOrEmail]);
     $user = $stmt->fetch();
 
-    if ($user && password_verify($password, $user->password)) {
-        if ($rememberMe) {
-            // Generate a secure token
-            $token = bin2hex(random_bytes(32)); // 64-character secure token
+    if ($user) {
+        // Check if the user is banned
+        if ($user->banned == 1) {
+            $msg = 'Your account is banned. Please contact support.';
+            popup($msg, false);
+        } else {
+            // Verify password if user is not banned
+            if (password_verify($password, $user->password)) {
+                if ($rememberMe) {
+                    // Generate a secure token
+                    $token = bin2hex(random_bytes(32)); // 64-character secure token
 
-            // Store the token in the database
-            $updateStmt = $_db->prepare("UPDATE customers SET remember_token = ? WHERE customer_id = ?");
-            $updateStmt->execute([$token, $user->customer_id]);
+                    // Store the token in the database
+                    $updateStmt = $_db->prepare("UPDATE customers SET remember_token = ? WHERE customer_id = ?");
+                    $updateStmt->execute([$token, $user->customer_id]);
 
-            // Set the token in a secure cookie
-            setcookie('remember_me', $token, [
-                'expires' => time() + (30 * 24 * 60 * 60), // 30 days
-                'path' => '/',
-                'secure' => true,    // Ensures the cookie is sent over HTTPS only
-                'httponly' => true,  // Prevents JavaScript access to the cookie
-                'samesite' => 'Strict',
-            ]);
+                    // Set the token in a secure cookie
+                    setcookie('remember_me', $token, [
+                        'expires' => time() + (30 * 24 * 60 * 60), // 30 days
+                        'path' => '/',
+                        'secure' => true,    // Ensures the cookie is sent over HTTPS only
+                        'httponly' => true,  // Prevents JavaScript access to the cookie
+                        'samesite' => 'Strict',
+                    ]);
+                }
+                login($user); // Log the user in
+            } else {
+                $msg = 'Invalid username/email or password';
+                popup($msg, false);
+            }
         }
-        login($user); // Log the user in
     } else {
         $msg = 'Invalid username/email or password';
         popup($msg, false);

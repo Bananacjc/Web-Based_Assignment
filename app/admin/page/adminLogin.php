@@ -1,5 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+    
 <?php
-include '../_base.php';
+$_css ='../css/_base.css';
+$_css1='../css/adminLogin.css';
+require '../_base.php';
+$msg = '';
+$isSuccess = false;
+
 if (is_post()) {
     $email    = req('email');
     $password = req('password');
@@ -30,22 +38,20 @@ if (is_post()) {
             temp('info', 'Login successfully');
             login($u);
         } else {
-            $_err['password'] = 'Not matched';
+            $msg = 'Invalid email or password';
+            popup($msg, false);
         }
+
     }
+    $msg = 'Invalid email or password';
+    popup($msg, false);
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
+
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="../css/adminLogin.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet" />
-    <link rel="icon" href="/app/images/logo.png" />
+       <link rel="icon" href="/app/images/logo.png" />
     <title>Admin Login</title>
 </head>
 

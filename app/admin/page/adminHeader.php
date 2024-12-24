@@ -1,7 +1,9 @@
 <?php
 // Get the page title from the query parameter or set a default value
 $pageTitle = isset($_GET['title']) ? htmlspecialchars($_GET['title']) : 'Dashboard';
+$_css = '../css/_base.css';
 require '../_base.php';
+require_login();
 ?>
 
 
@@ -15,9 +17,13 @@ require '../_base.php';
 
 </head>
 <?php
-$userRole =['MANAGER','STAFF'];
+$userRole = ['MANAGER', 'STAFF'];
+$user3Role = ['MANAGER', 'STAFF', 'DELIVERY_GUY'];
+
 ?>
+
 <body>
+
     <input type="checkbox" id="nav-toggle" hidden>
 
     <div id="sidebar" class="sidebar">
@@ -33,59 +39,72 @@ $userRole =['MANAGER','STAFF'];
                 <li class="sidebar-header">
                     <span class="label">Admin Panel</span>
                 </li>
-
-                <li class="sidebar-item">
-                    <a href="adminDashboard.php?title=Dashboard" class="sidebar-link">
-                        <span class="icon">📋</span>
-                        <span class="label">Dashboard</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-
-                    <?php if (in_array($_user?->role,$userRole)): ?>
-                        <a href="product.php?title=Product" class="sidebar-link">
-                            <span class="icon">🏷️</span>
-                            <span class="label">Product</span>
+                <?php if (in_array($_user?->role, $userRole)): ?>
+                    <li class="sidebar-item">
+                        <a href="adminDashboard.php?title=Dashboard" class="sidebar-link">
+                            <span class="icon">📋</span>
+                            <span class="label">Dashboard</span>
                         </a>
                     <?php endif ?>
-                </li>
-                <li class="sidebar-item">
-                    <a href="orderStatus.php?title=Order Status" class="sidebar-link">
-                        <span class="icon">📊</span>
-                        <span class="label">Order Status</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="customer.php?title=Customer" class="sidebar-link">
-                        <span class="icon">👥</span>
-                        <span class="label">Customer</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="staff.php?title=Staff" class="sidebar-link">
-                        <span class="icon">👤</span>
-                        <span class="label">Staff</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="#" class="sidebar-link" onclick="toggleSubMenu()">
-                        <span class="icon">⚙️</span>
-                        <span class="label">Settings</span>
-                    </a>
-                    <ul id="settings-menu" class="nested-menu">
-                        <li class="nested-item">
-                            <a href="accountProfile.php?title=Account" class="nested-link">Account</a>
+
+                    </li>
+
+                    <li class="sidebar-item">
+
+                        <?php if (in_array($_user?->role, $userRole)): ?>
+                            <a href="product.php?title=Product" class="sidebar-link">
+                                <span class="icon">🏷️</span>
+                                <span class="label">Product</span>
+                            </a>
+                        <?php endif ?>
+                    </li>
+                    <?php if (in_array($_user?->role, $user3Role)): ?>
+                        <li class="sidebar-item">
+                            <a href="orderStatus.php?title=Order Status" class="sidebar-link">
+                                <span class="icon">📊</span>
+                                <span class="label">Order Status</span>
+                            </a>
                         </li>
-                        <li class="nested-item">
-                            <a href="logout.php" class="nested-link">Log Out</a>
+                    <?php endif ?>
+
+                    <?php if (in_array($_user?->role, $userRole)): ?>
+                        <li class="sidebar-item">
+                            <a href="customer.php?title=Customer" class="sidebar-link">
+                                <span class="icon">👥</span>
+                                <span class="label">Customer</span>
+                            </a>
                         </li>
-                    </ul>
-                </li>
+                    <?php endif ?>
+                    <?php if ($_user?->role == 'MANAGER'): ?>
+                        <li class="sidebar-item">
+                            <a href="staff.php?title=Staff" class="sidebar-link">
+                                <span class="icon">👤</span>
+                                <span class="label">Staff</span>
+                            </a>
+                        </li>
+                    <?php endif ?>
+
+
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="toggleSubMenu()">
+                            <span class="icon">⚙️</span>
+                            <span class="label">Settings</span>
+                        </a>
+                        <ul id="settings-menu" class="nested-menu">
+                            <li class="nested-item">
+                                <a href="accountProfile.php?title=Account" class="nested-link">Account</a>
+                            </li>
+                            <li class="nested-item">
+                                <a href="logout.php" class="nested-link">Log Out</a>
+                            </li>
+                        </ul>
+                    </li>
             </ul>
         </div>
     </div>
 
     <div class="main-content">
+
         <header>
             <h1>
                 <label for="nav-toggle">
@@ -99,10 +118,15 @@ $userRole =['MANAGER','STAFF'];
             </div>
             <div class="user-wrapper">
                 <?php if ($_user): ?>
+                    <a href="accountProfile.php">
+
+                        <img src="../uploads/profile_images/<?= $_user->profile_image ?>" alt="Profile Picture" />
+                    </a>
                     <div>
                         <?= $_user->employee_name ?><br>
                         <?= $_user->role ?>
                     </div>
+
                 <?php endif ?>
             </div>
         </header>
