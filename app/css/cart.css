@@ -41,12 +41,16 @@
     margin-right: 30px;
 }
 
-.ti {
+.ti-plus, 
+.ti-minus {
     font-size: 25px;
+    transition: all 0.1s linear;
 }
 
-.ti:hover {
-    box-shadow: 0 0 1px 1px var(--color-black-carbon);
+.ti-plus:hover,
+.ti-minus:hover {
+    background-color: var(--color-black-carbon);
+    color: var(--color-white-crystal);
 }
 
 .quantity-value {
