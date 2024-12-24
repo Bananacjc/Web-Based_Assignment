@@ -105,7 +105,7 @@ body{
 
 #cart-popup.show{
     display: flex;
-    animation: add-to-cart 0.3s linear;
+    animation: add-to-cart 0.5s linear;
 }
 
 @keyframes add-to-cart {

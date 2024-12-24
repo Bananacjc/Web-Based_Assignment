@@ -509,6 +509,7 @@ function get_cart(): array
     }
 
     return [];
+
 }
 
 // Set shopping cart
@@ -554,7 +555,7 @@ function update_cart($id, $unit)
     $stmt = $_db->prepare('UPDATE customers SET cart = ? WHERE customer_id = ?');  // Prepare update query
 
     // Update local cart if valid
-    if ($unit >= 1 && $unit <= 10 && is_exists($id, 'products', 'product_id')) {
+    if ($unit >= 1 && is_exists($id, 'products', 'product_id')) {
         $cart[$id] = $unit;
     } else {
         unset($cart[$id]);
@@ -625,8 +626,6 @@ function generate_unique_id($prefix, $table, $column, $pdo)
 // ============================================================================
 // Global Constants and Variables
 // ============================================================================
-
-
 
 ?>
 

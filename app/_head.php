@@ -30,7 +30,9 @@ $userLoggedIn = isset($_SESSION['user']); // Check if user session exists
             ?>
             <div id="user-features">
                 <a href="/page/cart.php" class="position-relative">
-                    <i class="ti ti-shopping-cart"></i>Cart <?= $count ? "(" . $count . ")" : '' ?>
+                    <i class="ti ti-shopping-cart"></i>
+                    Cart&nbsp;<span id="cart-count"><?= $count ? "(".$count.")" : '' ?></span>
+                    
                     <div id='cart-popup'>
                         <img id='cart-popup-img' src="" width="inherit" height="inherit">
                     </div>
