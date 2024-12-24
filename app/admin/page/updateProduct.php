@@ -1,132 +1,130 @@
 <?php
-require '../_base.php'; // Include base functions and database connection
+require '../_base.php';
 
-// Fetch product and category details for editing
-if (is_get()) {
-    $id = req('product_id');
-
-    $stm = $_db->prepare('
-        SELECT p.*, c.category_image 
-        FROM products p
-        JOIN categories c ON p.category_name = c.category_name
-        WHERE product_id = ?
-    ');
-    $stm->execute([$id]);
-    $p = $stm->fetch();
-
-    if (!$p) {
-        redirect('product.php');
-    }
-
-    extract((array)$p);
-    $_SESSION['category_image'] = $p->category_image;
-    $_SESSION['product_image'] = $p->product_image;
-}
-
-// Handle POST request for updating product and category
 if (is_post()) {
-    $productId        = req('product_id');
-    $productName      = req('product_name');
-    $price            = req('price');
-    $description      = req('description');
-    $currentStock     = req('current_stock');
-    $status           = req('status');
-    $categoryName     = req('category_name');
-    $newCategoryName  = req('new_category_name');
-    $productImage     = get_file('product_image');
-    $newCategoryImage = get_file('new_category_image');
-    $productImagePath = $_SESSION['product_image'];
-    $categoryImagePath = $_SESSION['category_image'];
+    global $_err;   
+    
+    $product_id = req('product_id');
+    $product_name = req('product_name');
+    $existing_category = req('category_name'); 
+    $new_category_name = req('new_category_name');
+    $new_category_image = get_file('new_category_image');
+    $price = req('price');
+    $description = req('description');
+    $current_stock = req('current_stock');
+    $amount_sold = req('amount_sold');
+    $product_image = get_file('product_image');
+    $status = req('status');
 
-    // Determine the final category name to use
-    $finalCategoryName = $newCategoryName ?: $categoryName;
-
-    // Validate: product name
-    if ($productName == '') {
-        $_err['product_name'] = 'Product name is required.';
-    } else if (strlen($productName) > 100) {
-        $_err['product_name'] = 'Maximum 100 characters.';
+    if (empty($product_name)) {
+        $_err['product_name'] = 'Product Name is required.';
+    } elseif (strlen($product_name) > 100) {
+        $_err['product_name'] = 'Maximum 100 characters for Product Name.';
     }
 
-    // Validate: price
-    if ($price == '') {
+    if (empty($price)) {
         $_err['price'] = 'Price is required.';
-    } else if (!is_money($price)) {
-        $_err['price'] = 'Invalid price format.';
+    } elseif (!is_money($price)) {
+        $_err['price'] = 'Price must be in a valid format (e.g., 10.00, 99.99).';
+    } elseif ($price < 0.01 || $price > 99.99) {
+        $_err['price'] = 'Price must be between 0.01 and 99.99.';
     }
 
-    // Validate: description
-    if ($description == '') {
+    if (empty($description)) {
         $_err['description'] = 'Description is required.';
     }
 
-    // Validate: current stock
-    if (!is_numeric($currentStock) || $currentStock < 0) {
-        $_err['current_stock'] = 'Invalid stock value.';
+    if (empty($current_stock)) {
+        $_err['current_stock'] = 'Current Stock is required.';
+    } elseif ($current_stock < 0) {
+        $_err['current_stock'] = 'Current Stock must be a positive number.';
     }
 
-    // Validate: product image (only if a new image is uploaded)
-    if ($productImage) {
-        if (!str_starts_with($productImage->type, 'image/')) {
-            $_err['product_image'] = 'Invalid image file.';
-        } else if ($productImage->size > 1 * 1024 * 1024) {
-            $_err['product_image'] = 'Maximum file size is 1MB.';
+    if (empty($amount_sold)) {
+        $_err['amount_sold'] = 'Amount Sold is required.';
+    } elseif ($amount_sold < 0) {
+        $_err['amount_sold'] = 'Amount Sold must be a positive number.';
+    }
+
+    if ($new_category_name) {
+        if (empty($new_category_name)) {
+            $_err['new_category_name'] = 'Category Name is required.';
+        }
+
+        if ($new_category_image) {
+            if (!str_starts_with($new_category_image->type, 'image/')) {
+                $_err['new_category_image'] = 'New Category Image must be an image.';
+            } elseif ($new_category_image->size > 3 * 1024 * 1024) { // 3MB limit
+                $_err['new_category_image'] = 'New Category Image size exceeds the limit (3MB).';
+            }
         }
     }
 
-    // Validate: new category image (if uploaded)
-    if ($newCategoryImage) {
-        if (!str_starts_with($newCategoryImage->type, 'image/')) {
-            $_err['new_category_image'] = 'Invalid image file.';
-        } else if ($newCategoryImage->size > 1 * 1024 * 1024) {
-            $_err['new_category_image'] = 'Maximum file size is 1MB.';
+    if ($product_image) {
+        if (!str_starts_with($product_image->type, 'image/')) {
+            $_err['product_image'] = 'Product Image must be an image.';
+        } elseif ($product_image->size > 1 * 1024 * 1024) { // 1MB limit
+            $_err['product_image'] = 'Product Image size exceeds the limit (1MB).';
         }
     }
 
-    // Update product and category if no errors
+    $category_name = $new_category_name ?: $existing_category; 
+
     if (!$_err) {
-        if ($productImage) {
-            unlink("../uploads/product_images/$productImagePath");
-            $productImagePath = save_photo($productImage, '../uploads/product_images');
+        // Handle new category image if provided
+        if ($new_category_image) {
+            $new_category_image_path = save_photo($new_category_image, '../uploads/category_images');
         }
 
-        if ($newCategoryName) {
-            // Insert new category if specified
-            $stm = $_db->prepare('
-                INSERT INTO categories (category_name, category_image)
-                VALUES (?, ?)
-            ');
-            $newCategoryImagePath = $newCategoryImage
-                ? save_photo($newCategoryImage, '../uploads/category_images')
-                : $categoryImagePath; // Use existing category image if no new image is uploaded
-            $stm->execute([$newCategoryName, $newCategoryImagePath]);
-        } elseif ($newCategoryImage) {
-            // Update category image if new image uploaded
-            unlink("../uploads/category_images/$categoryImagePath");
-            $categoryImagePath = save_photo($newCategoryImage, '../uploads/category_images');
-
-            $stm = $_db->prepare('
-                UPDATE categories
-                SET category_image = ?
-                WHERE category_name = ?
-            ');
-            $stm->execute([$categoryImagePath, $categoryName]);
+        // Handle product image if provided
+        if ($product_image) {
+            // Delete the old product image (if required)
+            if (file_exists("../uploads/product_images/{$product_image}")) {
+                unlink("../uploads/product_images/{$product_image}"); 
+            }
+            $product_image_path = save_photo($product_image, '../uploads/product_images');
         }
 
-        try {
-            // Update product details in products table
-            $stm = $_db->prepare('
-                UPDATE products
-                SET product_name = ?, price = ?, description = ?, current_stock = ?, status = ?, category_name = ?, product_image = ?
-                WHERE product_id = ?
-            ');
-            $stm->execute([$productName, $price, $description, $currentStock, $status, $finalCategoryName, $productImagePath, $productId]);
+        // Insert new category if it does not exist
+        if ($new_category_name) {
+            $stmt = $_db->prepare("SELECT category_name FROM categories WHERE category_name = ?");
+            $stmt->execute([$new_category_name]);
+            $category = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            temp('success', 'Product and category updated successfully!');
-            redirect('product.php');
-        } catch (PDOException $e) {
-            temp('error', 'Error updating product: ' . $e->getMessage());
-            redirect();
+            if (!$category) {
+                $stmt = $_db->prepare('INSERT INTO categories (category_name, category_image) VALUES (?, ?)');
+                $stmt->execute([$new_category_name, $new_category_image_path ?? null]);
+            }
         }
-    }
+
+        // Prepare SQL to update product details
+        $sql = "UPDATE products SET 
+                    product_name = ?, 
+                    category_name = ?, 
+                    price = ?, 
+                    description = ?, 
+                    current_stock = ?, 
+                    amount_sold = ?, 
+                    product_image = ?, 
+                    status = ? 
+                WHERE product_id = ?";
+
+        // Execute SQL query
+        $stmt = $_db->prepare($sql);
+        $stmt->execute([
+            $product_name, 
+            $category_name, 
+            $price, 
+            $description, 
+            $current_stock, 
+            $amount_sold, 
+            $product_image_path ?? $product_image, 
+            $status, 
+            $product_id
+        ]);
+
+        temp('info', 'Product updated successfully!');
+        redirect('product.php');
+    } 
 }
+?>

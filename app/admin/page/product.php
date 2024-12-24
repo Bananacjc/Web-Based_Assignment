@@ -6,44 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Product Management</title>
 </head>
-<style>
-    .modal {
-        margin-top: 80px;
-        display: none;
-        position: absolute;
-        z-index: 1;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: auto;
-        background-color: rgba(0, 0, 0, 0.4);
-    }
 
-    .modal-content {
-        background: white;
-        width: 60%;
-        margin: 35px auto;
-        padding: 20px;
-        border-radius: 5px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        box-sizing: border-box;
-    }
-
-    .close-button {
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    .productTable th a.asc::after {
-        content: ' ▴';
-    }
-
-    .productTable th a.desc::after {
-        content: ' ▾';
-    }
-</style>
 <?php
 
 
@@ -51,6 +14,7 @@ include 'adminHeader.php' ?>
 
 <?php
 $fields = [
+    '',
     'product_image' => 'Product Image',
     'product_id'    => 'Product ID',
     'product_name'  => 'Product Name',
@@ -61,7 +25,7 @@ $fields = [
     'current_stock' => 'Stock',
     'amount_sold'   => 'Amount Sold',
     'status'        => 'Status',
-    'action' => 'Action'
+    'Action'
 ];
 
 
@@ -103,6 +67,12 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
         <button>Search</button>
     </form>
 
+    <form method="post" id="f">
+        <button formaction="restore.php">Restore</button>
+        <button formaction="delete.php" onclick="return confirmDelete()">Delete</button>
+    </form>
+
+
     <p><?= count($arr) ?> product(s)</p>
 
 
@@ -119,6 +89,12 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
         <tbody>
             <tr class="product-row" data-category="">
                 <?php foreach ($arr as $s): ?>
+                    <td>
+                        <input type="checkbox"
+                            name="id[]"
+                            value="<?= $s->product_id ?>"
+                            form="f">
+                    </td>
                     <td>
                         <img src="/admin/uploads/product_images/<?= $s->product_image ?>" class="resized-image">
                     </td>
@@ -137,18 +113,38 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
                     <td>
 
 
-                        <?php if ($_user?->role=='MAR'): ?>
-                            <!-- Allowed roles: Display Update and Delete buttons -->
-                            <button class="action-button" data-get="update.php?=<?= $s->$product_id ?>"
-                                onclick="showUpdateProductForm('<%= product.getProductId() %>', '<%= product.getProductName() %>', '<%= product.getCategory() %>', '<%= product.getPrice() %>', '<%= product.getDescription() %>','<%= product.getQuantity() %>', '<%= product.getAmountSold() %>', '<%= product.getImage() %>')">
+                        <?php if ($_user?->role == 'MANAGER'): ?>
+                            <button class="action-button" data-get="update.php?=<?= $s->product_id ?>" onclick="showUpdateProductForm(
+    '<?= $s->product_image ?>', 
+    '<?= $s->product_id ?>', 
+    '<?= $s->product_name ?>', 
+    '<?= $s->category_name ?>', 
+    '<?= $s->price ?>', 
+    '<?= $s->description ?>', 
+    '<?= $s->current_stock ?>', 
+    '<?= $s->amount_sold ?>', 
+    '<?= $s->status ?>'
+)">
                                 Update
                             </button>
+
+
                             <form action="delete.php" method="post" style="display: inline;">
-                                <input type="hidden" name="product_id" value="<?= $s->product_id ?>">
+                                <input type="hidden" name="id" value="<?= $s->product_id ?>">
                                 <button type="submit" class="delete-action-button" onclick="return confirmDelete();">Delete</button>
                             </form>
-                            <?php else: ?>
-                                <!-- Denied roles: Show specific denied message -->
+                        <?php elseif ($_user?->role == 'STAFF'): ?>
+                            <button class="action-button" onclick="showAccessDenied()">Update</button>
+                            <button type="submit" class="deleteButton" onclick="showAccessDenied();">Delete</button>
+
+
+                            <div id="accessDeniedMessage" class="modal" style="margin-top: 80px; display: none;">
+                                <div class="modal-content">
+                                    <span class="close-button" onclick="hideAccessDenied()">&times;</span>
+                                    <p>You do not have the necessary permissions to update or delete products. Your role is restricted.</p>
+                                </div>
+                            </div>
+                        <?php else: ?>
                             <div style="margin: 30px;">
                                 <button id="updateProductBtn" class="action-button" onclick="showAccessDenied()">Update</button>
                             </div>
@@ -158,7 +154,6 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
                                     <p>You do not have the necessary permissions to update or delete products. Your role is restricted.</p>
                                 </div>
                             </div>
-                        
                         <?php endif; ?>
 
                     </td>
@@ -169,14 +164,14 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
     </table>
 
     <?php
-    $roles = ['MANAGER', 'STAFF']; //define the role for access
+    $roles = ['MANAGER', 'STAFF'];
     $_categories = [];
     try {
         $stmt = $_db->query("SELECT category_name, category_image FROM categories");
         $_categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
         temp('error', "Error fetching categories: " . $e->getMessage());
-        redirect(); // Redirect to prevent further execution
+        redirect();
     }
     ?>
 
@@ -231,7 +226,7 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
                     ], '- Select Status -', 'required'); ?>
                     <span class="error"><?php err('status'); ?></span><br><br>
 
-                    <input type="submit" value="Add Product">
+                    <input type="submit" value="Add Product" onclick="return confirmAddProduct()">
                     <button type="button" class="cancel-button" onclick="hideAddForm()">Cancel</button>
                 </form>
             </div>
@@ -248,27 +243,14 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
         </div>
     <?php endif; ?>
 
-    <script>
-        function showAccessDenied() {
-            document.getElementById('accessDeniedMessage').style.display = 'block';
-        }
-
-        function hideAccessDenied() {
-            document.getElementById('accessDeniedMessage').style.display = 'none';
-        }
-    </script>
-
-
-
-
-
-
-    <!-- Update Product Modal -->
     <div id="updateModal" class="modal" style="margin-top: 80px;">
         <div class="modal-content">
             <span class="close-button" onclick="hideUpdateProductForm()">&times;</span>
             <form id="updateForm" action="updateProduct.php" method="Post" enctype="multipart/form-data" class="update-form">
-                <input type="hidden" id="updateAction" name="action" value="update">
+                <label for="product_id">Product ID:</label>
+                <input id="product_id" name="product_id" value="<?= $product['product_id']; ?>">
+                <br>
+
                 <label for="product_name">Product Name:</label>
                 <?php html_text('product_name', 'required'); ?>
                 <span class="error"><?php err('product_name'); ?></span><br><br>
@@ -296,9 +278,17 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
                 <?php html_number('current_stock', '0', '', '1', 'required'); ?>
                 <span class="error"><?php err('current_stock'); ?></span><br><br>
 
+                <label for="amount_sold">Amount Sold:</label>
+                <?php html_number('amount_sold', '0', '', '1', 'required'); ?>
+                <span class="error"><?php err('amount_sold'); ?></span><br><br>
+
                 <label for="product_image">Product Image:</label>
-                <?php html_file('product_image', 'image/*', 'required'); ?>
+                <input type="file" name="product_image" accept="image/*" />
+                <br>
+                <label for="current_image">Current Product Image:</label><br>
+                <img id="currentImage" src="<?= isset($product['product_image']) && $product['product_image'] ? '/admin/uploads/product_images/' . $product['product_image'] : ''; ?>" alt="Current Product Image" style="max-width: 150px; max-height: 150px;">
                 <span class="error"><?php err('product_image'); ?></span><br><br>
+
 
                 <label for="status">Status:</label>
                 <?php html_select('status', [
@@ -313,64 +303,41 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
             </form>
         </div>
     </div>
+
+
 </div>
 
 
 <script>
-    function filterByCategory() {
-        var select = document.getElementById("categoryFilter");
-        var category = select.value;
-        var table = document.getElementById("productTable");
-        var rows = table.getElementsByTagName("tr");
-
-        for (var i = 1; i < rows.length; i++) { // Start from 1 to skip the table header
-            var currentCategory = rows[i].getAttribute("data-category");
-            if (category === "All" || currentCategory === category) {
-                rows[i].style.display = ""; // Show row
-            } else {
-                rows[i].style.display = "none"; // Hide row
-            }
-        }
-    }
-
-
-    function checkOtherCategory(select, inputId) {
-        var value = select.value;
-        var input = document.getElementById(inputId);
-        if (value === 'Other') {
-            input.style.display = 'block';
-        } else {
-            input.style.display = 'none';
-            input.value = ''; // Clear the input when other categories are selected
-        }
-    }
-
-    function showUpdateProductForm(productImage, productId, productName, categcategory, price, productDescription, currentStock, amountSold) {
+    function showUpdateProductForm(productImage, productId, productName, category, price, productDescription, currentStock, amountSold, status) {
         var modal = document.getElementById('updateModal');
         var form = document.getElementById('updateForm');
         modal.style.display = "block";
-        form.elements['productId'].value = productId;
-        form.elements['productName'].value = productName;
-        form.elements['category'].value = category;
-        form.elements['price'].value = productPrice;
+        form.elements['product_id'].value = productId;
+        form.elements['product_name'].value = productName;
+        form.elements['category_name'].value = category;
+        form.elements['price'].value = price;
         form.elements['description'].value = productDescription;
-        form.elements['quantity'].value = quantity;
-        form.elements['amountSold'].value = amountSold;
-        document.getElementById('currentImage').src = 'data:image/jpeg;base64,' + imageUrl;
-        document.getElementById('currentImage').alt = productName;
+        form.elements['current_stock'].value = currentStock;
+        form.elements['amount_sold'].value = amountSold;
+
+        // Set the status dropdown value
+        form.elements['status'].value = status;
+
+        // Optionally set the image field if needed
+        document.getElementById('currentImage').src = "/admin/uploads/product_images/" + productImage;
     }
+
 
     // Function to hide the update product modal
     function hideUpdateProductForm() {
         document.getElementById('updateModal').style.display = "none";
     }
 
-    // Confirmation dialog for deleting a product
     function confirmDelete() {
         return confirm("Are you sure you want to delete this product?");
     }
 
-    // Function to show the modal for adding a new product
     function showAddForm() {
         var modal = document.getElementById('addProductModal');
         modal.style.display = "block";
@@ -379,6 +346,18 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
     // Function to hide the add product modal
     function hideAddForm() {
         document.getElementById('addProductModal').style.display = "none";
+    }
+
+    function showAccessDenied() {
+        document.getElementById('accessDeniedMessage').style.display = 'block';
+    }
+
+    function hideAccessDenied() {
+        document.getElementById('accessDeniedMessage').style.display = 'none';
+    }
+    function confirmAddProduct() {
+        const confirmation = confirm("Are you sure you want to add this product?");
+        return confirmation; 
     }
 </script>
 

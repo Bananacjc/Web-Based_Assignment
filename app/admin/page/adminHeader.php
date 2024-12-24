@@ -74,7 +74,7 @@ $userRole =['MANAGER','STAFF'];
                     </a>
                     <ul id="settings-menu" class="nested-menu">
                         <li class="nested-item">
-                            <a href="account.php?title=Account" class="nested-link">Account</a>
+                            <a href="accountProfile.php?title=Account" class="nested-link">Account</a>
                         </li>
                         <li class="nested-item">
                             <a href="logout.php" class="nested-link">Log Out</a>

@@ -176,3 +176,40 @@ form button.delete-action-button, button.cancel-button {
     padding: 10px; /* Adds padding inside the dropdown */
 }
 
+/* Adjust the layout when the sidebar is toggled */
+#nav-toggle:checked~.main {
+    margin-left: 70px;
+
+}
+
+
+.main {
+    margin-left: 250px;
+    padding-left: 20px;
+
+}
+
+.resized-image {
+    width: 100px; 
+    height: auto; 
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow-y: auto; /* Enables vertical scrolling */
+}
+
+
+.modal-content {
+    background: white;
+    width: 60%;
+    margin: 35px auto;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    max-height: 80vh; /* Restricts modal height */
+    overflow-y: auto; /* Enables scrolling within the modal if the content is too large */
+}

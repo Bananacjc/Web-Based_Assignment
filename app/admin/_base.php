@@ -12,6 +12,41 @@ session_start();
 // ============================================================================
 
 // Is GET request?
+
+
+
+function is_valid_json($string) {
+    json_decode($string);
+    return (json_last_error() == JSON_ERROR_NONE);
+}
+
+
+// Function to log actions in the database
+function logAction($employee_id, $action, $product_id = null) {
+    // Using the global $_db object for the database connection
+    global $_db;
+
+    // Prepare the SQL query to insert the log into the actionlogs table
+    $sql = "INSERT INTO actionlogs (employee_id, action, product_id, timestamp) 
+            VALUES (:employee_id, :action, :product_id, NOW())";
+
+    // Prepare the statement
+    $stmt = $_db->prepare($sql);
+
+    // Bind parameters to the prepared statement
+    $stmt->bindParam(':employee_id', $employee_id, PDO::PARAM_STR);
+    $stmt->bindParam(':action', $action, PDO::PARAM_STR);
+    $stmt->bindParam(':product_id', $product_id, PDO::PARAM_STR); // Can be null
+
+    // Execute the statement and check if successful
+    if ($stmt->execute()) {
+        echo "Action logged successfully.";
+    } else {
+        echo "Error logging action: " . $stmt->errorInfo()[2];
+    }
+}
+
+
 function is_get(): bool
 {
     return $_SERVER['REQUEST_METHOD'] == 'GET';
@@ -524,7 +559,7 @@ function generate_unique_id($prefix, $table, $column, $pdo)
     <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet" />
     <link rel="icon" href="../images/logo.png">
     <link rel="stylesheet" href="../css/base.css" type="text/css">
-    <link href="<?= $_css ?>" rel="stylesheet" type="text/css">
+   <link href="<?= $_css ?>" rel="stylesheet" type="text/css">
     <title><?= $_title ?? 'Untitled' ?></title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="/js/popup.js"></script>

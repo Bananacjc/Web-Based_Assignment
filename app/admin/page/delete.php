@@ -1,42 +1,31 @@
 <?php
-include '../_base.php';  // Include necessary base configurations
-
-// ----------------------------------------------------------------------------
+include '../_base.php';  
 
 if (is_post()) {
-    $id = req('product_id');  // Retrieve the product ID from the POST request
-
-    // Ensure the ID exists in the database before proceeding
+    $id = req('id', []); 
+    if (!is_array($id)) $id = [$id]; 
     try {
-        // Fetch product details including the photo filenames (product_image and category_image)
-        $stm = $_db->prepare('SELECT p.product_image 
-            FROM products p
-            WHERE p.product_id = ?');
-        $stm->execute([$id]);
-        $product = $stm->fetch(PDO::FETCH_OBJ);
+        foreach ($id as $v) {
+            $stm = $_db->prepare('SELECT p.product_image FROM products p WHERE p.product_id = ?');
+            $stm->execute([$v]);
+            $product = $stm->fetch(PDO::FETCH_OBJ);
 
-        if ($product) {
-            // Delete product image if it exists
-            if ($product->product_image && file_exists("../uploads/product_images/{$product->product_image}")) {
+            if ($product && $product->product_image && file_exists("../uploads/product_images/{$product->product_image}")) {
                 unlink("../uploads/product_images/{$product->product_image}");
             }
 
             // Delete the product record from the database
             $stm = $_db->prepare('DELETE FROM products WHERE product_id = ?');
-            $stm->execute([$id]);
-
-            temp('info', 'Product deleted successfully');
-        } else {
-            temp('error', 'Product not found');
+            $stm->execute([$v]);
         }
+
+        temp('info', count($id) . " product(s) deleted successfully.");  
     } catch (Exception $e) {
-        temp('error', 'Error deleting product: ' . $e->getMessage());
+        temp('error', 'Error deleting product(s): ' . $e->getMessage());
     }
 } else {
-    temp('error', 'Invalid request method');
+    temp('error', 'Invalid request method. Only POST requests are allowed.');
 }
-
-// Redirect back to the product listing page
 redirect('product.php');
 
-// ----------------------------------------------------------------------------
+
