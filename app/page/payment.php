@@ -3,6 +3,18 @@ $_title = 'Payment';
 $_css = '../css/payment.css';
 require '../_base.php';
 include '../_head.php';
+
+if (is_post()) {
+}
+
+// Initialize cart
+$cart = get_cart();
+
+if (!$cart) {
+    temp('popup-msg', ['msg' => 'Cart is Empty', 'isSuccess' => false]);
+    redirect('cart.php');
+}
+
 ?>
 <h1 class="h1 header-banner">Payment</h1>
 <div class="d-flex justify-content-space-evenly">

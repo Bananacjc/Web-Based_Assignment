@@ -51,14 +51,14 @@ function updateCartQty(productID, action) {
                 if (data.action === 'increase' || data.action === 'decrease' || data.action === 'change') {
                     /**@type {HTMLInputElement} */
                     $(`#quantity-${productID}`).val(data.newQuantity);
-                    $(`#subtotal-${productID}`).text(data.newSubtotal.toFixed(2));
+                    $(`#subtotal-${productID}`).text(ReplaceNumberWithCommas(data.newSubtotal.toFixed(2)));
                 } else if (data.action === 'remove') {
                     $(`#product-${productID}`).remove();
                 } 
 
                 if (data.cartCount > 0 && data.newTotal > 0) {
                     $('#cart-count').text("(" + data.cartCount + ")");
-                    $('#cart-total').text(data.newTotal.toFixed(2));
+                    $('#cart-total').text(ReplaceNumberWithCommas(data.newTotal.toFixed(2)));
                 } else {
                     $('#cart-count').text('');
                     $('#cart-total').parent().remove();

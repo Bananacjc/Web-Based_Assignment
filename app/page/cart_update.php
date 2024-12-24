@@ -45,7 +45,7 @@ if (is_post()) {
                 unset($cart[$productID]);
                 set_cart($cart);
             } else if ($action === 'change') {
-                if ($quantity > 1) {
+                if ($quantity > 0) {
                     $newQty = $quantity;
                     update_cart($productID, $newQty);
                     $newSubtotal = $newQty * $product->price;

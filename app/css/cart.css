@@ -54,7 +54,17 @@
 }
 
 .quantity-value {
-    font-weight: 400;
+    all: unset;
+    display: inline-block;
+
+    font-weight: 500;
+    font-family: "Inter", sans-serif;
+    font-size: 16px;
+
+    border: 1px solid var(--color-black-carbon);
+    text-align: center;
+    width: 55px;
+    height: 25px;
 }
 
 .cart-remove-btn {
