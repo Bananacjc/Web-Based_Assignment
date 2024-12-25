@@ -308,38 +308,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ?>
                 </tbody>
             </table>
-            <form id="bank-container" action="" class="d-flex" method="post">
+            <form id="bank-container" method="post">
+                <input type="hidden" name="form_type" value="bank_management">
                 <div>
                     <div class="input-subcontainer">
-                        <input type="text" name="name" class="input-box" required />
+                        <input type="text" name="name" class="input-box" required>
                         <label for="name" class="label">Name</label>
                     </div>
                     <div class="input-subcontainer">
-                        <input type="text" name="acc-num" class="input-box" required />
+                        <input type="text" name="acc-num" class="input-box" required>
                         <label for="acc-num" class="label">Account Number</label>
                     </div>
                     <div class="input-subcontainer">
-                        <input type="text" name="cvv" class="input-box" required />
+                        <input type="text" name="cvv" class="input-box" required>
                         <label for="cvv" class="label">CVV</label>
                     </div>
-                    <button class="btn" type="submit">Save</button>
-                </div>
-                <div>
                     <div class="input-subcontainer">
                         <label for="expiry-date" class="normal-label">Expiry Date</label>
-                        <input type="month" name="expiry-date" value="" spellcheck="false" id="expiry-date-input" required />
+                        <input type="month" name="expiry-date" class="input-box" required>
                     </div>
                     <div class="input-subcontainer">
                         <label for="card-type" class="normal-label">Card Type</label>
-                        <select name="card-type" id="card-type" class="input-box">
-                            <option value="">Select a card type</option>
+                        <select name="card-type" class="input-box">
                             <option value="visa">Visa</option>
                             <option value="mastercard">MasterCard</option>
                         </select>
                     </div>
                 </div>
+                <button class="btn" type="submit">Save</button>
             </form>
-
             <!-- E-Wallet Section -->
             <h2 style="margin-top: 30px;">E-Wallet</h2>
             <table class="table" id="ewallet-table">
@@ -368,18 +365,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ?>
                 </tbody>
             </table>
-            <form id="e-wallet-container" style="margin-left: 0;" action="" method="post">
+            <form id="e-wallet-container" method="post">
+                <input type="hidden" name="form_type" value="ewallet_management">
                 <div>
                     <div class="input-subcontainer">
-                        <input type="text" name="name" class="input-box" required />
+                        <input type="text" name="name" class="input-box" required>
                         <label for="name" class="label">Name</label>
                     </div>
                     <div class="input-subcontainer">
-                        <input type="text" name="phone" class="input-box" required />
+                        <input type="text" name="phone" class="input-box" required>
                         <label for="phone" class="label">Phone</label>
                     </div>
-                    <button class="btn" type="submit">Save</button>
                 </div>
+                <button class="btn" type="submit">Save</button>
             </form>
         </div>
     </div>
@@ -424,11 +422,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <button class="btn" type="submit" id="save-address-btn">Add Address</button>
         </form>
-        <div id="map" style="height: 400px; width: 100%;"></div>
-        <input type="text" id="autocomplete" placeholder="Type your address" class="input-box" />
-        <input type="hidden" id="latitude" name="latitude">
-        <input type="hidden" id="longitude" name="longitude">
-        <button class="btn" id="confirm-address-btn">Confirm Address</button>
     </div>
     <div class="content" id="order-history-content" style="display: none;">
         <h2>Order History</h2>

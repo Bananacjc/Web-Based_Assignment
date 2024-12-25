@@ -8,6 +8,31 @@
     overflow: hidden;
 }
 
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    background-color: #4CAF50;
+    color: white; 
+    padding: 10px 20px; 
+    border-radius: 5px; 
+    font-size: 18px; 
+    text-align: center;
+    transition: background-color 0.3s ease; 
+}
+
+.back-button i {
+    margin-right: 8px; 
+}
+
+.back-button:hover {
+    background-color: #45a049; 
+}
+
+.back-button:active {
+    background-color: #3e8e41; 
+}
+
 .sidebar {
     width: 250px;
     padding: 20px;

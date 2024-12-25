@@ -13,7 +13,19 @@ session_start();
 
 // Is GET request?
 
+function popup($msg, $isSuccess)
+{
+    echo "<script>showAlertPopup('$msg', $isSuccess);</script>";
+}
 
+
+function require_login()
+{
+    global $_user;
+    if (!$_user) {
+        redirect('/admin/page/adminLogin.php');
+    }
+}
 
 function is_valid_json($string) {
     json_decode($string);
@@ -541,6 +553,30 @@ function generate_unique_id($prefix, $table, $column, $pdo)
     return $generated_id;
 }
 
+
+function plainTextJson($jsonString)
+{
+    $decoded = json_decode($jsonString, true); // Use associative array mode
+
+    // Check if JSON decoding was successful
+    if (json_last_error() === JSON_ERROR_NONE) {
+        if (is_array($decoded)) {
+            // Convert array to a plain string (key-value pairs for associative arrays)
+            return implode("", array_map(function ($key, $value) {
+                if (is_array($value)) {
+                    // Handle nested arrays
+                    return "$key: [" . implode(", ",$value) . "]<br>";
+                }
+                return "$key: $value<br>";
+            }, array_keys($decoded), $decoded));
+        } elseif (is_string($decoded)) {
+            return $decoded;
+        }
+    }
+
+    return htmlspecialchars($jsonString);
+}
+
 // ============================================================================
 // Global Constants and Variables
 // ============================================================================
@@ -557,11 +593,26 @@ function generate_unique_id($prefix, $table, $column, $pdo)
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
     <link rel="icon" href="../images/logo.png">
     <link rel="stylesheet" href="../css/base.css" type="text/css">
    <link href="<?= $_css ?>" rel="stylesheet" type="text/css">
+   <link href="<?= $_css1 ?>" rel="stylesheet" type="text/css">
     <title><?= $_title ?? 'Untitled' ?></title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="/js/popup.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="/js/custom.js"></script>
+    <script src="/js/plainTextJson.js"></script>
+
 </head>
+
+<body>
+    <div id="popup" class="hide">
+        <div id="popup-content">
+            <h3 id="popup-title">Title</h3>
+            <p id="popup-msg">Message</p>
+            <button id="popup-btn" type="button">OK</button>
+        </div>
+    </div>
+    <script src="/js/popup.js"></script>
+</body>

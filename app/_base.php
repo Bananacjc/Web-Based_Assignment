@@ -577,6 +577,20 @@ $_db = new PDO('mysql:dbname=db_bananasis', 'root', '', [
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
 ]);
 
+// Remember ME
+if (!isset($_SESSION['user']) && isset($_COOKIE['remember_me'])) {
+    $token = $_COOKIE['remember_me'];
+
+    // Verify the token
+    $stmt = $_db->prepare("SELECT * FROM customers WHERE remember_token = ?");
+    $stmt->execute([$token]);
+    $user = $stmt->fetch();
+
+    if ($user) {
+        login($user); // Log the user in
+    }
+}
+
 // Is unique?
 function is_unique($value, $table, $field)
 {

@@ -9,13 +9,13 @@
 
 <?php
 include 'adminHeader.php';
+require_once '../lib/SimplePager.php'; // Include the SimplePager class
 
 $fields = [
     '',
     'customer_id' => 'Customer ID',
     'username' => 'Username',
     'email' => 'Email',
-    'password'=> 'Password',
     'contact_num' => 'Contact Number',
     'banks' => 'Banks',
     'ewallets' => 'E-wallets',
@@ -25,6 +25,7 @@ $fields = [
     'profile_image' => 'Profile Image',
     'Action'
 ];
+
 $sort = req('sort');
 $valid_sort_fields = ['customer_id', 'username', 'email', 'contact_num', 'banks', 'ewallets', 'addresses', 'cart', 'promotion_records', 'profile_image'];
 if (!in_array($sort, $valid_sort_fields)) {
@@ -37,12 +38,37 @@ if (!in_array($dir, ['asc', 'desc'])) {
 }
 
 $username = req('username');
+$bannedFilter = req('banned_filter'); // Retrieve the banned filter value
+$bannedFilter = in_array($bannedFilter, ['0', '1', 'all']) ? $bannedFilter : 'all'; // Default to 'all'
 
-// Make sure there's a space before 'BY'
-$query = "SELECT customer_id, username, email, password,contact_num, banks, ewallets, addresses, cart, promotion_records, profile_image FROM customers WHERE username LIKE ? ORDER BY $sort $dir";
+$whereClause = "WHERE username LIKE ?";
+$params = ["%$username%"];
+if ($bannedFilter === '0' || $bannedFilter === '1') {
+    $whereClause .= " AND banned = ?";
+    $params[] = $bannedFilter;
+}
+
+// Pagination settings
+$page = req('page', 1);
+$limit = 10; // Number of items per page
+$offset = ($page - 1) * $limit;
+
+// Count total records for pagination
+$countQuery = "SELECT COUNT(*) AS total FROM customers $whereClause";
+$countStmt = $_db->prepare($countQuery);
+$countStmt->execute($params);
+$totalRecords = $countStmt->fetchColumn();
+$totalPages = ceil($totalRecords / $limit);
+
+// Fetch the records for the current page
+$query = "SELECT customer_id, username, email, contact_num, banks, ewallets, addresses, cart, promotion_records, profile_image, banned 
+          FROM customers 
+          $whereClause 
+          ORDER BY $sort $dir
+          LIMIT $limit OFFSET $offset";
 
 $stm = $_db->prepare($query);
-$stm->execute(["%$username%"]);
+$stm->execute($params);
 $customers = $stm->fetchAll();
 
 ?>
@@ -51,14 +77,15 @@ $customers = $stm->fetchAll();
     <h1>CUSTOMER MANAGEMENT</h1>
     <form>
         <?= html_search('username', 'Search Customer Name', $username) ?>
-        <button>Search</button>
+        <select name="banned_filter" id="bannedFilter">
+            <option value="all" <?= $bannedFilter === 'all' ? 'selected' : '' ?>>All</option>
+            <option value="0" <?= $bannedFilter === '0' ? 'selected' : '' ?>>Active</option>
+            <option value="1" <?= $bannedFilter === '1' ? 'selected' : '' ?>>Blocked</option>
+        </select>
+        <button type="submit">Search</button>
     </form>
 
-    <form method="post" id="f">
-        <button formaction="deleteCustomer.php" onclick="return confirmDelete()">Delete</button>
-    </form>
-
-    <p><?= count($customers) ?> customer(s)</p>
+    <p><?= count($customers) ?> customer(s) on this page | Total: <?= $totalRecords ?> customer(s)</p>
 
     <table id="customerTable" class="data-table">
         <thead>
@@ -78,7 +105,6 @@ $customers = $stm->fetchAll();
                     <td><?= $c->customer_id ?></td>
                     <td><?= $c->username ?></td>
                     <td><?= $c->email ?></td>
-                    <td><?= $c->password ?></td>
                     <td><?= $c->contact_num ?></td>
                     <td><?= plainTextJson($c->banks) ?></td>
                     <td><?= plainTextJson($c->ewallets) ?></td>
@@ -86,22 +112,55 @@ $customers = $stm->fetchAll();
                     <td><?= plainTextJson($c->cart) ?></td>
                     <td><?= plainTextJson($c->promotion_records) ?></td>
                     <td>
-                        <img src="/uploads/profile_images/<?= $c->profile_image ?>" class="resized-image" alt="Profile Image">
+                        <img src="../uploads/profile_images/<?= $c->profile_image ?>" class="resized-image" alt="Profile Image">
                     </td>
                     <td>
-                        <button class="action-button" onclick="showUpdateForm()">Update</button>
+                        <button class="button action-button" onclick="showUpdateForm()">Update</button>
                         <form action="deleteCustomer.php" method="post" style="display:inline;">
                             <input type="hidden" name="id" value="<?= $c->customer_id ?>">
-                            <button type="submit" class="delete-action-button" onclick="return confirmDelete();">Delete</button>
+                            <button type="submit" class="button delete-action-button" onclick="return confirmDelete();">Delete</button>
                         </form>
+                        <?php if ($c->banned == 0): ?>
+                            <form action="banCustomer.php" method="POST" style="display:inline;">
+                                <input type="hidden" name="customer_id" value="<?= $c->customer_id ?>">
+                                <button type="submit" class="button ban-action-button">Ban</button>
+                            </form>
+                        <?php else: ?>
+                            <form action="unbanCustomer.php" method="POST" style="display:inline;">
+                                <input type="hidden" name="customer_id" value="<?= $c->customer_id ?>">
+                                <button type="submit" class="button unban-action-button">Unban</button>
+                            </form>
+                        <?php endif; ?>
+
                     </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
 
+    <!-- Pagination Links -->
+    <div class="pagination">
+        <?php if ($page > 1): ?>
+            <a href="?page=1&username=<?= urlencode($username) ?>&banned_filter=<?= $bannedFilter ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="first-page">First</a>
+            <a href="?page=<?= $page - 1 ?>&username=<?= urlencode($username) ?>&banned_filter=<?= $bannedFilter ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="prev-page">Prev</a>
+        <?php endif; ?>
+
+        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+            <a href="?page=<?= $i ?>&username=<?= urlencode($username) ?>&banned_filter=<?= $bannedFilter ?>&sort=<?= $sort ?>&dir=<?= $dir ?>"
+                class="page-number <?= $i == $page ? 'active' : '' ?>">
+                <?= $i ?>
+            </a>
+        <?php endfor; ?>
+
+        <?php if ($page < $totalPages): ?>
+            <a href="?page=<?= $page + 1 ?>&username=<?= urlencode($username) ?>&banned_filter=<?= $bannedFilter ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="next-page">Next</a>
+            <a href="?page=<?= $totalPages ?>&username=<?= urlencode($username) ?>&banned_filter=<?= $bannedFilter ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="last-page">Last</a>
+        <?php endif; ?>
+    </div>
+
+
     <div style="margin: 30px;">
-        <button id="addCustomerBtn" class="action-button" onclick="showAddForm()">Add new customer</button>
+        <button id="addCustomerBtn" class="add-button" onclick="showAddForm()">Add new customer</button>
     </div>
 
     <!-- Add Customer Modal -->
@@ -145,7 +204,9 @@ $customers = $stm->fetchAll();
                 <span class="error"><?php err('promotion_records'); ?></span><br><br>
 
                 <label for="profile_image">Profile Image:</label>
-                <input type="file" name="profile_image"><br><br>
+                <?php html_file('profile_image', 'image/*', 'required'); ?>
+                <span class="error"><?php err('profile_image'); ?></span><br><br>
+
 
                 <input type="submit" value="Add Customer">
                 <button type="button" class="cancel-button" onclick="hideAddForm()">Cancel</button>
@@ -235,28 +296,6 @@ $customers = $stm->fetchAll();
         return confirm('Are you sure you want to delete this customer?');
     }
 </script>
-<?php
-function plainTextJson($jsonString) {
-    $decoded = json_decode($jsonString, true); // Use associative array mode
 
-    // Check if JSON decoding was successful
-    if (json_last_error() === JSON_ERROR_NONE) {
-        if (is_array($decoded)) {
-            // Convert array to a plain string (key-value pairs for associative arrays)
-            return implode(", ", array_map(function($key, $value) {
-                if (is_array($value)) {
-                    // Handle nested arrays
-                    return "$key: [" . implode(", ", $value) . "]";
-                }
-                return "$key: $value";
-            }, array_keys($decoded), $decoded));
-        } elseif (is_string($decoded)) {
-            return $decoded;
-        }
-    }
 
-    return htmlspecialchars($jsonString); 
-}
-
-?>
 </html>
