@@ -75,39 +75,19 @@
     transition: border-color 0.2s ease-in-out;
 }
 
-#flex-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    width: 100%; 
-    
+
+#summary-table,
+#summary-table th, 
+#summary-table td{
+    text-align: right;
+    line-height: 30px;
 }
 
-#flex-container > h5 {
-    font-size: 16px;
-    font-weight: 600;
-    color: #1D1D1D;
-    margin: 16px 0;
-}
-
-#flex-container > p {
-    font-size: 16px;
-    font-weight: 400;
-    color: #797979;
-}
-
-.flex-item {
-    flex: 1 1 50%;
-    box-sizing: border-box;
-}
-
-.flex-item:nth-child(odd) {
+#summary-table td .price-tag {
     text-align: left;
 }
 
-.flex-item:nth-child(even) {
-    text-align: right;
-}
+
 
 .promo-code-select {
     font-size: 16px;

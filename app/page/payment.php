@@ -10,6 +10,9 @@ if (is_post()) {
 // Initialize cart
 $cart = get_cart();
 
+// Prepare Stmt
+$get_product_stmt = 'SELECT * FROM products WHERE product_id = ?';
+
 if (!$cart) {
     temp('popup-msg', ['msg' => 'Cart is Empty', 'isSuccess' => false]);
     redirect('cart.php');
@@ -18,8 +21,10 @@ if (!$cart) {
 ?>
 <h1 class="h1 header-banner">Payment</h1>
 <div class="d-flex justify-content-space-evenly">
-    <div id="billing-details-container">
+    <!-- <div id="billing-details-container">
         <h3>Billing Details</h3>
+
+       
         <select class="flex-item payment-method-select" name="selectPayment">
             <option value="">Choose a payment method</option>
             <option value="bank">Bank</option>
@@ -62,58 +67,91 @@ if (!$cart) {
                 <input type="text" name="ewallet-phone-num" value="<%= ewallet.getPhone()%>" class="sm-input-box" spellcheck="false" readonly tabindex="-1" />
             </div>
         </div>
-    </div>
+    </div> -->
 
-    <div id="order-summary-container">
-        <h3>Order Summary</h3>
-        <div id="flex-container">
-            <h5 class="flex-item order-header">PRODUCT</h5>
-            <h5 class="flex-item order-header">TOTAL (RM)</h5>
-            <!-- <%
-                    List<Orderitems> orderItems = (List<Orderitems>) request.getAttribute("orderItemList");
-                    List<Product> products = (List<Product>) request.getAttribute("products");
-                    if (orderItems != null && products != null) {
-                        for (Orderitems orderItem : orderItems) {
-                            for (Product product : products) {
-                                if (orderItem.getProductId().equals(product.getProductId())) {
-                    %> -->
-            <p class="flex-item product-name"><%= product.getProductName()%> x <%= orderItem.getQuantity()%></p>
-            <p class="flex-item product-price"><%= orderItem.getTotalPrice(product.getPrice(), orderItem.getQuantity())%></p>
-            <!-- <%
-                                }
-                            }
-                        }
-                    }
-                    %> -->
-            <h5 class="flex-item subtotal">SUBTOTAL</h5>
-            <h5 class="flex-item subtotal">${subTotal}</h5>
-            <h5 class="flex-item">Shipping Fee</h5>
-            <h5 class="flex-item">+ ${shippingFee}</h5>
-            <select class="flex-item promo-code-select" onchange="fetchPromoDetails()" name="promoCode">
-                <option value="-1">Choose a promo code...</option>
-                <%
-                        List<Promotionrecord> records = (List<Promotionrecord>) request.getAttribute("promotionRecordList");
-                        List<Promotion> promotions = (List<Promotion>) request.getAttribute("promotions");
-                        if (records != null && promotions != null) {
-                            for (Promotionrecord record : records) {
-                                for (Promotion promotion : promotions) {
-                                    if (record.getPromotionrecordPK().getPromoId()== promotion.getPromoId()) {
-                        %>
-                <option value="<%= promotion.getPromoId()%>"><%= promotion.getPromoName()%></option>
-                <%
-                                    }
-                                }
-                            }
-                        }
-                        %>
-            </select>
-            <p class="flex-item" id="promo-amount">- RM ${promoAmount}</p>
-            <h5 class="flex-item total-price">TOTAL</h5>
-            <h5 id="total" class="flex-item total-price">RM ${total}</h5>
+    <div id='order-summary-container'>
+        <h3 class="text-center">Order Summary</h3>
+        <div class="d-flex flex-wrap w-100 justify-content-space-between">
+            <table id="summary-table" class="w-100">
+                <tr>
+                    <th>PRODUCT</th>
+                    <th>PRICE (RM)</th>
+                    <th>QUANTITY</th>
+                    <th>SUBTOTAL (RM)</th>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                        <hr>
+                    </td>
+                </tr>
+                <?php
+                $pTotal = 0;
+                $shippingTotal = 0; //TODO
+                $stmt = $_db->prepare($get_product_stmt);
+                ?>
+                <?php foreach ($cart as $id => $quantity): ?>
+                    <?php
+                    $stmt->execute([$id]);
+                    $p = $stmt->fetch();
+
+                    $pName = $p->product_name;
+                    $pPrice = $p->price;
+                    $pSubtotal = $pPrice * $quantity;
+                    $pTotal += $pSubtotal;
+                    ?>
+                    <tr>
+                        <td><?= $pName; ?></td>
+                        <td><?= priceFormat($pPrice); ?></td>
+                        <td><?= $quantity ?></td>
+                        <td><?= priceFormat($pSubtotal); ?></td>
+                    </tr>
+                <?php endforeach ?>
+                <tr>
+                    <td colspan="4">
+                        <hr>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">Products Subtotal :</td>
+                    <td>RM&nbsp;<?= priceFormat($pTotal) ?></td>
+                </tr>
+                <tr>
+                    <td colspan="3">Shipping Subtotal :</td>
+                    <td>RM&nbsp;<?= priceFormat($shippingTotal) ?></td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <?php
+                        $promo_code = [
+                            'promoID_1' => 'promoNamae_1',
+                            'promoID_2' => 'promoNamae_2',
+                            'promoID_3' => 'promoNamae_3'
+                        ]
+                        ?>
+                        <?= html_select('promo', $promo_code, '- Choose a promo code -', 'data-select-onchange') ?>
+                    </td>
+                    <td>AJAX</td>
+                </tr>
+                <tr>
+                    <td colspan="3">TOTAL PAYMENT :</td>
+                    <td>RM&nbsp;<?= priceFormat($pTotal + $shippingTotal)?></td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-center">
+                        <form action="payment_checkout.php" target="_blank">
+                            <button>Pay</button>
+                        </form>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 </div>
-<form action="PromotionServlet" method="POST" id="selectForm">
+
+
+
+
+<!-- <form action="PromotionServlet" method="POST" id="selectForm">
     <input type="hidden" name="url" value="payment">
     <input type="hidden" name="action" value="select">
     <input type="hidden" name="promoId" value="">
@@ -169,5 +207,5 @@ if (!$cart) {
             selectElement.value = "-1";
         }
     }
-</script>
+</script> -->
 <?php include '../_foot.php'; ?>
