@@ -1,69 +1,79 @@
 $(document).ready(function () {
-    const $bankTable = $("#bank-table tbody");
-    const $ewalletTable = $("#ewallet-table tbody");
+    // Banks Management
+    const $bankForm = $("#bank-container");
+    const $bankActionInput = $("<input type='hidden' name='action' value='save-bank'>");
+    const $bankIndexInput = $("<input type='hidden' name='index'>");
+    $bankForm.append($bankActionInput).append($bankIndexInput);
 
-    function resetForm($form, saveAction) {
-        $form.find("input").val("");
-        $form.find("select").val("");
-        $form.find("[name='action']").val(saveAction);
-        $form.find("[name='index']").val("");
-        $form.find(".btn").text("Add");
-    }
-
-    // Handle bank edit
-    $bankTable.on("click", ".edit-bank-btn", function () {
+    $(document).on("click", ".edit-bank-btn", function (e) {
+        e.preventDefault();
         const $row = $(this).closest("tr");
         const index = $(this).data("index");
+        const name = $row.find(".bank-name").text();
+        const accNum = $row.find(".bank-account").text();
+        const cvv = $row.find(".bank-cvv").text();
+        const expiry = $row.find(".bank-expiry").text();
+        const cardType = $row.find(".bank-card-type").text();
 
-        $("#bank-container [name='name']").val($row.find(".bank-name").text());
-        $("#bank-container [name='acc-num']").val($row.find(".bank-account").text());
-        $("#bank-container [name='cvv']").val($row.find(".bank-cvv").text());
-        $("#bank-container [name='expiry-date']").val($row.find(".bank-expiry").text());
-        $("#bank-container [name='card-type']").val($row.find(".bank-card-type").text());
-        $("#bank-container [name='action']").val("edit-bank");
-        $("#bank-container [name='index']").val(index);
-        $("#bank-container .btn").text("Update");
+        $bankForm.find("[name='name']").val(name);
+        $bankForm.find("[name='acc-num']").val(accNum);
+        $bankForm.find("[name='cvv']").val(cvv);
+        $bankForm.find("[name='expiry-date']").val(expiry);
+        $bankForm.find("[name='card-type']").val(cardType);
+        $bankIndexInput.val(index);
+        $bankActionInput.val("edit-bank");
     });
 
-    // Handle bank delete
-    $bankTable.on("click", ".delete-bank-btn", function () {
+    $(document).on("click", ".delete-bank-btn", function (e) {
+        e.preventDefault();
         const index = $(this).data("index");
+
         if (confirm("Are you sure you want to delete this bank?")) {
-            $("#bank-container [name='action']").val("delete-bank");
-            $("#bank-container [name='index']").val(index);
-            $("#bank-container").submit();
+            $bankActionInput.val("delete-bank");
+            $bankIndexInput.val(index);
+            $bankForm.submit();
         }
     });
 
-    // Handle e-wallet edit
-    $ewalletTable.on("click", ".edit-wallet-btn", function () {
+    // Reset Bank Form
+    $bankForm.on("reset", function () {
+        $bankActionInput.val("save-bank");
+        $bankIndexInput.val("");
+    });
+
+    // E-Wallets Management
+    const $walletForm = $("#e-wallet-container");
+    const $walletActionInput = $("<input type='hidden' name='action' value='save-ewallet'>");
+    const $walletIndexInput = $("<input type='hidden' name='index'>");
+    $walletForm.append($walletActionInput).append($walletIndexInput);
+
+    $(document).on("click", ".edit-wallet-btn", function (e) {
+        e.preventDefault();
         const $row = $(this).closest("tr");
         const index = $(this).data("index");
+        const name = $row.find(".wallet-name").text();
+        const phone = $row.find(".wallet-phone").text();
 
-        $("#e-wallet-container [name='name']").val($row.find(".wallet-name").text());
-        $("#e-wallet-container [name='phone']").val($row.find(".wallet-phone").text());
-        $("#e-wallet-container [name='action']").val("edit-ewallet");
-        $("#e-wallet-container [name='index']").val(index);
-        $("#e-wallet-container .btn").text("Update");
+        $walletForm.find("[name='name']").val(name);
+        $walletForm.find("[name='phone']").val(phone);
+        $walletIndexInput.val(index);
+        $walletActionInput.val("edit-ewallet");
     });
 
-    // Handle e-wallet delete
-    $ewalletTable.on("click", ".delete-wallet-btn", function () {
+    $(document).on("click", ".delete-wallet-btn", function (e) {
+        e.preventDefault();
         const index = $(this).data("index");
+
         if (confirm("Are you sure you want to delete this e-wallet?")) {
-            $("#e-wallet-container [name='action']").val("delete-ewallet");
-            $("#e-wallet-container [name='index']").val(index);
-            $("#e-wallet-container").submit();
+            $walletActionInput.val("delete-ewallet");
+            $walletIndexInput.val(index);
+            $walletForm.submit();
         }
     });
 
-    // Reset bank form
-    $("#bank-container .btn").on("click", function () {
-        resetForm($("#bank-container"), "save-bank");
-    });
-
-    // Reset e-wallet form
-    $("#e-wallet-container .btn").on("click", function () {
-        resetForm($("#e-wallet-container"), "save-ewallet");
+    // Reset E-Wallet Form
+    $walletForm.on("reset", function () {
+        $walletActionInput.val("save-ewallet");
+        $walletIndexInput.val("");
     });
 });
