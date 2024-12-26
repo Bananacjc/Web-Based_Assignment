@@ -24,7 +24,7 @@ if (is_post()) {
         if ($stmt->rowCount() > 0) {
             $msg = 'Username or Email already exists.';
         } else {
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);//SHA1
             $customerId = generate_unique_id('CUS', 'customers', 'customer_id', $_db);
             $stmt = $_db->prepare("INSERT INTO customers (customer_id, username, email, password, profile_image) VALUES (?, ?, ?, ?, ?)");
             if ($stmt->execute([$customerId, $username, $email, $hashedPassword, $profileImage])) {
