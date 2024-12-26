@@ -27,8 +27,6 @@ $(document).ready(function () {
         $actionInput.val("edit-bank");
         $saveButton.text("Update Bank");
 
-        // Focus the input box
-        $bankAccountInput.focus();
     });
 
     // Handle delete button clicks using event delegation
