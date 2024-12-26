@@ -1,4 +1,7 @@
 <?php
+
+use Stripe\Price;
+
 $_title = 'Cart';
 $_css = '../css/cart.css';
 require '../_base.php';
@@ -44,8 +47,8 @@ if (is_post()) {
     </thead>
     <tbody>
         <?php
-        $count = 0;
-        $total = 0;
+        $pCount = 0;
+        $pTotal = 0;
 
         $cart = get_cart();
         $stmt = $_db->prepare('SELECT * FROM products WHERE product_id = ?');
@@ -61,9 +64,9 @@ if (is_post()) {
             $pName  = $p->product_name;
             $pPrice = $p->price;
 
-            $subtotal = $p->price * $quantity;
-            $count += $quantity;
-            $total += $subtotal;
+            $pSubtotal = $pPrice* $quantity;
+            $pCount += $quantity;
+            $pTotal += $pSubtotal;
             ?>
             <tr class="available-product" id="product-<?= $pID ?>">
                 <!-- Product Image + Name -->
@@ -75,21 +78,21 @@ if (is_post()) {
                 </td>
                 <!-- Product Price -->
                 <td class="price">
-                    <?= number_format($pPrice, 2) ?>
+                    <?= priceFormat($pPrice) ?>
                 </td>
                 <!-- Product Qty + Modify Qty -->
                 <td class="quantity">
                     <div class='d-flex align-items-center justify-content-space-around'>
                         <i class="ti ti-minus cursor-pointer" data-product-id="<?= $pID ?>" data-action="decrease"></i>
-                        <?php $GLOBALS['quantity-' . $pID] = $quantity; ?>
+                        <!-- <?php $GLOBALS['quantity-' . $pID] = $quantity; ?> -->
                         <?= html_number('quantity-' . $pID, 1, '', 1, "class='quantity-value' data-product-id='$pID' data-action='change'") ?>
-                        <!-- <span class="quantity-value" id="quantity-<?= $pID ?>"><?= $quantity ?></span> -->
+                        
                         <i class="ti ti-plus cursor-pointer" data-product-id="<?= $pID ?>" data-action="increase"></i>
                     </div>
                 </td>
                 <!-- Sub-total -->
                 <td class='total-price' id="subtotal-<?= $pID ?>">
-                    <?= number_format($subtotal, 2) ?>
+                    <?= priceFormat($pSubtotal) ?>
                 </td>
                 <!-- Remove -->
                 <td class="action">
@@ -102,11 +105,11 @@ if (is_post()) {
                 </td>
             </tr>
         <?php endforeach ?>
-        <?php if ($total): ?>
+        <?php if ($pTotal): ?>
             <tr>
                 <td colspan="3" class="text-right">TOTAL:</td>
                 <td id="cart-total">
-                    <?= number_format($total, 2) ?>
+                    <?= priceFormat($pTotal) ?>
                 </td>
                 <td></td>
             </tr>

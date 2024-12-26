@@ -21,6 +21,11 @@ function cartPopup($imagePath)
     echo "<script>showCartPopup('$imagePath');</script>";
 }
 
+function priceFormat($price): string 
+{
+    return number_format($price, 2, '.', ',');
+}
+
 // Is GET request?
 function is_get(): bool
 {
@@ -628,6 +633,22 @@ function generate_unique_id($prefix, $table, $column, $pdo)
 // Global Constants and Variables
 // ============================================================================
 
+
+// ============================================================================
+// Session, Cookie, Cache Handling
+// ============================================================================
+if (!isset($_SESSION['user']) && isset($_COOKIE['remember_me'])) {
+    $token = $_COOKIE['remember_me'];
+
+    // Verify the token
+    $stmt = $_db->prepare("SELECT * FROM customers WHERE remember_token = ?");
+    $stmt->execute([$token]);
+    $user = $stmt->fetch();
+
+    if ($user) {
+        login($user); // Log the user in
+    }
+}
 ?>
 
 <!DOCTYPE html>

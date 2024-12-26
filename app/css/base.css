@@ -231,6 +231,10 @@ label input[type='checkbox'] {
     flex-direction: column !important; 
 }
 
+.flex-wrap-wrap {
+    flex-wrap: wrap !important;  
+}
+
 /* justify-content */
 .justify-content-center {
     -webkit-box-pack: center !important;
