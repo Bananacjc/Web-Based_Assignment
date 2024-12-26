@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 08, 2024 at 12:31 PM
+-- Generation Time: Dec 26, 2024 at 02:09 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -24,6 +24,20 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `actionlogs`
+--
+
+CREATE TABLE `actionlogs` (
+  `log_id` int(11) NOT NULL,
+  `employee_id` varchar(19) NOT NULL,
+  `action` text NOT NULL,
+  `product_id` varchar(19) DEFAULT NULL,
+  `timestamp` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `categories`
 --
 
@@ -37,9 +51,11 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`category_name`, `category_image`) VALUES
-('Breads', '6752d8a74a874.jpg'),
-('Fruits', '6752d67620f3a.jpg'),
-('Vegetables', '6755771f882b8.jpg');
+('dairy', ''),
+('fruits', ''),
+('high vic', ''),
+('meal', ''),
+('snacks', '');
 
 -- --------------------------------------------------------
 
@@ -59,16 +75,13 @@ CREATE TABLE `customers` (
   `addresses` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `cart` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`cart`)),
   `promotion_records` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`promotion_records`)),
-  `profile_image` varchar(255) DEFAULT NULL
+  `profile_image` varchar(255) DEFAULT NULL,
+  `banned` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `customers`
 --
-
-INSERT INTO `customers` (`customer_id`, `username`, `email`, `contact_num`, `password`, `remember_token`, `banks`, `ewallets`, `addresses`, `cart`, `promotion_records`, `profile_image`) VALUES
-('CUS-20241205-h415YA', 'tanjc', 'haha@gmail.com', '', '$2y$10$3nqdhbNjYymK5NMZzWfQY.4tNlSXdDjYTyF57QK7vdnkVxwAt2Eu2', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('CUS-20241206-rX31Kx', 'hahahaha', 'hahahaha@gmail.com', '', '$2y$10$SnLxrkeL/h2uU3hJ79ykeOK.SpsbXO.4XePH.HFQ5LMd5JvTGvo8i', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -81,8 +94,14 @@ CREATE TABLE `employees` (
   `employee_name` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `role` enum('MANAGER','STAFF','DELIVERY_GUY','RESTOCK_GUY') NOT NULL
+  `role` enum('MANAGER','STAFF','DELIVERY_GUY') NOT NULL,
+  `profile_image` varchar(255) DEFAULT NULL,
+  `banned` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `employees`
+--
 
 -- --------------------------------------------------------
 
@@ -97,6 +116,10 @@ CREATE TABLE `orders` (
   `order_time` datetime NOT NULL,
   `status` enum('PENDING','PAID','SHIPPING','DELIVERED') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `orders`
+--
 
 -- --------------------------------------------------------
 
@@ -139,12 +162,6 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`product_id`, `product_name`, `category_name`, `price`, `description`, `current_stock`, `amount_sold`, `product_image`, `status`) VALUES
-('PRO-20241206-q7m69G', 'Apple', 'Fruits', 1.5, 'This is apple', 2000, 0, '6752d6762b753.jpg', 'AVAILABLE'),
-('PRO-20241206-RC0FQX', 'Bagel', 'Breads', 4.5, 'This is a big big bagel', 20, 0, '6752d8a74db40.jpg', 'AVAILABLE'),
-('PRO-20241206-xTQb1p', 'Banana', 'Fruits', 100, 'This is a banana pro max', 1, 0, '6752d7a3034e1.jpg', 'AVAILABLE'),
-('PRO-20241208-2u0tPc', 'Carrot', 'Vegetables', 2, 'This is a orange carrot', 50, 0, '6755771f94f48.jpg', 'OUT_OF_STOCK');
-
 -- --------------------------------------------------------
 
 --
@@ -184,6 +201,14 @@ CREATE TABLE `reviews` (
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `actionlogs`
+--
+ALTER TABLE `actionlogs`
+  ADD PRIMARY KEY (`log_id`),
+  ADD KEY `employee_id` (`employee_id`),
+  ADD KEY `product_id` (`product_id`);
 
 --
 -- Indexes for table `categories`
@@ -241,8 +266,25 @@ ALTER TABLE `reviews`
   ADD KEY `product_id` (`product_id`);
 
 --
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `actionlogs`
+--
+ALTER TABLE `actionlogs`
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `actionlogs`
+--
+ALTER TABLE `actionlogs`
+  ADD CONSTRAINT `fk_employee` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`),
+  ADD CONSTRAINT `fk_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`);
 
 --
 -- Constraints for table `orders`
