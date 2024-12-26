@@ -46,17 +46,6 @@ CREATE TABLE `categories` (
   `category_image` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `categories`
---
-
-INSERT INTO `categories` (`category_name`, `category_image`) VALUES
-('dairy', ''),
-('fruits', ''),
-('high vic', ''),
-('meal', ''),
-('snacks', '');
-
 -- --------------------------------------------------------
 
 --
@@ -79,9 +68,6 @@ CREATE TABLE `customers` (
   `banned` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `customers`
---
 
 -- --------------------------------------------------------
 
@@ -99,9 +85,6 @@ CREATE TABLE `employees` (
   `banned` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `employees`
---
 
 -- --------------------------------------------------------
 
@@ -117,9 +100,6 @@ CREATE TABLE `orders` (
   `status` enum('PENDING','PAID','SHIPPING','DELIVERED') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `orders`
---
 
 -- --------------------------------------------------------
 
@@ -158,9 +138,6 @@ CREATE TABLE `products` (
   `status` enum('AVAILABLE','UNAVAILABLE','OUT_OF_STOCK') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `products`
---
 
 -- --------------------------------------------------------
 
@@ -198,9 +175,6 @@ CREATE TABLE `reviews` (
   `comment_date_time` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Indexes for dumped tables
---
 
 --
 -- Indexes for table `actionlogs`
