@@ -1,62 +1,56 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
-<?php 
+<?php
+ include "adminHeader.php"; 
+$_css1='../base.css';
 $_css ='../css/adminDashboard.css';
 $_title='Admin Dashboard';
+$topSellingQuery = "
+    SELECT p.product_image, p.product_id, p.product_name, c.category_name, p.price, p.amount_sold
+    FROM products p
+    JOIN categories c ON p.category_name = c.category_name
+    ORDER BY p.amount_sold DESC
+    LIMIT 5";
 
+$topSellingStm = $_db->prepare($topSellingQuery);
+$topSellingStm->execute();
+$topSellingProducts = $topSellingStm->fetchAll();
 ?>
-
-
 
 <body>
 
-    <?php include "adminHeader.php"; ?>
+<div class='main'>
 
-    <div class="wrapper">
-        <div class="main">
-            <main class="content">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-md-flex align-items-center">
-                                        <div>
-                                            <h4 class="card-title">Top Selling Products</h4>
-                                            <p class="card-subtitle">Overview of Top Selling Items</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <table class="table table-bordered">
-                                        <thead>
-                                            <tr class="bg-light">
-                                                <th>Products</th>
-                                                <th>License</th>
-                                                <th>Support Agent</th>
-                                                <th>Technology</th>
-                                                <th>Tickets</th>
-                                                <th>Sales</th>
-                                                <th>Earnings</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Elite Admin</td>
-                                                <td>Single Use</td>
-                                                <td>John Doe</td>
-                                                <td><label class="label label-danger">Angular</label></td>
-                                                <td>46</td>
-                                                <td>356</td>
-                                                <td>$2850.06</td>
-                                            </tr>
-                                            <!-- Add other rows here -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<div class="top-selling-products">
+    <h2>Top 5 Selling Products</h2>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Product Image</th>
+                <th>Product ID</th>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Amount Sold</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($topSellingProducts as $p): ?>
+                <tr>
+                    <td>
+                        <img src="../../uploads/product_images/<?= $p->product_image ?>" class="resized-image">
+                    </td>
+                    <td><?= $p->product_id ?></td>
+                    <td><?= $p->product_name ?></td>
+                    <td><?= $p->category_name ?></td>
+                    <td><?= $p->price ?></td>
+                    <td><?= $p->amount_sold ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+</div>
 
                     <!-- Other cards -->
                     <div class="row">

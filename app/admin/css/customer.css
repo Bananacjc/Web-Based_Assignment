@@ -37,21 +37,6 @@ h1 {
     object-fit: cover;
 }
 
-/*form button.delete-action-button,
-button.cancel-button {
-    background-color: red;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    transition: background-color 0.3s;
-    cursor: pointer;
-    border-radius: 5px;
-}*/
 
 /* Base button class for consistent styling */
 .button {
@@ -197,47 +182,6 @@ button.cancel-button {
     cursor: pointer;
 }
 
-.category-filter {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    background-color: #f8f9fa;
-    /* Light grey background */
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: 10px;
-    /* Adjust as needed */
-}
-
-.category-filter label {
-    font-weight: bold;
-    margin-right: 10px;
-    color: #333;
-    /* Dark grey color for the text */
-}
-
-.category-filter select {
-    padding: 8px 16px;
-    border: 2px solid #ccc;
-    /* Light grey border */
-    border-radius: 4px;
-    background-color: white;
-    cursor: pointer;
-    outline: none;
-    transition: border-color 0.3s;
-}
-
-.category-filter select:hover,
-.category-filter select:focus {
-    border-color: #007bff;
-    /* Blue color on hover/focus */
-}
-
-/* Optional: style for options in the dropdown */
-.category-filter option {
-    padding: 10px;
-    /* Adds padding inside the dropdown */
-}
 
 /* Adjust the layout when the sidebar is toggled */
 #nav-toggle:checked~.main {
@@ -275,9 +219,7 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
     max-height: 80vh;
-    /* Restricts modal height */
     overflow-y: auto;
-    /* Enables scrolling within the modal if the content is too large */
 }
 
 

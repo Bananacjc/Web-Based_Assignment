@@ -71,11 +71,9 @@
     $stm->execute($params);
     $employees = $stm->fetchAll();
 
-    // Fetch available roles for filtering
     $rolesQuery = "SELECT DISTINCT role FROM employees";
     $roles = $_db->query($rolesQuery)->fetchAll(PDO::FETCH_COLUMN);
 
-    // Display the employees and the filters
     ?>
     <div class="main">
         <h1>STAFF MANAGEMENT</h1>
@@ -124,7 +122,7 @@
                         <td><?= $e->email ?></td>
                         <td><?= $e->role ?></td>
                         <td>
-                            <img src="../uploads/profile_images/<?= $e->profile_image ?>" class="resized-image" alt="Profile Image">
+                            <img src="../../uploads/profile_images/<?= $e->profile_image ?>" class="resized-image" alt="Profile Image">
                         </td>
                         <td>
                             <button class="button action-button" onclick="showUpdateEmployeeForm(

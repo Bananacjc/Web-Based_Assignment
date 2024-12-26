@@ -10,8 +10,8 @@ if (is_post()) {
             $stm->execute([$v]);
             $employee = $stm->fetch(PDO::FETCH_OBJ);
 
-            if ($employee && $employee->profile_image && file_exists("../uploads/product_images/{$employee->profile_image}")) {
-                unlink("../uploads/product_images/{$employee->profile_image}");
+            if ($employee && $employee->profile_image && file_exists("../../uploads/product_images/{$employee->profile_image}")) {
+                unlink("../../uploads/product_images/{$employee->profile_image}");
             }
 
             // Delete the product record from the database

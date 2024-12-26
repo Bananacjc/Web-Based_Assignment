@@ -15,7 +15,7 @@ if (is_post()) {
     if (empty($employee_name)) {
         $_err['employee_name'] = "Employee Name is required for Employee ID: $employee_id.";
     }
-    
+
     if (empty($email)) {
         $_err['email'] = "Email is required.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -45,7 +45,7 @@ if (is_post()) {
     }
 
         if ($profile_image) {
-            $profile_image_path = save_photo($profile_image, '../uploads/profile_images');
+            $profile_image_path = save_photo($profile_image, '../../uploads/profile_images');
         } else {
             $profile_image_path = null;
         }

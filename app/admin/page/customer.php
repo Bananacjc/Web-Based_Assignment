@@ -117,7 +117,7 @@ $customers = $stm->fetchAll();
                     <td><?= plainTextJson($c->cart) ?></td>
                     <td><?= plainTextJson($c->promotion_records) ?></td>
                     <td>
-                        <img src="../uploads/profile_images/<?= $c->profile_image ?>" class="resized-image" alt="Profile Image">
+                        <img src="../../uploads/profile_images/<?= $c->profile_image ?>" class="resized-image" alt="Profile Image">
                     </td>
                     <td>
                         <button class="button action-button" onclick="showUpdateCustomerForm(

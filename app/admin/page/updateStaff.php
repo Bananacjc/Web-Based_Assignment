@@ -43,7 +43,7 @@ if (is_post()) {
 
     if (!$_err) {
         if ($profile_image) {
-            $profile_image_path = save_photo($profile_image, '../uploads/profile_images');
+            $profile_image_path = save_photo($profile_image, '../../uploads/profile_images');
         } else {
             // If no image is uploaded, keep the existing profile image
             $stmt = $_db->prepare("SELECT profile_image FROM employees WHERE employee_id = ?");
