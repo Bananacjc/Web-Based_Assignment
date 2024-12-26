@@ -70,13 +70,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 redirect();
             }
 
-            $banks[] = $bankData;
-            $banksJson = json_encode($banks);
+            $banksJson = json_encode($bankData);
+            $banks = $banksJson;
 
             $stmt = $_db->prepare("UPDATE customers SET banks = ? WHERE customer_id = ?");
-            $stmt->execute([$banksJson, $_user->customer_id]);
+            $stmt->execute([$banks, $_user->customer_id]);
 
-            $_user->banks = $banksJson;
+            $_user->banks = json_decode($banks);
             temp('popup-msg', ['msg' => 'Bank added successfully.', 'isSuccess' => true]);
         } elseif ($action === 'edit-bank' && is_numeric($index)) {
             // Edit an existing bank
@@ -239,7 +239,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <li id="address-btn"><i class="ti ti-map-pins"></i>Address</li>
             <li id="order-history-btn"><i class="ti ti-shopping-cart"></i> Order and Reviews</li>
             <li id="change-password-btn"><i class="ti ti-lock"></i> Change Password</li>
-            <li id="logout-btn"><a href="LogoutServlet" id="logout-link"><i class="ti ti-logout"></i>Logout</a></li>
+            <li id="logout-btn"><a href="login.php" id="logout-link"><i class="ti ti-logout"></i>Logout</a></li>
         </ul>
     </div>
     <div class="content" id="personal-info-content" style="display: block;">
@@ -289,23 +289,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
-                    $banks = json_decode($_user->banks ?? '[]', true);
-                    foreach ($banks as $index => $bank) {
-                        echo "<tr>
-                        <td>" . ($index + 1) . "</td>
-                        <td class='bank-name'>{$bank['name']}</td>
-                        <td class='bank-account'>{$bank['accNum']}</td>
-                        <td class='bank-cvv'>{$bank['cvv']}</td>
-                        <td class='bank-expiry'>{$bank['expiry']}</td>
-                        <td class='bank-card-type'>{$bank['cardType']}</td>
-                        <td class='text-center'>
-                            <button class='btn edit-bank-btn' data-index='{$index}'>Edit</button>
-                            <button class='btn delete-bank-btn' data-index='{$index}'>Delete</button>
-                        </td>
-                    </tr>";
-                    }
-                    ?>
+                    <tr>
+                    <?php if ($_user->banks): ?>
+                    <?php foreach ($_user->banks as $bank): ?>
+                        <td><?= $bank['name']?></td>
+                    <?php endforeach ?>
+                    <?php endif ?>
+                        </tr>
                 </tbody>
             </table>
             <form id="bank-container" method="post">
