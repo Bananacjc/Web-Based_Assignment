@@ -68,13 +68,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 redirect();
             }
 
-            $banksJson = json_encode($bankData);
-            $banks = $banksJson;
+            $banks[] = $bankData;
+            $banksJson = json_encode($banks);
 
             $stmt = $_db->prepare("UPDATE customers SET banks = ? WHERE customer_id = ?");
-            $stmt->execute([$banks, $_user->customer_id]);
+            $stmt->execute([$banksJson, $_user->customer_id]);
 
-            $_user->banks = json_decode($banks);
+            $_user->banks = $banksJson;
             temp('popup-msg', ['msg' => 'Bank added successfully.', 'isSuccess' => true]);
         } elseif ($action === 'edit-bank' && is_numeric($index)) {
             // Validate expiry date format
@@ -179,7 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <li id="address-btn"><i class="ti ti-map-pins"></i>Address</li>
             <li id="order-history-btn"><i class="ti ti-shopping-cart"></i> Order and Reviews</li>
             <li id="change-password-btn"><i class="ti ti-lock"></i> Change Password</li>
-            <li id="logout-btn"><a href="login.php" id="logout-link"><i class="ti ti-logout"></i>Logout</a></li>
+            <li id="logout-btn"><a href="LogoutServlet" id="logout-link"><i class="ti ti-logout"></i>Logout</a></li>
         </ul>
     </div>
     <div class="content" id="personal-info-content" style="display: block;">
