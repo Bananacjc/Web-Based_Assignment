@@ -29,25 +29,36 @@ $fields = [
 ];
 
 
+$product_name = req('product_name');
+$category_name = req('category_name');
+
+
 $sort = req('sort');
 key_exists($sort, $fields) || $sort = 'product_id';
 
 $dir = req('dir');
 in_array($dir, ['asc', 'desc']) || $dir = 'asc';
 
+$page = req('page', 1);
+$limit = 10; // Number of items per page
+$offset = ($page - 1) * $limit;
 
+$total_products_query = 'SELECT COUNT(*) FROM products WHERE product_name LIKE ? AND (category_name = ? OR ?)';
+$total_products_stm = $_db->prepare($total_products_query);
+$total_products_stm->execute(["%$product_name%", $category_name, $category_name == null]);
+$total_products = $total_products_stm->fetchColumn();
+$total_pages = ceil($total_products / $limit);
 
-$product_name = req('product_name');
-$category_name = req('category_name');
 
 // Fetch filtered data with optional filters
-$query = '
+$query = "
        SELECT p.*, c.category_image 
        FROM products p
        JOIN categories c ON p.category_name = c.category_name
        WHERE p.product_name LIKE ? 
        AND (p.category_name = ? OR ?)
-       ORDER BY ' . $sort . ' ' . $dir;
+       ORDER BY  $sort $dir
+       LIMIT $limit OFFSET $offset";
 
 $stm = $_db->prepare($query);
 $stm->execute(["%$product_name%", $category_name, $category_name == null]);
@@ -74,7 +85,7 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
     </form>
 
 
-    <p><?= count($arr) ?> product(s)</p>
+    <p><?= count($arr) ?> product(s) on this page | Total: <?= $total_products ?> product(s)</p>
 
 
     <!-- Product Table -->
@@ -166,6 +177,26 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
 
     </table>
 
+    <div class="pagination">
+    <?php if ($page > 1): ?>
+        <a href="?page=1&product_name=<?= urlencode($product_name) ?>&category_name=<?= urlencode($category_name) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="first-page">First</a>
+        <a href="?page=<?= $page - 1 ?>&product_name=<?= urlencode($product_name) ?>&category_name=<?= urlencode($category_name) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="prev-page">Prev</a>
+    <?php endif; ?>
+
+    <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+        <a href="?page=<?= $i ?>&product_name=<?= urlencode($product_name) ?>&category_name=<?= urlencode($category_name) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>"
+           class="page-number <?= $i == $page ? 'active' : '' ?>">
+            <?= $i ?>
+        </a>
+    <?php endfor; ?>
+
+    <?php if ($page < $total_pages): ?>
+        <a href="?page=<?= $page + 1 ?>&product_name=<?= urlencode($product_name) ?>&category_name=<?= urlencode($category_name) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="next-page">Next</a>
+        <a href="?page=<?= $$total_pages ?>&product_name=<?= urlencode($product_name) ?>&category_name=<?= urlencode($category_name) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="last-page">Last</a>
+    <?php endif; ?>
+</div>
+
+
     <?php
     $roles = ['MANAGER', 'STAFF'];
     $_categories = [];
@@ -251,7 +282,7 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
             <span class="close-button" onclick="hideUpdateProductForm()">&times;</span>
             <form id="updateForm" action="updateProduct.php" method="Post" enctype="multipart/form-data" class="update-form">
                 <label for="product_id">Product ID:</label>
-                <input id="product_id" name="product_id" value="<?= $product['product_id']; ?>">
+                <input id="product_id" name="product_id" value="<?= $product['product_id']; ?>" readonly>
                 <br>
 
                 <label for="product_name">Product Name:</label>
@@ -270,7 +301,7 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
                 <span class="error"><?php err('new_category_image'); ?></span><br><br>
 
                 <label for="price">Price:</label>
-                <?php html_number('price', '0', '', '0.01', 'required'); ?>
+                <?php html_number('price', '', '', '0.01', 'required'); ?>
                 <span class="error"><?php err('price'); ?></span><br><br>
 
                 <label for="description">Description:</label>
@@ -278,11 +309,11 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
                 <span class="error"><?php err('description'); ?></span><br><br>
 
                 <label for="current_stock">Current Stock:</label>
-                <?php html_number('current_stock', '0', '', '1', 'required'); ?>
+                <?php html_number('current_stock', '', '', '1', 'required'); ?>
                 <span class="error"><?php err('current_stock'); ?></span><br><br>
 
                 <label for="amount_sold">Amount Sold:</label>
-                <?php html_number('amount_sold', '0', '', '1', 'required'); ?>
+                <?php html_number('amount_sold', '', '', '1', 'required'); ?>
                 <span class="error"><?php err('amount_sold'); ?></span><br><br>
 
                 <label for="product_image">Product Image:</label>

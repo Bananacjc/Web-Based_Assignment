@@ -1,3 +1,50 @@
+/*Pagination*/
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.pagination a {
+    padding: 8px 12px;
+    text-decoration: none;
+    color: #007bff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination a:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.pagination .active {
+    background-color: #007bff;
+    color: white;
+}
+
+.pagination .first-page, .pagination .prev-page, .pagination .next-page, .pagination .last-page {
+    font-weight: bold;
+}
+
+.pagination .first-page:hover, .pagination .prev-page:hover, .pagination .next-page:hover, .pagination .last-page:hover {
+    background-color: #0056b3;
+}
+
+.pagination a.disabled {
+    color: #ccc;
+    pointer-events: none;
+}
+
+.pagination a.disabled:hover {
+    background-color: transparent;
+}
+
+
+
 /* Flash Message ----------------------------------------------------------- */
 
 #info {
@@ -16,6 +63,27 @@
 }
 
 #info:not(:empty) {
+    animation: fade 5s;
+}
+
+
+
+#error {
+    position: fixed;
+    color: #fff;
+    background: #DC3545;
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 10px 20px;
+    left: 50%;
+    translate: -50% 0;
+    z-index: 999;
+
+    top: -100px;
+    opacity: 0;
+}
+
+#error:not(:empty) {
     animation: fade 5s;
 }
 

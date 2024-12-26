@@ -10,6 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stm = $_db->prepare($query);
         $stm->execute([$customer_id]);
 
+        temp('info',"Employee with ID: $customer_id has been unbanned successfully.");
         redirect('customer.php');
 
     }

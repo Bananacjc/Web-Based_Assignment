@@ -1,98 +1,101 @@
 <?php
-require '../_base.php'; // Include base functions and database connection
+require '../_base.php';
 
-// Handle POST request
 if (is_post()) {
-    $_err = []; // Store validation errors
+    global $_err;
 
-    // Sanitize and validate inputs
+    // Get form values
     $username = req('username');
     $email = req('email');
-    $contactNum = req('contact_num');
+    $contact_num = req('contact_num');
     $banks = req('banks');
     $ewallets = req('ewallets');
     $addresses = req('addresses');
     $cart = req('cart');
-    $promotionRecords = req('promotion_records');
+    $promotion_records = req('promotion_records');
+    $profile_image = get_file('profile_image'); // Profile image is optional
 
-    // Validate username
-    if ($username == '') {
-        $_err['username'] = 'Username is required.';
+    $_err = [];
+
+    if (empty($username)) {
+        $_err['username'] = "Username is required.";
+    } elseif (!preg_match('/^[a-zA-Z0-9\s\-]+$/', $username)) {
+        $_err['username'] = "Username can only contain letters, numbers, spaces, and hyphens.";
     }
 
-    // Validate email
-    if ($email == '') {
-        $_err['email'] = 'Email is required.';
+    if (empty($email)) {
+        $_err['email'] = "Email is required.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $_err['email'] = 'Invalid email address.';
+        $_err['email'] = "Invalid email format.";
     } else {
         $stmt = $_db->prepare("SELECT customer_id FROM customers WHERE email = ?");
         $stmt->execute([$email]);
         if ($stmt->rowCount() > 0) {
-            $_err['email'] = 'Email is already in use.';
+            $_err['email'] = "Email is already in use.";
         }
     }
 
-    // Validate contact number
-    if ($contactNum == '') {
-        $_err['contact_num'] = 'Contact number is required.';
-    } elseif (!ctype_digit($contactNum)) {
-        $_err['contact_num'] = 'Contact number must be numeric.';
+    if (empty($contact_num)) {
+        $_err['contact_num'] = "Contact number is required.";
+    } elseif (!ctype_digit($contact_num)) {
+        $_err['contact_num'] = "Contact number must be numeric.";
     }
 
-    // Validate and decode JSON fields
-    if ($cart) {
-        $decodedCart = json_decode($cart, true);  // Decode as an associative array
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            $_err['cart'] = 'Invalid JSON format for cart.';
+    if ($profile_image) {
+        if (!str_starts_with($profile_image->type, 'image/')) {
+            $_err['profile_image'] = "Profile image must be a valid image file.";
+        } elseif ($profile_image->size > 2 * 1024 * 1024) { // Limit to 2MB
+            $_err['profile_image'] = "Profile image exceeds the size limit (2MB).";
+        }
+    }
+
+        if ($profile_image) {
+            $profile_image_path = save_photo($profile_image, '../uploads/profile_images');
         } else {
-            $cart = $decodedCart;  // Only assign if valid
+            $profile_image_path = null;
         }
-    }
+        
+    if (!$_err) {
 
-    if ($promotionRecords) {
-        $decodedPromotionRecords = json_decode($promotionRecords, true);  // Decode as an associative array
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            $_err['promotion_records'] = 'Invalid JSON format for promotion records.';
-        } else {
-            $promotionRecords = $decodedPromotionRecords;  // Only assign if valid
-        }
-    }
+        $banks = json_encode($banks);
+        $ewallets = json_encode($ewallets);
+        $addresses = json_encode($addresses);
+        $cart = json_encode($cart);
+        $promotion_records = json_encode($promotion_records);
 
-    // Handle profile image upload
-    $profileImagePath = null;
-    $profileImage = get_file('profile_image');
-    if (!$profileImage) {
-        $_err['profile_image'] = 'Product image is required.';
-    } elseif (!str_starts_with($profileImage->type, 'image/')) {
-        $_err['profile_image'] = 'Invalid image file. Please upload an image.';
-    }
-    if(empty($_err)){
-        $profileImagePath= save_photo($profileImage, '../uploads/profile_images');
+        // Generate a unique customer ID
+        $customer_id = generate_unique_id('CUS', 'customers', 'customer_id', $_db);
 
-            $customerId = generate_unique_id('CUS', 'customers', 'customer_id', $_db);
-
+        // Insert new customer into the database
+        try {
             $stmt = $_db->prepare("
                 INSERT INTO customers (customer_id, username, email, contact_num, banks, ewallets, addresses, cart, promotion_records, profile_image)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
+            
             $stmt->execute([
-                $customerId,
+                $customer_id,
                 $username,
                 $email,
-                $contactNum,
-                $banks ?: null, // handle case when banks is empty or null
-                $ewallets ?: null, // handle case when ewallets is empty or null
-                $addresses ?: null, // handle case when addresses is empty or null
-                $cart ? json_encode($cart) : null, // Save as JSON if it is not empty
-                $promotionRecords ? json_encode($promotionRecords) : null, // Save as JSON if it is not empty
-                $profileImagePath
+                $contact_num,
+                $banks, // Store as JSON-encoded string
+                $ewallets, // Store as JSON-encoded string
+                $addresses, // Store as JSON-encoded string
+                $cart, // Store as JSON-encoded string
+                $promotion_records, // Store as JSON-encoded string
+                $profile_image_path
             ]);
 
-            temp('success', "Customer added successfully!");
+            // Success message and redirect
+            temp('info', "Customer added successfully!");
             redirect('customer.php');
-        } 
+        } catch (PDOException $e) {
+            $_err['error'] = 'Error adding customer: ' . $e->getMessage();
+        }
+    } else {
+        // If validation failed, send errors back to the form
+        temp('error', $_err);
+        redirect('customer.php');
     }
-        
-    
-
+}
+?>

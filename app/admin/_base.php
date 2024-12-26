@@ -109,7 +109,7 @@ function temp($key, $value = null)
         $_SESSION['temp_' . $key] = $value;
     } else {
         $value = $_SESSION['temp_' . $key] ?? null;
-        unset($_SESSION['temp' . $key]); // Unset the session variable
+        unset($_SESSION['temp_' . $key]); // Unset the session variable
         return $value;
     }
 }
@@ -284,11 +284,14 @@ function html_number($key, $min = '', $max = '', $step = '', $attr = '')
 }
 
 // Generate <input type='search'>
-function html_search($key, $attr = '')
-{
+function html_search($key, $attr = '',$placeholder = 'Search Username Here') {
+    // Encode the value if it exists in the global array or is empty
     $value = encode($GLOBALS[$key] ?? '');
-    echo "<input type='search' id='$key' name='$key' value='$value' $attr>";
+    
+    // Create the input field with the value, attributes, and placeholder
+    echo "<input type='search' id='$key' name='$key' value='$value' $attr placeholder='$placeholder'>";
 }
+
 
 // Generate <input type='date'>
 function html_date($key, $min = '', $max = '', $attr = '')
@@ -397,14 +400,12 @@ function table_headers($fields, $sort, $dir, $href = '')
 $_err = [];
 
 // Generate <span class='err'>
-function err($key)
-{
+function err($field) {
     global $_err;
-    if ($_err[$key] ?? false) {
-        echo "<span class='err'>$_err[$key]</span>";
-    } else {
-        echo '<span></span>';
+    if (isset($_err[$field])) {
+        return $_err[$field];
     }
+    return '';
 }
 
 // ============================================================================
@@ -565,9 +566,9 @@ function plainTextJson($jsonString)
             return implode("", array_map(function ($key, $value) {
                 if (is_array($value)) {
                     // Handle nested arrays
-                    return "$key: [" . implode(", ",$value) . "]<br>";
+                    return "$key: [" . implode(", ",$value) . "]";
                 }
-                return "$key: $value<br>";
+                return "$key: $value";
             }, array_keys($decoded), $decoded));
         } elseif (is_string($decoded)) {
             return $decoded;

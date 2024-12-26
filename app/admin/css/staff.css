@@ -1,4 +1,3 @@
-
 h1 {
     margin-top: 160px;
     color: #333;
@@ -10,7 +9,7 @@ h1 {
     border-collapse: collapse;
     margin: 20px auto;
     background-color: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .data-table th, .data-table td {
@@ -36,7 +35,7 @@ h1 {
     object-fit: cover;
 }
 
-form button.delete-action-button, button.cancel-button{
+form button.delete-action-button, button.cancel-button {
     background-color: red;
     color: white;
     border: none;
@@ -70,132 +69,190 @@ form button.delete-action-button, button.cancel-button{
     background-color: #0056b3;
 }
 
+.button {
+    width: 100px;
+    height: 40px;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.ban-action-button,
+.unban-action-button {
+    background-color: #ff5c33;
+}
+
+.ban-action-button:hover,
+.unban-action-button:hover {
+    background-color: #ff471a;
+}
+
 .update-form {
-    background-color: #ffffff; /* Lighter background for a clean look */
+    background-color: #ffffff;
     padding: 20px;
-    border-radius: 5px; /* Less pronounced radius for a subtle effect */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Softer shadow */
-    max-width: 600px; /* Max width to avoid too large appearance */
-    margin: 20px auto; /* Centering horizontally and providing some vertical spacing */
-    width: 90%; /* Responsive width */
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 20px auto;
+    width: 90%;
 }
 
 .update-form label {
     display: block;
-    margin-bottom: 8px; /* Smaller margin for compact spacing */
-    color: #333333; /* Standard dark color for readability */
-    font-size: 14px; /* Optional: adjust font size for consistency */
+    margin-bottom: 8px;
+    color: #333;
+    font-size: 14px;
 }
 
 .update-form input, .update-form select, .update-form textarea {
     width: 100%;
-    padding: 10px; /* Adjust padding for better text visibility */
-    margin-bottom: 15px; /* Consistent margin */
-    border: 1px solid #cccccc; /* Lighter border for a softer look */
-    border-radius: 4px; /* Consistency in rounding */
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
     box-sizing: border-box;
 }
 
 .update-form img {
     margin-top: 10px;
-    border-radius: 4px; /* Keeping the border-radius consistent */
+    border-radius: 4px;
 }
 
 .update-form input[type="submit"] {
-    background-color: #4CAF50; /* A greener, more neutral color */
+    background-color: #4CAF50;
     color: white;
     font-weight: bold;
-    border: none; /* Remove additional border styling */
+    border: none;
     cursor: pointer;
 }
 
 .update-form input[type="submit"]:hover {
-    background-color: #45a049; /* Slightly darker shade on hover */
+    background-color: #45a049;
 }
 
-
 .add-form {
-    background-color: #ffffff; /* Lighter background for a clean look */
+    background-color: #ffffff;
     padding: 20px;
-    border-radius: 5px; /* Less pronounced radius for a subtle effect */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Softer shadow */
-    max-width: 600px; /* Max width to avoid too large appearance */
-    margin: 20px auto; /* Centering horizontally and providing some vertical spacing */
-    width: 90%; /* Responsive width */
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 20px auto;
+    width: 90%;
 }
 
 .add-form label {
     display: block;
-    margin-bottom: 8px; /* Smaller margin for compact spacing */
-    color: #333333; /* Standard dark color for readability */
-    font-size: 14px; /* Optional: adjust font size for consistency */
+    margin-bottom: 8px;
+    color: #333;
+    font-size: 14px;
 }
 
 .add-form input, .add-form select, .add-form textarea {
     width: 100%;
-    padding: 10px; /* Adjust padding for better text visibility */
-    margin-bottom: 15px; /* Consistent margin */
-    border: 1px solid #cccccc; /* Lighter border for a softer look */
-    border-radius: 4px; /* Consistency in rounding */
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
     box-sizing: border-box;
 }
 
 .add-form img {
     margin-top: 10px;
-    border-radius: 4px; /* Keeping the border-radius consistent */
+    border-radius: 4px;
 }
 
 .add-form input[type="submit"] {
-    background-color: #4CAF50; /* A greener, more neutral color */
+    background-color: #4CAF50;
     color: white;
     font-weight: bold;
-    border: none; /* Remove additional border styling */
+    border: none;
     cursor: pointer;
 }
 
 .add-form input[type="submit"]:hover {
-    background-color: #45a049; /* Slightly darker shade on hover */
+    background-color: #45a049;
 }
 
-.password-button {
-        padding: 10px 20px;
-        background-color: yellowgreen;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        margin-top: 10px;
-    }
-
-    .password-button:hover {
-        background-color: darkgreen;
-    }
-
-
-/* Styling labels for better readability and alignment */
-#passwordForm label {
-    display: block; /* Makes the label display as a block */
-    margin-bottom: 8px; /* Adds space below the label */
-    color: #333; /* Sets the text color */
-    font-size: 16px; /* Sets the text size */
-    font-weight: bold; /* Makes the font bold */
+.modal {
+    margin-top: 80px;
+    display: none;
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
-/* Styling inputs for a unified, appealing look */
-#passwordForm input[type="password"] {
-    width: 100%; /* Makes input take full container width */
-    padding: 10px; /* Adds padding inside the input for text */
-    margin-bottom: 15px; /* Adds space below each input */
-    border: 1px solid #ccc; /* Adds a subtle border */
-    border-radius: 4px; /* Rounds the corners of the input fields */
-    box-sizing: border-box; /* Changes the box-sizing so padding doesn't affect width */
+.modal-content {
+    background: white;
+    width: 60%;
+    margin: 35px auto;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
-/* Focus styling to highlight the input when clicked or tabbed into */
-#passwordForm input[type="password"]:focus {
-    border-color: #0056b3; /* Changes border color to blue when focused */
-    box-shadow: 0 0 8px rgba(0, 86, 179, 0.5); /* Adds a soft glow */
+.close-button {
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
 
+.pagination a {
+    padding: 8px 12px;
+    text-decoration: none;
+    color: #007bff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination a:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.pagination .active {
+    background-color: #007bff;
+    color: white;
+}
+
+.pagination .first-page, .pagination .prev-page, .pagination .next-page, .pagination .last-page {
+    font-weight: bold;
+}
+
+.pagination .first-page:hover, .pagination .prev-page:hover, .pagination .next-page:hover, .pagination .last-page:hover {
+    background-color: #0056b3;
+}
+
+.pagination a.disabled {
+    color: #ccc;
+    pointer-events: none;
+}
+
+.pagination a.disabled:hover {
+    background-color: transparent;
+}

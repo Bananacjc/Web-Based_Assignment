@@ -1,12 +1,10 @@
 <?php
 // Get the page title from the query parameter or set a default value
 $pageTitle = isset($_GET['title']) ? htmlspecialchars($_GET['title']) : 'Dashboard';
-$_css = '../css/_base.css';
+$_css = '../css/base.css';
 require '../_base.php';
 require_login();
 ?>
-
-
 <!DOCTYPE html>
 <html>
 
@@ -23,6 +21,21 @@ $user3Role = ['MANAGER', 'STAFF', 'DELIVERY_GUY'];
 ?>
 
 <body>
+
+<?php 
+$info = temp('info');
+if (!empty($info)) {
+    echo "<div id='info'>" . (is_array($info) ? implode(", ", $info) : $info) . "</div>";
+}
+
+$error = temp('error');
+if (!empty($error)) {
+    echo "<div id='error'>" . (is_array($error) ? implode("<br>", $error) : $error) . "</div>";
+}
+?>
+
+
+
 
     <input type="checkbox" id="nav-toggle" hidden>
 
