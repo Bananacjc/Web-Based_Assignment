@@ -79,10 +79,10 @@ if (is_post()) {
     if (!$_err) {
         $new_category_image_path = null;
         if ($new_category_image) {
-            $new_category_image_path = save_photo($new_category_image, '../uploads/category_images');
+            $new_category_image_path = save_photo($new_category_image, '../../uploads/category_images');
         }
 
-        $product_image_path = $product_image ? save_photo($product_image, '../uploads/product_images') : null;
+        $product_image_path = $product_image ? save_photo($product_image, '../../uploads/product_images') : null;
 
         if (!$product_image_path) {
             $stmt = $_db->prepare("SELECT product_image FROM products WHERE product_id = ?");

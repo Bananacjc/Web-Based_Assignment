@@ -5,12 +5,11 @@ $_title = 'Promotion';
 $_css = '../css/promotion.css';
 require '../_base.php';
 include '../_head.php';
+
 ?>
 
 <h1 class="h1 header-banner">Promotions</h1>
 <div id="promo-container">
-
-
     <div class="promo-card">
         <div class="promo-image">
             <img src="../images/login-products.png" alt="Promotion Image">
