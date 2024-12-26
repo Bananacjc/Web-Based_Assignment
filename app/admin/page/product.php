@@ -108,12 +108,12 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
                             form="f">
                     </td>
                     <td>
-                        <img src="/admin/uploads/product_images/<?= $s->product_image ?>" class="resized-image">
+                        <img src="../../admin/uploads/product_images/<?= $s->product_image ?>" class="resized-image">
                     </td>
                     <td><?= $s->product_id ?></td>
                     <td><?= $s->product_name ?></td>
                     <td>
-                        <img src="/admin/uploads/category_images/<?= $s->category_image ?>" class="resized-image">
+                        <img src="../../uploads/category_images/<?= $s->category_image ?>" class="resized-image">
                     </td>
                     <td><?= $s->category_name ?></td>
                     <td><?= $s->price ?></td>
@@ -320,7 +320,7 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
                 <input type="file" name="product_image" accept="image/*" />
                 <br>
                 <label for="current_image">Current Product Image:</label><br>
-                <img id="currentImage" src="<?= isset($product['product_image']) && $product['product_image'] ? '/admin/uploads/product_images/' . $product['product_image'] : ''; ?>" alt="Current Product Image" style="max-width: 150px; max-height: 150px;">
+                <img id="currentImage" src="<?= isset($product['product_image']) && $product['product_image'] ? '../../uploads/product_images/' . $product['product_image'] : ''; ?>" alt="Current Product Image" style="max-width: 150px; max-height: 150px;">
                 <span class="error"><?php err('product_image'); ?></span><br><br>
 
 

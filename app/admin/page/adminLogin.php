@@ -60,7 +60,7 @@ if (is_post()) {
         <div id="container-left">
             <form id="login-container" method="post">
                 <div id="logo">
-                    <img src="../images/logo.png" alt="Logo" width="70" height="70" />
+                    <img src="../../images/logo.png" alt="Logo" width="70" height="70" />
                     <p id="banana">BANANA</p>
                     <p id="sis">SIS</p>
                 </div>
@@ -86,7 +86,7 @@ if (is_post()) {
         </div>
         <div id="container-right">
             <p>Welcome Back</p>
-            <img src="../images/login-products.png" alt="Grocery items on shelves" style="width:60%; height:auto;">
+            <img src="../../images/login-products.png" alt="Grocery items on shelves" style="width:60%; height:auto;">
         </div>
     </div>
     <script src="js/showPassword.js"></script>

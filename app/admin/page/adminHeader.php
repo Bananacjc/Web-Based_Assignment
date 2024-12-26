@@ -43,7 +43,7 @@ if (!empty($error)) {
         <div class="h-100">
             <div class="sidebar-logo">
                 <a href="adminDashboard.php?title=Dashboard">
-                    <img src="../images/logo.png" alt="Logo" width="25" height="25" />
+                    <img src="../../images/logo.png" alt="Logo" width="25" height="25" />
                     <span class="label">BananaSis</span>
                 </a>
             </div>
