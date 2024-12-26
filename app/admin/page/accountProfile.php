@@ -26,9 +26,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $profileImage = $_user->profile_image;
         if ($profilePic) {
-            $newProfileImage = save_photo($profilePic, '../../uploads/profile_images');
+            $newProfileImage = save_photo($profilePic, '../uploads/profile_images');
             if ($profileImage && $profileImage !== 'guest.png') {
-                $oldImagePath = "../../uploads/profile_images/$profileImage";
+                $oldImagePath = "../uploads/profile_images/$profileImage";
                 if (file_exists($oldImagePath)) unlink($oldImagePath);
             }
             $profileImage = $newProfileImage;
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="hidden" name="form_type" value="personal_info" />
             <div class="input-file-container" id="drop-zone">
                 <div class="image-preview-container">
-                    <img id="image-preview" src="../../uploads/profile_images/<?= $_user->profile_image ?>" alt="Profile Picture" />
+                    <img id="image-preview" src="../uploads/profile_images/<?= $_user->profile_image ?>" alt="Profile Picture" />
                 </div>
                 <input type="file" name="profile-pic" id="profile-pic" class="input-file" accept="image/*" onchange="previewFile()" />
                 <div class="drag-overlay" id="drag-overlay">

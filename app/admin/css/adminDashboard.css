@@ -135,8 +135,24 @@ body {
     }
 }
 
-/* Adjust the layout when the sidebar is toggled */
 #nav-toggle:checked~.wrapper .main {
     margin-left: 70px;
 
 }
+.top-selling-products .data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.top-selling-products .data-table th, 
+.top-selling-products .data-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.top-selling-products .data-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+

@@ -24,14 +24,14 @@ if (is_post()) {
         $_err['password'] = 'Required';
     }
 
-    // Login user
     if (!$_err) {
-        // TODO
+        $hashedPassword = sha1($password);
+
         $stm = $_db->prepare('
             SELECT * FROM employees
             WHERE email = ? AND password= ?
         ');
-        $stm->execute([$email, $password]);
+        $stm->execute([$email, $hashedPassword]);
         $u = $stm->fetch();
 
         if ($u) {
