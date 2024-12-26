@@ -7,7 +7,6 @@ $_css = '../css/cart.css';
 require '../_base.php';
 include '../_head.php';
 
-$orderItems = [];
 if (is_post()) {
     $btn    = req('btn');
     $target = req('target');
