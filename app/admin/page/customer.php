@@ -85,6 +85,11 @@ $customers = $stm->fetchAll();
         <button type="submit">Search</button>
     </form>
 
+    <form method="post" id="f">
+        <button formaction="restore.php">Restore</button>
+        <button formaction="deleteCustomer.php" onclick="return confirmDelete()">Delete</button>
+    </form>
+
     <p><?= count($customers) ?> customer(s) on this page | Total: <?= $totalRecords ?> customer(s)</p>
 
     <table id="customerTable" class="data-table">
