@@ -400,10 +400,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <td>" . ($index + 1) . "</td>
             <td class='address-text'>$address</td>
             <td class='text-center'>
-                <button class='btn edit-address-btn' data-index='$index' title='Edit Address'>
+                <button class='btn edit-address-btn' data-index='$index'>
                     <i class='ti ti-edit'></i>
                 </button>
-                <button class='btn delete-address-btn' data-index='$index' title='Delete Address'>
+                <button class='btn delete-address-btn' data-index='$index'>
                     <i class='ti ti-trash'></i>
                 </button>
             </td>
