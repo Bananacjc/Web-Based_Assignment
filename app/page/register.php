@@ -37,8 +37,9 @@ if (is_post()) {
     }
 
     if ($msg) {
-        temp('popup-msg', ['msg' => $msg, 'isSuccess' => $isSuccess]);
+        
         if ($isSuccess) {
+            temp('popup-msg', ['msg' => $msg, 'isSuccess' => $isSuccess]);
             redirect('login.php');
         } else {
             popup($msg, $isSuccess);

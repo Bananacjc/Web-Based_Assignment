@@ -14,11 +14,7 @@
     justify-content: space-evenly;
 }
 
-.billing-detail-container {
-    display: flex;
-    flex-direction: column;
-    margin: 20px 0;
-}
+
 
 .normal-label {
     margin-bottom: 10px;
@@ -31,8 +27,7 @@
     border-radius: 8px;
     box-sizing: border-box;
     width: 50%;
-    pointer-events: none;
-    user-select: none; 
+    pointer-events: pointer;
 }
 
 .bg-input-box{
@@ -53,6 +48,12 @@
     border-radius: 16px;
     box-shadow: 0 0px 6px rgba(0,0,0,0.1);
     box-sizing: border-box;
+}
+
+#billing-details-container .billing-detail-container {
+    display: flex;
+    flex-direction: column;
+    margin: 20px 0;
 }
 
 #payment-container > * > h3{

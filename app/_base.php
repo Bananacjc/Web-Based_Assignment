@@ -21,7 +21,7 @@ function cartPopup($imagePath)
     echo "<script>showCartPopup('$imagePath');</script>";
 }
 
-function priceFormat($price): string 
+function priceFormat($price): string
 {
     return number_format($price, 2, '.', ',');
 }
@@ -491,17 +491,20 @@ function get_cart(): array
     // Prepare query
     $stmt = $_db->prepare('SELECT cart FROM customers WHERE customer_id = ?');
     $stmt->execute([$_user->customer_id]);
-    $currentUser = $stmt->fetch();
+    $cartRow = $stmt->fetch(PDO::FETCH_OBJ); // Fetch as object
 
-    // If user exist and cart no empty
-    if ($currentUser && $currentUser->cart) {
-        $cart = json_decode($currentUser->cart, true);  // Decode json into array
-        set_cart($cart);
-        return $cart;
+    // If user exists and 'cart' is not empty
+    if ($cartRow && !empty($cartRow->cart)) {
+        $cart = json_decode($cartRow->cart, true);  // Decode JSON into array
+        if (json_last_error() === JSON_ERROR_NONE) {
+            set_cart($cart);
+            return $cart;
+        } else {
+            error_log("JSON Decode Error: " . json_last_error_msg());
+        }
     }
 
     return [];
-
 }
 
 // Set shopping cart
@@ -516,27 +519,17 @@ function set_cart($cart = [])
     // Encode cart into json
     $cart_json = json_encode($cart);
 
-    try {
-        $stmt->execute([$cart_json, $_user->customer_id]);
-    } catch (PDOException $e) {
-        throw new PDOException("Database Error: " . $e->getMessage(), (int)$e->getCode());
+    if (json_last_error() == JSON_ERROR_NONE) {
+        try {
+            $stmt->execute([$cart_json, $_user->customer_id]);
+        } catch (PDOException $e) {
+            throw new PDOException("Database Error: " . $e->getMessage(), (int)$e->getCode());
+        }
+    } else {
+        error_log("JSON Decode Error: " . json_last_error_msg());
     }
 }
 
-// Update shopping cart
-// function update_cart($id, $unit)
-// {
-//     $cart = get_cart();
-
-//     if ($unit >= 1 && $unit <= 10 && is_exists($id, 'products', 'product_id')) {
-//         $cart[$id] = $unit;
-//         ksort($cart);
-//     } else {
-//         unset($cart[$id]);
-//     }
-
-//     set_cart($cart);
-// }
 
 function update_cart($id, $unit)
 {
@@ -554,17 +547,18 @@ function update_cart($id, $unit)
     }
 
     // Convert to json
-    try {
-        $cart_json = json_encode($cart, JSON_THROW_ON_ERROR);
-    } catch (JsonException $e) {
-        throw new JsonException("Encoding Cart Failed: " . $e->getMessage(), $e->getCode(), $e);
-    }
 
-    // Write to db
-    try {
-        $stmt->execute([$cart_json, $_user->customer_id]);
-    } catch (PDOException $e) {
-        throw new PDOException("Database Error: " . $e->getMessage(), (int)$e->getCode());
+    $cart_json = json_encode($cart);
+    if (json_last_error() == JSON_ERROR_NONE) {
+
+        // Write to db
+        try {
+            $stmt->execute([$cart_json, $_user->customer_id]);
+        } catch (PDOException $e) {
+            throw new PDOException("Database Error: " . $e->getMessage(), (int)$e->getCode());
+        }
+    } else {
+        error_log("JSON Decode Error: " . json_last_error_msg());
     }
 }
 
