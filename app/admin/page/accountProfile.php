@@ -1,7 +1,7 @@
 <?php
 $_title = 'Profile';
 $_css = '../css/accountProfile.css';
-$_css1 = '../css/_base.css';
+$_css1 = '../css/base.css';
 require '../_base.php';
 
 
@@ -17,11 +17,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (!$username || !$email || !$role) {
             temp('popup-msg', ['msg' => 'All fields are required.', 'isSuccess' => false]);
-            redirect();
+            redirect('accountProfile.php');
         }
         if (!is_email($email)) {
             temp('popup-msg', ['msg' => 'Invalid email format.', 'isSuccess' => false]);
-            redirect();
+            redirect('accountProfile.php');
         }
 
         $profileImage = $_user->profile_image;
@@ -47,20 +47,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             temp('popup-msg', ['msg' => 'Failed to update profile.', 'isSuccess' => false]);
         }
+        redirect('accountProfile.php');
+    } elseif ($formType === 'change_password') {
+        $oldPassword = trim(post('old-password'));
+        $newPassword = trim(post('new-password'));
+        $confirmPassword = trim(post('confirm-password'));
+
+        if (!$oldPassword || !$newPassword || !$confirmPassword) {
+            temp('popup-msg', ['msg' => 'All fields are required.', 'isSuccess' => false]);
+            redirect();
+
+        }
+
+        if (sha1($oldPassword) !== $_user->password) {
+            temp('popup-msg', ['msg' => 'Incorrect old password.', 'isSuccess' => false]);
+            redirect();
+
+        }
+
+        if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/', $newPassword)) {
+            temp('popup-msg', [
+                'msg' => 'New password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character.',
+                'isSuccess' => false
+                
+            ]);
+            redirect();
+
+        }
+
+        if ($newPassword !== $confirmPassword) {
+            temp('popup-msg', ['msg' => 'New password and confirmation password do not match.', 'isSuccess' => false]);
+            redirect();
+        }
+
+        $hashedNewPassword = sha1($newPassword);
+        $stmt = $_db->prepare("UPDATE employees SET password = ? WHERE employee_id = ?");
+        $success = $stmt->execute([$hashedNewPassword, $_user->employee_id]);
+
+        if ($success) {
+            temp('popup-msg', ['msg' => 'Password changed successfully.', 'isSuccess' => true]);
+        } else {
+            temp('popup-msg', ['msg' => 'Failed to update password. Please try again.', 'isSuccess' => false]);
+        }
+
         redirect();
     }
 }
+
+
+
 ?>
 <div id="profile-container">
     <div class="sidebar">
-    <a href="adminDashboard.php" class="back-button">
-    <i class="fa fa-arrow-left"></i> Back
-</a>
+        <a href="adminDashboard.php" class="back-button">
+            <i class="fa fa-arrow-left"></i> Back
+        </a>
 
         <ul>
             <li id="personal-info-btn"><i class="ti ti-user"></i> Personal Info</li>
             <li id="change-password-btn"><i class="ti ti-lock"></i> Change Password</li>
-            <li id="logout-btn"><a href="LogoutServlet" id="logout-link"><i class="ti ti-logout"></i>Logout</a></li>
+            <li id="logout-btn"><a href="logout.php" id="logout-link" onclick="return confirmLogOut()"><i class="ti ti-logout"></i>Logout</a></li>
         </ul>
     </div>
     <div class="content" id="personal-info-content" style="display: block;">
@@ -97,22 +143,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="content" id="change-password-content" style="display: none;">
         <h2>Change Password</h2>
-        <form id="change-password-container" action="ChangePassword" method="post">
+        <form id="change-password-container" action="" method="post">
+            <input type="hidden" name="form_type" value="change_password" />
             <div class="input-subcontainer">
-                <input type="password" name="password" id="password" class="input-box" spellcheck="false" required />
-                <label for="password" class="label">Password</label>
-                <i class="ti ti-eye-off" id="togglePassword"></i>
+                <input type="password" name="old-password" id="old-password" class="input-box" spellcheck="false" />
+                <label for="old-password" class="label">Old Password</label>
+                <i class="ti ti-eye-off" id="toggleOldPassword"></i>
             </div>
             <div class="input-subcontainer">
-                <input type="password" name="confirm-password" id="confirm-password" class="input-box" spellcheck="false" required />
+                <input type="password" name="new-password" id="new-password" class="input-box" spellcheck="false" />
+                <label for="new-password" class="label">New Password</label>
+                <i class="ti ti-eye-off" id="toggleNewPassword"></i>
+            </div>
+            <div class="input-subcontainer">
+                <input type="password" name="confirm-password" id="confirm-password" class="input-box" spellcheck="false"/>
                 <label for="confirm-password" class="label">Confirm Password</label>
                 <i class="ti ti-eye-off" id="toggleConfirmPassword"></i>
             </div>
             <button class="btn" type="submit">Save</button>
         </form>
+
     </div>
-    <!-- Add other content divs similarly with display: none; -->
 </div>
+<script>
+function confirmLogOut() {
+        return confirm('Are you sure you want to logout?');
+    }
+    </script>
+    
 <script src="../js/profileSidebar.js"></script>
 <script src="../js/imageDragAndDrop.js"></script>
 <script src="../js/inputHasContent.js"></script>

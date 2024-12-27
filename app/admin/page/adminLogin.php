@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-    
+
 <?php
-$_css ='../css/_base.css';
-$_css1='../css/adminLogin.css';
+$_css = '../css/base.css';
+$_css1 = '../css/adminLogin.css';
 require '../_base.php';
 $msg = '';
 $isSuccess = false;
@@ -41,7 +41,6 @@ if (is_post()) {
             $msg = 'Invalid email or password';
             popup($msg, false);
         }
-
     }
     $msg = 'Invalid email or password';
     popup($msg, false);
@@ -51,7 +50,7 @@ if (is_post()) {
 
 <head>
     <meta charset="UTF-8" />
-       <link rel="icon" href="/app/images/logo.png" />
+    <link rel="icon" href="/app/images/logo.png" />
     <title>Admin Login</title>
 </head>
 
@@ -66,17 +65,16 @@ if (is_post()) {
                 </div>
                 <div id="input-container">
                     <div class="input-subcontainer">
-
-                        <label for="email">Email</label>
-                        <?= html_text('email', 'maxlength="100"') ?>
-                        <?= err('email') ?>
+                        <input type="text" name="email" id="email" class="input-box" spellcheck="false" placeholder=" " />
+                        <label for="email" class="label">Email</label>
                     </div>
                     <div class="input-subcontainer">
-                        <label for="password">Password</label>
-                        <?= html_password('password', 'maxlength="100"') ?>
-                        <?= err('password') ?>
-
+                        <input type="password" name="password" id="password" class="input-box" spellcheck="false" placeholder=" " />
+                        <label for="password" class="label">Password</label>
                         <i class="ti ti-eye-off" id="togglePassword"></i>
+                    </div>
+                    <div>
+                        <a href="forgetPassword.php" id="forgotpass" class="hover-underline-anim">Forgot your password?</a>
                     </div>
                 </div>
 
@@ -84,12 +82,12 @@ if (is_post()) {
                 <button id="loginbtn" type="submit">Login</button>
             </form>
         </div>
-        <div id="container-right">
-            <p>Welcome Back</p>
-            <img src="../../images/login-products.png" alt="Grocery items on shelves" style="width:60%; height:auto;">
-        </div>
-    </div>
-    <script src="js/showPassword.js"></script>
-</body>
 
+    <div id="container-right">
+        <p>Welcome Back</p>
+        <img src="../../images/login-products.png" alt="Grocery items on shelves" style="width:60%; height:auto;">
+    </div>
+</div>
+</body>
+<script src="../js/showPassword.js"></script>
 </html>
