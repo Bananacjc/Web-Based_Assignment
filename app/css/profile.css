@@ -216,7 +216,7 @@
     display: inline-block;
 }
 
-.success {
+.otp-sent-success {
     cursor: not-allowed!important;
 }
 
@@ -276,6 +276,12 @@
     margin: 5px;
     padding: 10px;
     background-color: var(--color-red-light);
+}
+
+.pac-container {
+    z-index: 10000 !important; /* Ensure it appears above other elements */
+    top: 50px !important;
+    left: 0 !important;
 }
 
 /* Order History */

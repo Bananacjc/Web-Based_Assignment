@@ -96,15 +96,16 @@ function get_file($key)
 }
 
 // Crop, resize and save photo
-function save_photo($f, $folder, $width = 200, $height = 200)
+function save_photo($f, $folder)
 {
-    $photo = uniqid() . '.jpg';
+    $photo = uniqid() . '.png'; // Use PNG to preserve transparency
 
     require_once 'lib/SimpleImage.php';
     $img = new SimpleImage();
+
+    // Load the file and save it directly without resizing
     $img->fromFile($f->tmp_name)
-        ->thumbnail($width, $height)
-        ->toFile("$folder/$photo", 'image/jpeg');
+        ->toFile("$folder/$photo", 'image/png'); // Save as PNG to retain transparency
 
     return $photo;
 }

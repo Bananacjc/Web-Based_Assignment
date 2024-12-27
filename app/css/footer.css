@@ -1,5 +1,10 @@
 @import url(base.css);
 
+footer {
+    z-index: 1; /* Ensure it is lower than the autocomplete dropdown */
+    position: relative; /* Avoid interference with absolute elements */
+}
+
 #footer-wave-svg {
     background-color: transparent;
     height: 30px;
@@ -14,6 +19,8 @@
 #footer-container{
     /* background: #212529; */
     background-color: var(--color-black-carbon);
+    position: relative; /* Ensure it doesn't overlap absolute elements */
+    z-index: 1; /* Lower than autocomplete dropdown */
 }
 
 #footer-top{

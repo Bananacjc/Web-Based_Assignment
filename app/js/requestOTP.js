@@ -22,7 +22,7 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.trim() === 'Success') {
                     $button.html('<i class="ti ti-check"></i> Sent')
-                        .addClass('success')
+                        .addClass('otp-sent-success')
                         .prop('disabled', true);
                 } else {
                     $button.text('Retry').prop('disabled', false);

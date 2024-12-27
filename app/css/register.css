@@ -157,7 +157,7 @@ body {
     display: inline-block;
 }
 
-.success {
+.otp-sent-success {
     cursor: not-allowed!important;
 }
 
