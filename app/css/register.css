@@ -65,7 +65,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    align-items: stretch;
 }
 
 .input-subcontainer {
@@ -120,19 +120,44 @@ body {
 }
 
 .input-box:focus,
-.input-box:valid {
+.input-box:not(:placeholder-shown) {
     border-color: var(--color-gold);
     outline: solid 1px var(--color-gold);
     color: #4d4d4d;
 }
 
 .input-box:focus + .label,
-.input-box:valid + .label {
+.input-box:not(:placeholder-shown) + .label {
     transform: translateX(-15px) translateY(-165%) scale(0.9);
     padding: 0 10px;
     color: var(--color-gold);
     background-color: var(--color-white-pure);
     z-index: 2;
+}
+
+#request-otp-btn {
+    margin: 0.5rem 0 0.5rem 1rem;
+    padding: 16px 20px;
+    width: 16rem;
+    line-height: 16px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    font-family: "Inter", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    background-color: var(--color-gold);
+    text-align: center;
+    text-decoration: none;
+    color: var(--color-black-carbon);
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+    cursor: pointer;
+    outline: none;
+    display: inline-block;
+}
+
+.success {
+    cursor: not-allowed!important;
 }
 
 #registerbtn{
