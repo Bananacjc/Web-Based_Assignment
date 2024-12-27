@@ -1,7 +1,8 @@
 <?php
 require '../_base.php'; // Include base functions and database connection
 
-// Handle POST request for adding or updating products
+// Handle POST request for adding a product
+// Handle POST request for adding a product
 if (is_post()) {
     global $_err;
 
@@ -13,7 +14,7 @@ if (is_post()) {
     $categoryName = post('category_name');
     $newCategoryName = post('new_category_name');
     $categoryImage = get_file('new_category_image'); // For new category image
-    $productId = post('product_id'); // Assuming product ID is sent for updates
+    $productId = post('product_id'); // Assuming product ID is sent for updates (no longer needed)
 
     // Product name validation
     if (empty($productName)) {
@@ -76,6 +77,9 @@ if (is_post()) {
                 $stmt = $_db->prepare("INSERT INTO categories (category_name, category_image) VALUES (?, ?)");
                 $stmt->execute([$newCategoryName, $categoryImagePath]);
                 $categoryName = $newCategoryName; // Use newly created category name
+
+                // Log the action of creating a new category
+                log_action($employeeId, 'Create Category', 'Created new category: ' . $newCategoryName, $_db);
             } catch (PDOException $e) {
                 $_err['new_category_name'] = 'Error adding new category: ' . $e->getMessage();
             }
@@ -90,48 +94,32 @@ if (is_post()) {
         $_err['product_image'] = 'Invalid image file. Please upload an image.';
     }
 
-    // If no errors, insert or update the product
+    // If no errors, insert the new product
     if (empty($_err)) {
         $productImagePath = save_photo($productImage, '../../uploads/product_images');
         
-        // Update product if productId is provided
-        if (!empty($productId)) {
-            try {
-                $stmt = $_db->prepare("
-                    UPDATE products SET 
-                    product_name = ?, 
-                    category_name = ?, 
-                    price = ?, 
-                    description = ?, 
-                    current_stock = ?, 
-                    product_image = ?, 
-                    status = ? 
-                    WHERE product_id = ?
-                ");
-                $stmt->execute([$productName, $categoryName, $price, $description, $currentStock, $productImagePath, $status, $productId]);
-                temp('info', "Product updated successfully!");
-                redirect('product.php');
-            } catch (PDOException $e) {
-                $_err['error'] = 'Error updating product: ' . $e->getMessage();
+        // New product insertion code
+        $productId = generate_unique_id('PRO', 'products', 'product_id', $_db);
+        try {
+            $stmt = $_db->prepare("
+                INSERT INTO products (product_id, product_name, category_name, price, description, current_stock, amount_sold, product_image, status)
+                VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)
+            ");
+            $stmt->execute([$productId, $productName, $categoryName, $price, $description, $currentStock, $productImagePath, $status]);
+
+            if ($_user && isset($_user->employee_id)) {
+                $employeeId = $_user->employee_id;
+                log_action($employeeId, 'Add Product', 'Added new product: ' . $productName, $_db);
             }
-        } else {
-            // New product insertion code
-            $productId = generate_unique_id('PRO', 'products', 'product_id', $_db);
-            try {
-                $stmt = $_db->prepare("
-                    INSERT INTO products (product_id, product_name, category_name, price, description, current_stock, amount_sold, product_image, status)
-                    VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)
-                ");
-                $stmt->execute([$productId, $productName, $categoryName, $price, $description, $currentStock, $productImagePath, $status]);
-                temp('info', "Product added successfully!");
-                redirect('product.php');
-            } catch (PDOException $e) {
-                $_err['error'] = 'Error adding product: ' . $e->getMessage();
-            }
+            temp('info', "Product added successfully!");
+            redirect('product.php');
+        } catch (PDOException $e) {
+            $_err['error'] = 'Error adding product: ' . $e->getMessage();
         }
     } else {
         temp('error', $_err);
         redirect('product.php');
     }
 }
+
 ?>

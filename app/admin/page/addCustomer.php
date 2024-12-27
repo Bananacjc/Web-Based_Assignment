@@ -66,7 +66,6 @@ if (is_post()) {
         // Generate a unique customer ID
         $customer_id = generate_unique_id('CUS', 'customers', 'customer_id', $_db);
 
-        // Insert new customer into the database
         try {
             $stmt = $_db->prepare("
                 INSERT INTO customers (customer_id, username, email, contact_num, banks, ewallets, addresses, cart, promotion_records, profile_image)
@@ -78,15 +77,19 @@ if (is_post()) {
                 $username,
                 $email,
                 $contact_num,
-                $banks, // Store as JSON-encoded string
-                $ewallets, // Store as JSON-encoded string
-                $addresses, // Store as JSON-encoded string
-                $cart, // Store as JSON-encoded string
-                $promotion_records, // Store as JSON-encoded string
+                $banks, 
+                $ewallets, 
+                $addresses,
+                $cart, 
+                $promotion_records, 
                 $profile_image_path
             ]);
 
-            // Success message and redirect
+            if ($_user && isset($_user->employee_id)) {
+                $employeeId = $_user->employee_id;
+                log_action($employeeId, 'Add Customer', 'Added new customer: ' . $customer_id, $_db);
+            }
+
             temp('info', "Customer added successfully!");
             redirect('customer.php');
         } catch (PDOException $e) {

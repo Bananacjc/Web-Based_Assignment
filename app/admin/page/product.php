@@ -10,8 +10,9 @@
 <?php
 
 
-include 'adminHeader.php' ?>
+include 'adminHeader.php' 
 
+?>
 <?php
 $fields = [
     '',
@@ -40,7 +41,7 @@ $dir = req('dir');
 in_array($dir, ['asc', 'desc']) || $dir = 'asc';
 
 $page = req('page', 1);
-$limit = 10; // Number of items per page
+$limit = 10; 
 $offset = ($page - 1) * $limit;
 
 $total_products_query = 'SELECT COUNT(*) FROM products WHERE product_name LIKE ? AND (category_name = ? OR ?)';

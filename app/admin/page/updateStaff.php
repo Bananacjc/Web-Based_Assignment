@@ -68,6 +68,11 @@ if (is_post()) {
             $employee_id
         ]);
 
+        if ($_user && isset($_user->employee_id)) {
+            $employeeId = $_user->employee_id;
+            log_action($employeeId, 'Updated Staff', "Updated Staff: $employee_id", $_db);
+        }
+
         temp('info', 'Employee updated successfully!');
         redirect('staff.php');
     } else {

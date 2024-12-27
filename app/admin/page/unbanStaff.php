@@ -10,6 +10,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stm = $_db->prepare($query);
         $stm->execute([$employee_id]);
 
+        if ($_user && isset($_user->employee_id)) {
+            $employeeId = $_user->employee_id;
+            log_action($employeeId, 'Unblock Staff', "Unblocked Staff: $employee_id", $_db);
+        }
+
         temp('info',"Employee with ID: $employee_id has been banned successfully.");
         redirect('staff.php');
 

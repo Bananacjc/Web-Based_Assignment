@@ -92,20 +92,22 @@ if (is_post()) {
             $username,
             $email,
             $contact_num,
-            $banks, // Store as JSON-encoded string
-            $ewallets, // Store as JSON-encoded string
-            $addresses, // Store as JSON-encoded string
-            $cart, // Store as JSON-encoded string
-            $promotion_records, // Store as JSON-encoded string
+            $banks, 
+            $ewallets, 
+            $addresses, 
+            $cart, 
+            $promotion_records, 
             $profile_image_path,
             $customer_id
         ]);
 
-        // Set success message and redirect
+        if ($_user && isset($_user->employee_id)) {
+            $employeeId = $_user->employee_id;
+            log_action($employeeId, 'Updated Customer', "Updated Customer: $customer_id", $_db);
+        }
         temp('info', 'Customer updated successfully!');
         redirect('customer.php');
     } else {
-        // If validation failed, send errors back to the form
         temp('error', $_err);
         redirect('customer.php');
     }

@@ -63,7 +63,7 @@
 .input-subcontainer {
     width: 300px;
     position: relative;
-    margin: 20px 0;
+    margin: 15px 0;
     display: flex;
     align-items: center;
 }
@@ -92,16 +92,14 @@
 }
 
 .input-box:focus,
-.input-box:valid,
-.input-box.has-content {
+.input-box:not(:placeholder-shown) {
     border-color: #888;
     outline: solid 1px #888;
     color: #888;
 }
 
 .input-box:focus + .label,
-.input-box:valid + .label,
-.input-box.has-content + .label {
+.input-box:not(:placeholder-shown) + .label {
     transform: translateY(-135%) translateX(0%) scale(0.9);
     color: #888;
     background: #FFF;
@@ -110,6 +108,12 @@
 
 
 /* personal info */
+
+#personal-info-input-container {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+}
 
 .input-file-container {
     position: relative;
@@ -185,9 +189,35 @@
 
 .btn:hover,
 .reviewbtn:hover,
-.viewbtn:hover {
+.viewbtn:hover,
+#request-otp-btn:hover {
     background-color: #000000;
     color: #EFEFEF;
+}
+
+#request-otp-btn {
+    margin: auto 0 auto 10px;
+    height: 50px;
+    width: 16rem;
+    line-height: 16px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    font-family: "Inter", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    background-color: var(--color-gold);
+    text-align: center;
+    text-decoration: none;
+    color: var(--color-black-carbon);
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+    cursor: pointer;
+    outline: none;
+    display: inline-block;
+}
+
+.success {
+    cursor: not-allowed!important;
 }
 
 /* payment */

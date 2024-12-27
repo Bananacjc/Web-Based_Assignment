@@ -7,23 +7,80 @@ include '../_head.php';
 require_login();
 reset_user();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $formType = post('form_type'); // Fetch the hidden input field
+// Handle logout directly if the logout query parameter is set
+if (isset($_GET['logout'])) {
+    logout('/page/login.php'); // Call the logout function and redirect to the login page
+}
 
-    if ($formType === 'personal_info') {
-        // Handle personal info update
+if (is_post()) {
+    $formType = post('form_type'); // Fetch the hidden input field
+    if (isset($_POST['request_otp'])) { // Handle OTP request
+        header('Content-Type: text/plain'); // Set response type to plain text
+        ob_clean(); // Clear any output buffer before sending the response
+        try {
+            $email = trim($_POST['email']);
+
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                echo 'Invalid email format.';
+                exit;
+            }
+
+            // Generate OTP
+            $otp = rand(100000, 999999);
+            $_SESSION['otp'] = $otp;
+            $_SESSION['otp_email'] = $email;
+
+            $m = get_mail();
+            $m->addAddress($email);
+            $m->isHTML(true);
+            $m->Subject = 'Your OTP for Email Verification';
+            $m->Body = "<p>Your OTP is <b>$otp</b>. Please use it to verify your email address update.</p>";
+
+            if ($m->send()) {
+                echo 'Success';
+            } else {
+                echo 'Failed to send OTP.';
+            }
+        } catch (Exception $e) {
+            echo 'Unexpected server error occurred.';
+        }
+        exit; // Stop further execution
+    } elseif ($formType === 'personal_info') {
         $username = trim($_POST['username']);
         $email = trim($_POST['email']);
         $phone = trim($_POST['phone']);
+        $otpEntered = trim(post('otp'));
         $profilePic = get_file('profile-pic');
 
         if (!$username || !$email || !$phone) {
             temp('popup-msg', ['msg' => 'All fields are required.', 'isSuccess' => false]);
             redirect();
         }
+
         if (!is_email($email)) {
             temp('popup-msg', ['msg' => 'Invalid email format.', 'isSuccess' => false]);
             redirect();
+        }
+
+        if ($email !== $_user->email) { // Email update requires OTP verification
+            if (empty($otpEntered)) {
+                temp('popup-msg', ['msg' => 'Please enter the OTP sent to your email.', 'isSuccess' => false]);
+                redirect();
+            }
+
+            if (!isset($_SESSION['otp']) || $_SESSION['otp_email'] !== $email) {
+                temp('popup-msg', ['msg' => 'No OTP found or mismatch. Please request OTP again.', 'isSuccess' => false]);
+                redirect();
+            }
+
+            if ($otpEntered != $_SESSION['otp']) {
+                temp('popup-msg', ['msg' => 'Invalid OTP. Please check your email.', 'isSuccess' => false]);
+                redirect();
+            }
+
+            // Clear OTP session on successful verification
+            unset($_SESSION['otp']);
+            unset($_SESSION['otp_email']);
         }
 
         $profileImage = $_user->profile_image;
@@ -68,6 +125,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 redirect();
             }
 
+            // Check for duplicate account numbers
+            foreach ($banks as $bank) {
+                if ($bank['accNum'] === $bankData['accNum']) {
+                    temp('popup-msg', ['msg' => 'This account number is already added.', 'isSuccess' => false]);
+                    redirect();
+                }
+            }
+
+            // Add the bank
             $banks[] = $bankData;
             $banksJson = json_encode($banks);
 
@@ -83,18 +149,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 temp('popup-msg', ['msg' => 'Invalid expiry date format.', 'isSuccess' => false]);
                 redirect();
             }
-        
+
+            // Check for duplicate account numbers (excluding the current index being edited)
+            $newAccNum = trim(post('acc-num'));
+            foreach ($banks as $i => $bank) {
+                if ($i !== (int)$index && $bank['accNum'] === $newAccNum) {
+                    temp('popup-msg', ['msg' => 'This account number is already added.', 'isSuccess' => false]);
+                    redirect();
+                }
+            }
+
             $banks[$index] = [
-                'accNum' => trim(post('acc-num')),
+                'accNum' => $newAccNum,
                 'cvv' => trim(post('cvv')),
                 'expiry' => $expiry,
             ];
-        
+
             // Update the database
             $banksJson = json_encode($banks);
             $stmt = $_db->prepare("UPDATE customers SET banks = ? WHERE customer_id = ?");
             $stmt->execute([$banksJson, $_user->customer_id]);
-        
+
             $_user->banks = $banksJson;
             temp('popup-msg', ['msg' => 'Bank updated successfully.', 'isSuccess' => true]);
         } elseif ($action === 'delete-bank' && is_numeric($index)) {
@@ -167,6 +242,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         redirect(); // Reload the page to reflect changes
+    } elseif ($formType === 'change_password') {
+        // Handle change password
+        $oldPassword = trim(post('old-password'));
+        $newPassword = trim(post('new-password'));
+        $confirmPassword = trim(post('confirm-password'));
+
+        // Validate old password
+        if (!$oldPassword || !$newPassword || !$confirmPassword) {
+            temp('popup-msg', ['msg' => 'All fields are required.', 'isSuccess' => false]);
+            redirect();
+        }
+
+        if (sha1($oldPassword) !== $_user->password) {
+            temp('popup-msg', ['msg' => 'Incorrect old password.', 'isSuccess' => false]);
+            redirect();
+        }
+
+        // Validate new password complexity
+        if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/', $newPassword)) {
+            temp('popup-msg', [
+                'msg' => 'New password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character.',
+                'isSuccess' => false
+            ]);
+            redirect();
+        }
+
+        // Check if new password matches confirm password
+        if ($newPassword !== $confirmPassword) {
+            temp('popup-msg', ['msg' => 'New password and confirmation password do not match.', 'isSuccess' => false]);
+            redirect();
+        }
+
+        // Update the password in the database
+        $hashedNewPassword = sha1($newPassword);
+        $stmt = $_db->prepare("UPDATE customers SET password = ? WHERE customer_id = ?");
+        $success = $stmt->execute([$hashedNewPassword, $_user->customer_id]);
+
+        if ($success) {
+            temp('popup-msg', ['msg' => 'Password changed successfully.', 'isSuccess' => true]);
+        } else {
+            temp('popup-msg', ['msg' => 'Failed to update password. Please try again.', 'isSuccess' => false]);
+        }
+
+        redirect();
     }
 }
 ?>
@@ -179,7 +298,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <li id="address-btn"><i class="ti ti-map-pins"></i>Address</li>
             <li id="order-history-btn"><i class="ti ti-shopping-cart"></i> Order and Reviews</li>
             <li id="change-password-btn"><i class="ti ti-lock"></i> Change Password</li>
-            <li id="logout-btn"><a href="LogoutServlet" id="logout-link"><i class="ti ti-logout"></i>Logout</a></li>
+            <li id="logout-btn"><a href="?logout=true" id="logout-link"><i class="ti ti-logout"></i>Logout</a></li>
         </ul>
     </div>
     <div class="content" id="personal-info-content" style="display: block;">
@@ -195,14 +314,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <p>Drop your image here</p>
                 </div>
             </div>
-            <div>
+            <div id="personal-info-input-container">
                 <div class="input-subcontainer">
-                    <input type="text" name="username" value="<?= $_user->username ?? '' ?>" class="input-box" spellcheck="false" required/>
+                    <input type="text" name="username" value="<?= $_user->username ?? '' ?>" class="input-box" spellcheck="false" required />
                     <label for="username" class="label">Username</label>
                 </div>
                 <div class="input-subcontainer">
-                    <input type="text" name="email" value="<?= $_user->email ?? '' ?>" class="input-box" spellcheck="false" required />
+                    <input type="text" name="email" id="email" value="<?= $_user->email ?? '' ?>" class="input-box" spellcheck="false" required />
                     <label for="email" class="label">Email</label>
+                </div>
+                <div class="d-flex justify-content-space-around">
+                    <div class="input-subcontainer">
+                        <input type="text" name="otp" class="input-box" spellcheck="false" placeholder=" " />
+                        <label for="otp" class="label">OTP</label>
+                    </div>
+                    <button type="button" id="request-otp-btn">Request OTP</button>
                 </div>
                 <div class="input-subcontainer">
                     <input type="text" name="phone" value="<?= $_user->contact_num ?? '' ?>" class="input-box" spellcheck="false" required />
@@ -253,11 +379,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="hidden" name="action" id="bank-action" value="save-bank" />
                 <input type="hidden" name="index" id="bank-index" value="" />
                 <div class="input-subcontainer">
-                    <input type="text" name="acc-num" id="bank-account-input" class="input-box" required />
+                    <input type="text" name="acc-num" id="bank-account-input" class="input-box" placeholder=" " required />
                     <label for="acc-num" class="label">Account Number</label>
                 </div>
                 <div class="input-subcontainer">
-                    <input type="text" name="cvv" id="bank-cvv-input" class="input-box" required />
+                    <input type="text" name="cvv" id="bank-cvv-input" class="input-box" placeholder=" " required />
                     <label for="cvv" class="label">CVV</label>
                 </div>
                 <div class="input-subcontainer">
@@ -304,7 +430,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="hidden" name="action" id="action" value="save-address" />
             <input type="hidden" name="index" id="address-index" value="" />
             <div class="input-subcontainer" id="address-input-container">
-                <input type="text" name="address" id="address-input" class="input-box" spellcheck="false" required/>
+                <input type="text" name="address" id="address-input" class="input-box" spellcheck="false" placeholder=" " required />
                 <label for="address" class="label">New Address</label>
             </div>
             <button class="btn" type="submit" id="save-address-btn">Add Address</button>
@@ -345,24 +471,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     <div class="content" id="change-password-content" style="display: none;">
         <h2>Change Password</h2>
-        <form id="change-password-container" action="ChangePassword" method="post">
+        <form id="change-password-container" action="" method="post">
+            <input type="hidden" name="form_type" value="change_password" />
             <div class="input-subcontainer">
-                <input type="password" name="old-password" id="old-password" class="input-box" spellcheck="false" required />
+                <input type="password" name="old-password" id="old-password" class="input-box" spellcheck="false" placeholder=" " required />
                 <label for="old-password" class="label">Old Password</label>
                 <i class="ti ti-eye-off" id="toggleOldPassword"></i>
             </div>
             <div class="input-subcontainer">
-                <input type="password" name="new-password" id="new-password" class="input-box" spellcheck="false" required />
+                <input type="password" name="new-password" id="new-password" class="input-box" spellcheck="false" placeholder=" " required />
                 <label for="new-password" class="label">New Password</label>
                 <i class="ti ti-eye-off" id="toggleNewPassword"></i>
             </div>
             <div class="input-subcontainer">
-                <input type="password" name="confirm-password" id="confirm-password" class="input-box" spellcheck="false" required />
+                <input type="password" name="confirm-password" id="confirm-password" class="input-box" spellcheck="false" placeholder=" " required />
                 <label for="confirm-password" class="label">Confirm Password</label>
                 <i class="ti ti-eye-off" id="toggleConfirmPassword"></i>
             </div>
             <button class="btn" type="submit">Save</button>
         </form>
+
     </div>
     <!-- Add other content divs similarly with display: none; -->
 </div>
@@ -372,5 +500,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script src="../js/showPassword.js"></script>
 <script src="../js/paymentMethodManagement.js"></script>
 <script src="../js/addressManagement.js"></script>
+<script src="../js/requestOTP.js"></script>
 
 <?php include '../_foot.php'; ?>

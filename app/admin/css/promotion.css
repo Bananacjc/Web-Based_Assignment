@@ -1,0 +1,52 @@
+.button {
+    width: 100px; 
+    height: 40px;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button{
+    display: inline-block;
+    margin-right: 10px; 
+
+}
+/* Buttons with static size */
+.add-button {
+    background-color: #007BFF; /* Blue */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.add-button:hover {
+    background-color: #0056b3; /* Darker blue */
+}
+.delete-action-button {
+    background-color: red;
+}
+
+.delete-action-button:hover {
+    background-color: #cc0000; /* Slightly darker red */
+}
+
+.view-action-button {
+    background-color: grey;
+}
+
