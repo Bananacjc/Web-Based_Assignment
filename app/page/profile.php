@@ -7,6 +7,11 @@ include '../_head.php';
 require_login();
 reset_user();
 
+// Handle logout directly if the logout query parameter is set
+if (isset($_GET['logout'])) {
+    logout('/page/login.php'); // Call the logout function and redirect to the login page
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $formType = post('form_type'); // Fetch the hidden input field
 
@@ -54,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $action = post('action');
         $index = post('index');
         $banks = json_decode($_user->banks ?? '[]', true);
-
+    
         if ($action === 'save-bank') {
             // Add a new bank
             $bankData = [
@@ -62,18 +67,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'cvv' => trim(post('cvv')),
                 'expiry' => trim(post('expiry-date'))
             ];
-
+    
             if (in_array('', $bankData)) {
                 temp('popup-msg', ['msg' => 'All fields are required for adding a bank.', 'isSuccess' => false]);
                 redirect();
             }
-
+    
+            // Check for duplicate account numbers
+            foreach ($banks as $bank) {
+                if ($bank['accNum'] === $bankData['accNum']) {
+                    temp('popup-msg', ['msg' => 'This account number is already added.', 'isSuccess' => false]);
+                    redirect();
+                }
+            }
+    
+            // Add the bank
             $banks[] = $bankData;
             $banksJson = json_encode($banks);
-
+    
             $stmt = $_db->prepare("UPDATE customers SET banks = ? WHERE customer_id = ?");
             $stmt->execute([$banksJson, $_user->customer_id]);
-
+    
             $_user->banks = $banksJson;
             temp('popup-msg', ['msg' => 'Bank added successfully.', 'isSuccess' => true]);
         } elseif ($action === 'edit-bank' && is_numeric($index)) {
@@ -83,18 +97,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 temp('popup-msg', ['msg' => 'Invalid expiry date format.', 'isSuccess' => false]);
                 redirect();
             }
-        
+    
+            // Check for duplicate account numbers (excluding the current index being edited)
+            $newAccNum = trim(post('acc-num'));
+            foreach ($banks as $i => $bank) {
+                if ($i !== (int)$index && $bank['accNum'] === $newAccNum) {
+                    temp('popup-msg', ['msg' => 'This account number is already added.', 'isSuccess' => false]);
+                    redirect();
+                }
+            }
+    
             $banks[$index] = [
-                'accNum' => trim(post('acc-num')),
+                'accNum' => $newAccNum,
                 'cvv' => trim(post('cvv')),
                 'expiry' => $expiry,
             ];
-        
+    
             // Update the database
             $banksJson = json_encode($banks);
             $stmt = $_db->prepare("UPDATE customers SET banks = ? WHERE customer_id = ?");
             $stmt->execute([$banksJson, $_user->customer_id]);
-        
+    
             $_user->banks = $banksJson;
             temp('popup-msg', ['msg' => 'Bank updated successfully.', 'isSuccess' => true]);
         } elseif ($action === 'delete-bank' && is_numeric($index)) {
@@ -103,10 +126,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 unset($banks[$index]);
                 $banks = array_values($banks); // Re-index the array
                 $banksJson = json_encode($banks);
-
+    
                 $stmt = $_db->prepare("UPDATE customers SET banks = ? WHERE customer_id = ?");
                 $stmt->execute([$banksJson, $_user->customer_id]);
-
+    
                 $_user->banks = $banksJson;
                 temp('popup-msg', ['msg' => 'Bank deleted successfully.', 'isSuccess' => true]);
             } else {
@@ -167,6 +190,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         redirect(); // Reload the page to reflect changes
+    } elseif ($formType === 'change_password') {
+        // Handle change password
+        $oldPassword = trim(post('old-password'));
+        $newPassword = trim(post('new-password'));
+        $confirmPassword = trim(post('confirm-password'));
+
+        // Validate old password
+        if (!$oldPassword || !$newPassword || !$confirmPassword) {
+            temp('popup-msg', ['msg' => 'All fields are required.', 'isSuccess' => false]);
+            redirect();
+        }
+
+        if (sha1($oldPassword) !== $_user->password) {
+            temp('popup-msg', ['msg' => 'Incorrect old password.', 'isSuccess' => false]);
+            redirect();
+        }
+
+        // Validate new password complexity
+        if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/', $newPassword)) {
+            temp('popup-msg', [
+                'msg' => 'New password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character.',
+                'isSuccess' => false
+            ]);
+            redirect();
+        }
+
+        // Check if new password matches confirm password
+        if ($newPassword !== $confirmPassword) {
+            temp('popup-msg', ['msg' => 'New password and confirmation password do not match.', 'isSuccess' => false]);
+            redirect();
+        }
+
+        // Update the password in the database
+        $hashedNewPassword = sha1($newPassword);
+        $stmt = $_db->prepare("UPDATE customers SET password = ? WHERE customer_id = ?");
+        $success = $stmt->execute([$hashedNewPassword, $_user->customer_id]);
+
+        if ($success) {
+            temp('popup-msg', ['msg' => 'Password changed successfully.', 'isSuccess' => true]);
+        } else {
+            temp('popup-msg', ['msg' => 'Failed to update password. Please try again.', 'isSuccess' => false]);
+        }
+
+        redirect();
     }
 }
 ?>
@@ -179,7 +246,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <li id="address-btn"><i class="ti ti-map-pins"></i>Address</li>
             <li id="order-history-btn"><i class="ti ti-shopping-cart"></i> Order and Reviews</li>
             <li id="change-password-btn"><i class="ti ti-lock"></i> Change Password</li>
-            <li id="logout-btn"><a href="LogoutServlet" id="logout-link"><i class="ti ti-logout"></i>Logout</a></li>
+            <li id="logout-btn"><a href="?logout=true" id="logout-link"><i class="ti ti-logout"></i>Logout</a></li>
         </ul>
     </div>
     <div class="content" id="personal-info-content" style="display: block;">
@@ -197,7 +264,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div>
                 <div class="input-subcontainer">
-                    <input type="text" name="username" value="<?= $_user->username ?? '' ?>" class="input-box" spellcheck="false" required/>
+                    <input type="text" name="username" value="<?= $_user->username ?? '' ?>" class="input-box" spellcheck="false" required />
                     <label for="username" class="label">Username</label>
                 </div>
                 <div class="input-subcontainer">
@@ -304,7 +371,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="hidden" name="action" id="action" value="save-address" />
             <input type="hidden" name="index" id="address-index" value="" />
             <div class="input-subcontainer" id="address-input-container">
-                <input type="text" name="address" id="address-input" class="input-box" spellcheck="false" required/>
+                <input type="text" name="address" id="address-input" class="input-box" spellcheck="false" required />
                 <label for="address" class="label">New Address</label>
             </div>
             <button class="btn" type="submit" id="save-address-btn">Add Address</button>
@@ -345,7 +412,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     <div class="content" id="change-password-content" style="display: none;">
         <h2>Change Password</h2>
-        <form id="change-password-container" action="ChangePassword" method="post">
+        <form id="change-password-container" action="" method="post">
+            <input type="hidden" name="form_type" value="change_password" />
             <div class="input-subcontainer">
                 <input type="password" name="old-password" id="old-password" class="input-box" spellcheck="false" required />
                 <label for="old-password" class="label">Old Password</label>
@@ -363,6 +431,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <button class="btn" type="submit">Save</button>
         </form>
+
     </div>
     <!-- Add other content divs similarly with display: none; -->
 </div>
