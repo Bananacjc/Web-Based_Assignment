@@ -26,34 +26,6 @@ body {
 
 }
 
-/* Card styling */
-.card {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Card-body adjustment for flexible content */
-.card-body {
-    padding: 20px;
-    flex-grow: 1;
-    /* Ensures content grows to fill available space */
-}
-
-.card-title {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-    color: #333;
-}
-
-.card-subtitle {
-    font-size: 1em;
-    color: #777;
-}
 
 .table {
     width: 100%;
@@ -78,62 +50,6 @@ body {
     color: #555;
 }
 
-/* Table hover effect */
-.table tbody tr:hover {
-    background-color: #f1f1f1;
-}
-
-/* Label styles */
-.label {
-    padding: 5px 10px;
-    font-size: 0.9em;
-    border-radius: 4px;
-    color: white;
-}
-
-.label-danger {
-    background-color: #f44336;
-}
-
-.label-info {
-    background-color: #2196F3;
-}
-
-.label-success {
-    background-color: #4CAF50;
-}
-
-.label-purple {
-    background-color: #9C27B0;
-}
-
-/* Dashboard grid */
-.row {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.col-lg-6 {
-    flex: 1;
-    min-width: 280px;
-}
-
-@media (max-width: 768px) {
-    .table {
-        font-size: 0.9em;
-    }
-
-    .table th,
-    .table td {
-        padding: 10px 12px;
-    }
-
-    .table {
-        width: 100%;
-        table-layout: fixed;
-    }
-}
 
 #nav-toggle:checked~.wrapper .main {
     margin-left: 70px;
@@ -155,4 +71,62 @@ body {
     background-color: #f4f4f4;
     font-weight: bold;
 }
+
+
+.main {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+}
+
+.top-selling-products {
+    margin: 0 auto;
+    max-width: 80%;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.top-selling-products h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto;
+    
+}
+
+.data-table thead tr {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.data-table th, .data-table td {
+    text-align: center;
+    padding: 12px;
+    border: 1px solid #ddd;
+}
+
+.data-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.data-table tr:hover {
+    background-color: #e8f8e8;
+}
+
+.resized-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 4px;
+    object-fit: cover;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 

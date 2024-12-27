@@ -70,6 +70,11 @@ if (is_post()) {
                 $profile_image_path 
             ]);
 
+            if ($_user && isset($_user->employee_id)) {
+                $employeeId = $_user->employee_id;
+                log_action($employeeId, 'Add Staff', 'Added new staff: ' . $employee_name, $_db);
+            }
+
             temp('info', "Employee added successfully!");
             redirect('staff.php');
         } catch (PDOException $e) {

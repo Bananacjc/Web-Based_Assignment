@@ -18,6 +18,13 @@ if (is_post()) {
             $stm = $_db->prepare('DELETE FROM employees WHERE employee_id = ?');
             $stm->execute([$v]);
         }
+        if ($_user && isset($_user->employee_id)) {
+            $employeeId = $_user->employee_id;
+            $deletedProductIds = implode(', ', $id);
+
+            log_action($employeeId, 'Delete Staff', "Delete Staff: {$deletedProductIds}", $_db);
+        }
+
 
         temp('info', count($id) . " employee(s) deleted successfully.");  
     } catch (Exception $e) {

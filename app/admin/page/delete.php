@@ -19,6 +19,13 @@ if (is_post()) {
             $stm->execute([$v]);
         }
 
+
+        if ($_user && isset($_user->employee_id)) {
+            $employeeId = $_user->employee_id;
+            $deletedProductIds = implode(', ', $id);
+            log_action($employeeId, 'Delete Product', "Delete Product: {$deletedProductIds}", $_db);
+        }
+
         temp('info', count($id) . " product(s) deleted successfully.");  
     } catch (Exception $e) {
         temp('error', 'Error deleting product(s): ' . $e->getMessage());
