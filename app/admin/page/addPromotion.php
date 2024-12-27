@@ -13,23 +13,26 @@ if (is_post()) {
     $startDate = post('start_date');
     $endDate = post('end_date');
     $status = post('status');
-    $promoImage = get_file('promo_image'); 
+    $promoImage = get_file('promo_image');
 
     if (empty($promoName)) {
         $_err['promo_name'] = 'Promo name is required.';
-    } elseif (!preg_match('/^[a-zA-Z0-9\s\-]+$/', $promoName)) {
+    } 
+    elseif (!preg_match('/^[a-zA-Z0-9\s\-]+$/', $promoName)){
         $_err['promo_name'] = 'Promo name can only contain letters, numbers, space.';
     }
 
     if (empty($promoCode)) {
         $_err['promo_code'] = 'Promo code is required.';
-    } elseif (!preg_match('/^[A-Z0-9]+$/', $promoCode)) {
+    } 
+    elseif (!preg_match('/^[A-Z0-9]+$/', $promoCode)) {
         $_err['promo_code'] = 'Promo code must be uppercase letters and numbers only.';
     }
 
     if (empty($description)) {
         $_err['description'] = 'Description is required.';
-    } elseif (strlen($description) > 255) {
+    } 
+    elseif (strlen($description) > 255) {
         $_err['description'] = 'Description cannot be more than 255 characters.';
     }
 
@@ -102,4 +105,3 @@ if (is_post()) {
         redirect('promotionVoucher.php');
     }
 }
-?>

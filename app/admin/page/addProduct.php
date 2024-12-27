@@ -1,8 +1,6 @@
 <?php
-require '../_base.php'; // Include base functions and database connection
+require '../_base.php'; 
 
-// Handle POST request for adding a product
-// Handle POST request for adding a product
 if (is_post()) {
     global $_err;
 
@@ -62,7 +60,6 @@ if (is_post()) {
         }
     }
 
-    // Handle new category
     if (!empty($newCategoryName)) {
         if (empty($categoryImage)) {
             $_err['new_category_image'] = 'New category image is required.';
@@ -70,15 +67,13 @@ if (is_post()) {
             $_err['new_category_image'] = 'Invalid category image file. Please upload an image.';
         }
 
-        // Insert the new category into the database if no errors
         if (empty($_err)) {
             $categoryImagePath = save_photo($categoryImage, '../../uploads/category_images');
             try {
                 $stmt = $_db->prepare("INSERT INTO categories (category_name, category_image) VALUES (?, ?)");
                 $stmt->execute([$newCategoryName, $categoryImagePath]);
-                $categoryName = $newCategoryName; // Use newly created category name
+                $categoryName = $newCategoryName; 
 
-                // Log the action of creating a new category
                 log_action($employeeId, 'Create Category', 'Created new category: ' . $newCategoryName, $_db);
             } catch (PDOException $e) {
                 $_err['new_category_name'] = 'Error adding new category: ' . $e->getMessage();
@@ -86,7 +81,6 @@ if (is_post()) {
         }
     }
 
-    // Handle product image
     $productImage = get_file('product_image');
     if (!$productImage) {
         $_err['product_image'] = 'Product image is required.';
@@ -94,11 +88,9 @@ if (is_post()) {
         $_err['product_image'] = 'Invalid image file. Please upload an image.';
     }
 
-    // If no errors, insert the new product
     if (empty($_err)) {
         $productImagePath = save_photo($productImage, '../../uploads/product_images');
         
-        // New product insertion code
         $productId = generate_unique_id('PRO', 'products', 'product_id', $_db);
         try {
             $stmt = $_db->prepare("

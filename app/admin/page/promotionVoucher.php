@@ -345,25 +345,56 @@ $promotions = $stm->fetchAll();
     }
 
 
-    function showUpdatePromotionForm(promoImage, promo_id, promo_name, promo_code, description, requirement, promo_amount, limit_usage, start_date, end_date, status) {
-        var modal = document.getElementById('updatePromotionModal');
-        var form = document.getElementById('updateForm');
+    function showUpdatePromotionForm(
+        promoImage,
+        promo_id,
+        promo_name,
+        promo_code,
+        description,
+        requirement,
+        promo_amount,
+        limit_usage,
+        start_date,
+        end_date,
+        status
+    ) {
+        const modal = document.getElementById('updatePromotionModal');
+        const form = document.getElementById('updateForm');
+
+        // Display the modal
         modal.style.display = 'block';
+
+        // Set the values in the form
         form.elements['promo_id'].value = promo_id;
         form.elements['promo_name'].value = promo_name;
         form.elements['promo_code'].value = promo_code;
-
         form.elements['description'].value = description;
         form.elements['requirement'].value = requirement;
         form.elements['promo_amount'].value = promo_amount;
         form.elements['limit_usage'].value = limit_usage;
-        form.elements['start_date'].value = start_date;
-        form.elements['end_date'].value = end_date;
+
+        // Format dates to YYYY-MM-DD
+        const formattedStartDate = formatDate(start_date);
+        const formattedEndDate = formatDate(end_date);
+
+        form.elements['start_date'].value = formattedStartDate;
+        form.elements['end_date'].value = formattedEndDate;
+
         form.elements['status'].value = status;
 
+        // Set the current image
         document.getElementById('viewCurrentImage2').src = "/uploads/promo_images/" + promoImage;
-
     }
+
+    // Helper function to format dates to YYYY-MM-DD
+    function formatDate(date) {
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
 
 
     function hideViewForm() {

@@ -12,6 +12,23 @@ session_start();
 // ============================================================================
 
 // Is GET request?
+function get_mail()
+{
+    require_once 'lib/PHPMailer.php';
+    require_once 'lib/SMTP.php';
+
+    $m = new PHPMailer(true);
+    $m->isSMTP();
+    $m->SMTPAuth = true;
+    $m->Host = 'smtp.gmail.com';
+    $m->Port = 587;
+    $m->Username = 'liaw.casual@gmail.com';
+    $m->Password = 'buvq yftx klma vezl';
+    $m->CharSet = 'utf-8';
+    $m->setFrom($m->Username, '😺 Admin');
+
+    return $m;
+}
 
 function popup($msg, $isSuccess)
 {
@@ -468,23 +485,7 @@ function auth(...$roles)
 // liawcv1@gmail.com            obyj shnv prpa kzvj
 
 // Initialize and return mail object
-function get_mail()
-{
-    require_once 'lib/PHPMailer.php';
-    require_once 'lib/SMTP.php';
 
-    $m = new PHPMailer(true);
-    $m->isSMTP();
-    $m->SMTPAuth = true;
-    $m->Host = 'smtp.gmail.com';
-    $m->Port = 587;
-    $m->Username = 'AACS3173@gmail.com';
-    $m->Password = 'npsg gzfd pnio aylm';
-    $m->CharSet = 'utf-8';
-    $m->setFrom($m->Username, '😺 Admin');
-
-    return $m;
-}
 
 // ============================================================================
 // Shopping Cart
@@ -613,7 +614,6 @@ function plainTextJson($jsonString)
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="/js/custom.js"></script>
-    <script src="/js/plainTextJson.js"></script>
 
 </head>
 
@@ -627,3 +627,13 @@ function plainTextJson($jsonString)
     </div>
     <script src="/js/popup.js"></script>
 </body>
+
+<?php
+$popup_message = temp('popup-msg') ?? null;
+if ($popup_message) {
+    $msg = $popup_message['msg'];
+    $isSuccess = $popup_message['isSuccess'];
+    popup($msg, $isSuccess);
+}
+
+?>
