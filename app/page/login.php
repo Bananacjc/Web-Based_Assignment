@@ -7,8 +7,8 @@ $msg = '';
 $isSuccess = false;
 
 if (is_post()) {
-    $usernameOrEmail = post('username-email');
-    $password = post('password');
+    $usernameOrEmail = trim(post('username-email'));
+    $password = trim(post('password'));
     $rememberMe = post('remember_me') === '1';
 
     // Fetch user from the database
@@ -22,8 +22,8 @@ if (is_post()) {
             $msg = 'Your account is banned. Please contact support.';
             popup($msg, false);
         } else {
-            // Verify password if user is not banned
-            if (password_verify($password, $user->password)) {
+            // Verify password hashed with SHA1
+            if (sha1($password) === $user->password) { // Compare SHA1 hashes
                 if ($rememberMe) {
                     // Generate a secure token
                     $token = bin2hex(random_bytes(32)); // 64-character secure token
@@ -52,13 +52,12 @@ if (is_post()) {
         popup($msg, false);
     }
 }
-
 ?>
 
 <body>
-    <?php if (!empty($error)): ?>
+    <?php if (!empty($msg)): ?>
         <script>
-            showPopup('<?= $error ?>', 'error');
+            showPopup('<?= $msg ?>', 'error');
         </script>
     <?php endif; ?>
     <div id="container">
@@ -81,7 +80,7 @@ if (is_post()) {
                         <?= html_checkbox('remember_me', 'Remember Me', '', "id='remember-me'") ?>
                     </div>
                     <div>
-                        <a href="ForgetPassword.php" id="forgotpass" class="hover-underline-anim">Forgot your password?</a>
+                        <a href="forget_password.php" id="forgotpass" class="hover-underline-anim">Forgot your password?</a>
                     </div>
                 </div>
                 <button id="loginbtn" type="submit">Login</button>
@@ -102,7 +101,4 @@ if (is_post()) {
         </div>
     </div>
     <script src="../js/showPassword.js"></script>
-    </script>
 </body>
-
-</html>

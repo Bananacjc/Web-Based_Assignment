@@ -1,7 +1,5 @@
 <?php
 
-use Stripe\Price;
-
 $_title = 'Cart';
 $_css = '../css/cart.css';
 require '../_base.php';
@@ -27,6 +25,7 @@ if (is_post()) {
     }
 }
 
+require_login();
 ?>
 
 <h1 class="h1 header-banner">Cart</h1>
@@ -83,7 +82,7 @@ if (is_post()) {
                 <td class="quantity">
                     <div class='d-flex align-items-center justify-content-space-around'>
                         <i class="ti ti-minus cursor-pointer" data-product-id="<?= $pID ?>" data-action="decrease"></i>
-                        <!-- <?php $GLOBALS['quantity-' . $pID] = $quantity; ?> -->
+                        <?php $GLOBALS['quantity-' . $pID] = $quantity; ?>
                         <?= html_number('quantity-' . $pID, 1, '', 1, "class='quantity-value' data-product-id='$pID' data-action='change'") ?>
                         
                         <i class="ti ti-plus cursor-pointer" data-product-id="<?= $pID ?>" data-action="increase"></i>

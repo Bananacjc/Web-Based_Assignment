@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 26, 2024 at 03:37 PM
+-- Generation Time: Dec 26, 2024 at 04:50 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -46,6 +46,15 @@ CREATE TABLE `categories` (
   `category_image` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `categories`
+--
+
+INSERT INTO `categories` (`category_name`, `category_image`) VALUES
+('Breads', '676d76e845209.jpg'),
+('Fruits', '676d7687b37f7.jpg'),
+('Vegetables', '676d77c3627cf.jpg');
+
 -- --------------------------------------------------------
 
 --
@@ -67,6 +76,13 @@ CREATE TABLE `customers` (
   `banned` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `customers`
+--
+
+INSERT INTO `customers` (`customer_id`, `username`, `email`, `contact_num`, `password`, `remember_token`, `banks`, `addresses`, `cart`, `promotion_records`, `profile_image`, `banned`) VALUES
+('CUS-20241226-HScE4N', 'tanjc', 'tanjeecheng1016@gmail.com', '', '$2y$10$OnNzCxds5mgZtQ63YthdKO7VeJk3Mueu27.TUo6WhT62jXdOfbCom', '33effdb051c253eb885fca5f2ef48684cfd7746bbeb7593bc62fcfeb97bd6037', NULL, NULL, NULL, NULL, 'guest.png', 0);
+
 -- --------------------------------------------------------
 
 --
@@ -82,6 +98,15 @@ CREATE TABLE `employees` (
   `profile_image` varchar(255) DEFAULT NULL,
   `banned` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `employees`
+--
+
+INSERT INTO `employees` (`employee_id`, `employee_name`, `password`, `email`, `role`, `profile_image`, `banned`) VALUES
+('EMP-20241226-ko12na', 'admin', '664819d8c5343676c9225b5ed00a5cdc6f3a1ff3', 'admin@gmail.com', 'MANAGER', NULL, 0),
+('EMP-20241226-s5U0Zw', 'DeliveryGuy', '0a566818cd05e2c3726677a95ec1dc8657d5cc51', 'deliveryguy@gmail.com', 'DELIVERY_GUY', '676d7ae93e125.jpg', 0),
+('EMP-20241226-TWykLg', 'Staff1', '62d1677a9acbd298db0f7a906848c68cebcb154b', 'staff1@gmail.com', 'STAFF', '676d7b44324d8.jpg', 0);
 
 -- --------------------------------------------------------
 
@@ -119,6 +144,17 @@ CREATE TABLE `products` (
   `product_image` varchar(255) NOT NULL,
   `status` enum('AVAILABLE','UNAVAILABLE','OUT_OF_STOCK') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`product_id`, `product_name`, `category_name`, `price`, `description`, `current_stock`, `amount_sold`, `product_image`, `status`) VALUES
+('PRO-20241226-3srUTR', 'Brioche', 'Breads', 3.29, 'Soft and buttery brioche with a rich, fluffy texture and a hint of sweetness. Perfect for sandwiches, toast, or enjoying on its own as a delightful treat!', 0, 0, '676d79df1ac78.jpg', 'OUT_OF_STOCK'),
+('PRO-20241226-cSEwhZ', 'Banana', 'Fruits', 4.99, 'Sweet and creamy bananas, rich in potassium and essential nutrients. Perfect for snacking, smoothies, or baking. Enjoy their natural energy boost anytime!', 912, 0, '676d774282332.jpg', 'AVAILABLE'),
+('PRO-20241226-i5HA8g', 'Carrot', 'Vegetables', 1.99, 'Fresh, crunchy carrots packed with vitamins and a naturally sweet flavor. Perfect for snacking, cooking, or juicing. A healthy choice for every meal!', 129, 0, '676d77c36cc96.jpg', 'AVAILABLE'),
+('PRO-20241226-rWEiPT', 'Bagel', 'Breads', 4.29, 'Soft and chewy bagels baked to perfection, with a golden crust and a delightful texture. Perfect for breakfast or snacks, pair them with cream cheese, jam, or your favorite toppings. Available in plain, sesame, and everything flavors!', 42, 0, '676d76e8494e5.jpg', 'AVAILABLE'),
+('PRO-20241226-sk9VcT', 'Apple', 'Fruits', 1.39, 'Juicy and crisp, our fresh red apples are the perfect blend of sweetness and tartness.', 292, 0, '676d7687b9b73.jpg', 'AVAILABLE');
 
 -- --------------------------------------------------------
 

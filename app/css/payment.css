@@ -14,35 +14,19 @@
     justify-content: space-evenly;
 }
 
-.billing-detail-container {
-    display: flex;
-    flex-direction: column;
-    margin: 20px 0;
-}
-
 .normal-label {
     margin-bottom: 10px;
     color: #1D1D1D;
 }
 
-.sm-input-box{
-    padding: 16px 40px 16px 16px;
-    border: 1px solid #cccccc;
-    border-radius: 8px;
-    box-sizing: border-box;
-    width: 50%;
-    pointer-events: none;
-    user-select: none; 
-}
-
+.sm-input-box, 
 .bg-input-box{
     padding: 16px 40px 16px 16px;
-    border: 1px solid #cccccc;
+    border: 1px solid var(--color-grey);
     border-radius: 8px;
     box-sizing: border-box;
-    width: 100%;
-    pointer-events: none;
-    user-select: none; 
+    pointer-events: pointer;
+    font-size: 16px;
 }
 
 #order-summary-container,
@@ -55,25 +39,13 @@
     box-sizing: border-box;
 }
 
-#payment-container > * > h3{
-    font-family: "League Spartan", sans-serif;
-    font-weight: 700;
-    font-size: 36px;
-    margin: 0 0 50px 0;
-    color: #1D1D1D;
+#billing-details-container .billing-detail-container {
+    display: flex;
+    flex-direction: column;
+    margin: 20px 0;
 }
 
-.payment-method-select {
-    font-size: 16px;
-    font-family: 'Inter',sans-serif;
-    height: 30px;
-    width: 250px;
-    text-align: left !important;
-    border: 1px solid #1D1D1D;
-    border-radius: 4px;
-    color: #1D1D1D;
-    transition: border-color 0.2s ease-in-out;
-}
+
 
 
 #summary-table,
@@ -85,26 +57,6 @@
 
 #summary-table td .price-tag {
     text-align: left;
-}
-
-
-
-.promo-code-select {
-    font-size: 16px;
-    font-family: 'Inter',sans-serif;
-    text-align: left;
-    padding: 0;
-    margin: auto 0;
-    height: 30px;
-    border: 1px solid #1D1D1D;
-    border-radius: 4px;
-    color: #1D1D1D;
-    transition: border-color 0.2s ease-in-out;
-}
-
-.promo-code-select:focus {
-    border-color: #13c86f;
-    box-shadow: 0 0 5px rgba(19, 200, 111, 0.3);
 }
 
 #promo-amount {

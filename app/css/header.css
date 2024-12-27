@@ -89,6 +89,11 @@ body{
     font-size: 24px;
 }
 
+#header-profile-pic {
+    margin: auto 5px;
+    border-radius: 50%;
+}
+
 /* Cart popup */
 #cart-popup {
     border: 1px solid black;

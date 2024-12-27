@@ -18,30 +18,69 @@ if (!$cart) {
     redirect('cart.php');
 }
 
+require_login();
+
 ?>
 <h1 class="h1 header-banner">Payment</h1>
 <div class="d-flex justify-content-space-evenly">
-    <!-- <div id="billing-details-container">
+    <div id="billing-details-container">
         <h3>Billing Details</h3>
+        <?php 
+            $stmt = $_db->prepare('SELECT * FROM customers WHERE customer_id = ?');
+            $stmt->execute([$_user->customer_id]);
+            $currentUser = $stmt->fetch();
 
+            $uName = $currentUser->username;
+            $uEmail = $currentUser->email;
+            $uPhone = $currentUser->contact_num;
+
+
+            $paymentMethod = [];
+            $addressOption = [];
+
+            if ($currentUser->banks) {
+                $banks = json_decode($currentUser->banks, true);
+
+                foreach($banks as $index => $bank) {
+                    $paymentMethod = [
+                        $index+1 => $bank['accNum']
+                    ];
+                }
+            }
+
+            if ($currentUser->addresses){
+                $addresses = json_decode($currentUser->addresses, true);
+
+                foreach($addresses as $index => $address) {
+                    $addressOption = [
+                        $index+1 => $address
+                    ];
+                }
+            }
+        ?>
+        <div class="billing-detail-container">
+            <label for="uPaymentMethod" class="normal-label">Payment Method</label>
+            <?= html_select('selectPayment', $paymentMethod, '- Choose a payment method -') ?>
+        </div>
        
-        <select class="flex-item payment-method-select" name="selectPayment">
-            <option value="">Choose a payment method</option>
-            <option value="bank">Bank</option>
-            <option value="ewallet">E Wallet</option>
-            <option value="cash">Cash on delivery</option>
-        </select>
         <div class="billing-detail-container">
-            <label for="name" class="normal-label">Name</label>
-            <input type="text" name="name" value="<%= customer.getCustomerName()%>" class="sm-input-box" spellcheck="false" readonly tabindex="-1" />
+            <label for="uName" class="normal-label">Name</label>
+            <?php $GLOBALS['uName'] = $uName ?>
+            <?= html_text('uName', "class='sm-input-box w-50' spellcheck='false'") ?>
         </div>
         <div class="billing-detail-container">
-            <label for="phone" class="normal-label">Phone</label>
-            <input type="text" name="phone" value="<%= customer.getContactNumber()%>" class="sm-input-box" spellcheck="false" readonly tabindex="-1" />
+            <label for="uPhone" class="normal-label">Phone</label>
+            <?php $GLOBALS['uPhone'] = $uPhone ?>
+            <?= html_text('uPhone', "class='sm-input-box w-50' spellcheck='false'") ?>
         </div>
         <div class="billing-detail-container">
-            <label for="address" class="normal-label">Address</label>
-            <textarea name="address" class="bg-input-box" rows="4" cols="50" placeholder="<%= customer.getAddress()%>"></textarea>
+            <label for="uAddress" class="normal-label">Address</label>
+            <?php if ($addressOption){
+                html_select('selectAddress', $addressOption, '- Choose a delivery address -');
+            } ?>
+            <br>
+            <?= html_textarea('uAddress', "class='bg-input-box w-100' rows='4' cols='50'")?>
+            
         </div>
         <div class="payment-method-container" id="bank-detail" style="display: none;">
             <div class="billing-detail-container">
@@ -67,7 +106,7 @@ if (!$cart) {
                 <input type="text" name="ewallet-phone-num" value="<%= ewallet.getPhone()%>" class="sm-input-box" spellcheck="false" readonly tabindex="-1" />
             </div>
         </div>
-    </div> -->
+    </div>
 
     <div id='order-summary-container'>
         <h3 class="text-center">Order Summary</h3>

@@ -92,19 +92,22 @@
 }
 
 .input-box:focus,
-.input-box.has-content:valid {
+.input-box:valid,
+.input-box.has-content {
     border-color: #888;
     outline: solid 1px #888;
     color: #888;
 }
 
 .input-box:focus + .label,
+.input-box:valid + .label,
 .input-box.has-content + .label {
     transform: translateY(-135%) translateX(0%) scale(0.9);
     color: #888;
     background: #FFF;
     padding: 0 5px;
 }
+
 
 /* personal info */
 
@@ -189,10 +192,6 @@
 
 /* payment */
 
-#e-wallet-container {
-    margin-left: 50px;;
-}
-
 .normal-label {
     margin: 0 20px;
     color: #888;
@@ -235,13 +234,15 @@
     width: 100%;
 }
 
-.edit-address-btn{
+.edit-address-btn,
+.edit-bank-btn {
     margin: 5px;
     padding: 10px;
     background-color: var(--color-blue-aqua);
 }
 
-.delete-address-btn{
+.delete-address-btn,
+.delete-bank-btn {
     margin: 5px;
     padding: 10px;
     background-color: var(--color-red-light);
