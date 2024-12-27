@@ -97,6 +97,14 @@ if (!empty($error)) {
                         </li>
                     <?php endif ?>
 
+                    <?php if (in_array($_user?->role, $userRole)): ?>
+                    <li class="sidebar-item">
+                        <a href="promotionVoucher.php?title=Promotion" class="sidebar-link">
+                            <span class="icon">📋</span>
+                            <span class="label">Promotion Voucher</span>
+                        </a>
+                    <?php endif ?>
+
 
                     <li class="sidebar-item">
                         <a href="#" class="sidebar-link" onclick="toggleSubMenu()">

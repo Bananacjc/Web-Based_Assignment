@@ -18,6 +18,15 @@ function popup($msg, $isSuccess)
     echo "<script>showAlertPopup('$msg', $isSuccess);</script>";
 }
 
+function log_action($employeeId, $actionType, $actionDetails, $db) {
+    try {
+        $stmt = $db->prepare("INSERT INTO actionlog (employee_id, action_type, action_details, action_date) VALUES (?, ?, ?, NOW())");
+        $stmt->execute([$employeeId, $actionType, $actionDetails]);
+    } catch (PDOException $e) {
+        // Log error if needed
+        error_log("Error logging action: " . $e->getMessage());
+    }
+}
 
 function require_login()
 {

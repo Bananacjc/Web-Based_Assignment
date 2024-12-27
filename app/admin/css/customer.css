@@ -37,8 +37,6 @@ h1 {
     object-fit: cover;
 }
 
-
-/* Base button class for consistent styling */
 .button {
     width: 100px; 
     height: 40px;

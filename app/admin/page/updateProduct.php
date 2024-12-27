@@ -128,6 +128,11 @@ if (is_post()) {
             $product_id
         ]);
 
+        if ($_user && isset($_user->employee_id)) {
+            $employeeId = $_user->employee_id;
+            log_action($employeeId, 'Updated Product', "Updated Product: $product_id", $_db);
+        }
+
         temp('info', 'Product updated successfully!');
         redirect('product.php');
     } else {
