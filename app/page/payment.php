@@ -25,44 +25,55 @@ require_login();
 <div class="d-flex justify-content-space-evenly">
     <div id="billing-details-container">
         <h3>Billing Details</h3>
-        <?php 
-            $stmt = $_db->prepare('SELECT * FROM customers WHERE customer_id = ?');
-            $stmt->execute([$_user->customer_id]);
-            $currentUser = $stmt->fetch();
+        <?php
+        $stmt = $_db->prepare('SELECT * FROM customers WHERE customer_id = ?');
+        $stmt->execute([$_user->customer_id]);
+        $currentUser = $stmt->fetch();
 
-            $uName = $currentUser->username;
-            $uEmail = $currentUser->email;
-            $uPhone = $currentUser->contact_num;
+        $uName = $currentUser->username;
+        $uEmail = $currentUser->email;
+        $uPhone = $currentUser->contact_num;
 
+        $paymentMethod = [];
+        $addressOption = [];
 
-            $paymentMethod = [];
-            $addressOption = [];
+        if ($currentUser->banks) {
+            $banks = json_decode($currentUser->banks, true);
 
-            if ($currentUser->banks) {
-                $banks = json_decode($currentUser->banks, true);
-
-                foreach($banks as $index => $bank) {
-                    $paymentMethod = [
-                        $index+1 => $bank['accNum']
-                    ];
-                }
+            foreach ($banks as $index => $bank) {
+                $paymentMethod[$bank['accNum']] = $bank['accNum'];
             }
+        }
 
-            if ($currentUser->addresses){
-                $addresses = json_decode($currentUser->addresses, true);
+        if ($currentUser->addresses) {
+            $addresses = json_decode($currentUser->addresses, true);
 
-                foreach($addresses as $index => $address) {
-                    $addressOption = [
-                        $index+1 => $address
-                    ];
-                }
+            foreach ($addresses as $index => $address) {
+                $addressOption[$address] = $address;
             }
+        }
         ?>
         <div class="billing-detail-container">
             <label for="uPaymentMethod" class="normal-label">Payment Method</label>
-            <?= html_select('selectPayment', $paymentMethod, '- Choose a payment method -') ?>
+            <?= html_select('selectPayment', $paymentMethod, '- Decide Later -') ?>
         </div>
-       
+        <div id="bank-detail-container" class="d-none">
+            <div id="bank-detail-subcontainer" class="d-flex flex-direction-row">
+                <div class="billing-detail-container" style="width: 40%; padding-right: 10px; ">
+                    <label for="accNum" class="normal-label">Account Number</label>
+                    <?= html_text('accNum', "class='sm-input-box' spellcheck='false' readonly ") ?>
+                </div>
+                <div class="billing-detail-container" style="width: 20%; padding-right: 10px;">
+                    <label for="cvvNum" class="normal-label">CVV</label>
+                    <?= html_text('cvvNum', "class='sm-input-box' spellcheck='false' readonly ") ?>
+                </div>
+                <div class="billing-detail-container" style="width: 20%; user-select: none;">
+                    <label for="exDate" class="normal-label">Expiry Date</label>
+                    <?= html_text('exDate', "class='sm-input-box' spellcheck='false' readonly ") ?>
+                </div>
+            </div>
+        </div>
+
         <div class="billing-detail-container">
             <label for="uName" class="normal-label">Name</label>
             <?php $GLOBALS['uName'] = $uName ?>
@@ -75,37 +86,16 @@ require_login();
         </div>
         <div class="billing-detail-container">
             <label for="uAddress" class="normal-label">Address</label>
-            <?php if ($addressOption){
-                html_select('selectAddress', $addressOption, '- Choose a delivery address -');
+            <?php if ($addressOption) {
+                html_select('selectAddress', $addressOption, '- Decide Later -');
             } ?>
             <br>
-            <?= html_textarea('uAddress', "class='bg-input-box w-100' rows='4' cols='50'")?>
-            
+            <label for="uAddress" class="normal-label">or Manually:</label>
+            <?= html_textarea('uAddress', "class='bg-input-box w-100' rows='4' cols='50'") ?>
+
         </div>
-        <div class="payment-method-container" id="bank-detail" style="display: none;">
-            <div class="billing-detail-container">
-                <label for="name-in-bank" class="normal-label">Name in Bank</label>
-                <input type="text" name="name-in-bank" value="<%= bank.getName()%>" class="sm-input-box" spellcheck="false" readonly tabindex="-1" />
-            </div>
-            <div class="billing-detail-container">
-                <label for="bank-acc-num" class="normal-label">Bank Account Number</label>
-                <input type="text" name="bank-acc-num" value="<%= bank.getAccNum()%>" class="sm-input-box" spellcheck="false" readonly tabindex="-1" />
-            </div>
-            <div class="billing-detail-container">
-                <label for="card-type" class="normal-label">Card Type</label>
-                <input type="text" name="card-type" value="<%= bank.getCardType()%>" class="sm-input-box" spellcheck="false" readonly tabindex="-1" />
-            </div>
-        </div>
-        <div class="payment-method-container" id="ewallet-detail" style="display: none;">
-            <div class="billing-detail-container">
-                <label for="name-in-ewallet" class="normal-label">Name in E-Wallet</label>
-                <input type="text" name="name-in-ewallet" value="<%= ewallet.getName()%>" class="sm-input-box" spellcheck="false" readonly tabindex="-1" />
-            </div>
-            <div class="billing-detail-container">
-                <label for="ewallet-phone-num" class="normal-label">E-Wallet Phone Number</label>
-                <input type="text" name="ewallet-phone-num" value="<%= ewallet.getPhone()%>" class="sm-input-box" spellcheck="false" readonly tabindex="-1" />
-            </div>
-        </div>
+
+
     </div>
 
     <div id='order-summary-container'>
@@ -173,7 +163,7 @@ require_login();
                 </tr>
                 <tr>
                     <td colspan="3">TOTAL PAYMENT :</td>
-                    <td>RM&nbsp;<?= priceFormat($pTotal + $shippingTotal)?></td>
+                    <td>RM&nbsp;<?= priceFormat($pTotal + $shippingTotal) ?></td>
                 </tr>
                 <tr>
                     <td colspan="4" class="text-center">
@@ -186,65 +176,6 @@ require_login();
         </div>
     </div>
 </div>
+<script src="../js/payment.js"></script>
 
-
-
-
-<!-- <form action="PromotionServlet" method="POST" id="selectForm">
-    <input type="hidden" name="url" value="payment">
-    <input type="hidden" name="action" value="select">
-    <input type="hidden" name="promoId" value="">
-    <input type="hidden" name="subTotal" value="${subTotal}">
-</form>
-<div>
-    <form id="payForm" action="PaymentServlet" method="POST">
-        <input type="hidden" name="paymentMethod" value="">
-        <button class="paybtn" onclick="pay()">Pay</button>
-    </form>
-</div>
-<script src="js/paymentMethod.js"></script>
-<script>
-    function pay() {
-        var inputElements = document.getElementsByName('paymentMethod');
-        var selectElements = document.getElementsByName('selectPayment');
-        if (selectElements[0].value === "bank") {
-            inputElements[0].value = "0";
-        }
-        if (selectElements[0].value === "ewallet") {
-            inputElements[0].value = "1";
-        }
-        if (selectElements[0].value === "cash") {
-            inputElements[0].value = "2";
-        }
-        var form = document.getElementById("payForm");
-        form.submit();
-    }
-
-    function fetchPromoDetails() {
-        var inputElements = document.getElementsByName('promoId');
-        var selectElements = document.getElementsByName('promoCode');
-        inputElements[0].value = selectElements[0].value;
-        if (selectElements[0].value === "-1") {
-            return;
-        }
-        var form = document.getElementById("selectForm");
-        form.submit();
-    }
-
-    var selectedPromoId = '<%= session.getAttribute("promoId") %>';
-
-    document.addEventListener('DOMContentLoaded', function() {
-        selectPromoCode(selectedPromoId);
-    });
-
-    function selectPromoCode(promoId) {
-        if (promoId !== null && promoId !== "-1") {
-            var selectElement = document.querySelector('.promo-code-select');
-            selectElement.value = promoId;
-        } else {
-            var selectElement = document.querySelector('.promo-code-select');
-            selectElement.value = "-1";
-        }
-    }
-</script> -->
 <?php include '../_foot.php'; ?>

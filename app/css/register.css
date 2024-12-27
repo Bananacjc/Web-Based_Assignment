@@ -157,7 +157,7 @@ body {
     display: inline-block;
 }
 
-.success {
+.otp-sent-success {
     cursor: not-allowed!important;
 }
 
@@ -186,6 +186,12 @@ body {
 #request-otp-btn:hover {
     background-color: #000000;
     color: #EFEFEF;
+}
+
+.ti.ti-check {
+    color: #0fa059;
+    font-size: 14px;
+    font-weight: 900;
 }
 
 #login-container {

@@ -12,23 +12,75 @@ if (isset($_GET['logout'])) {
     logout('/page/login.php'); // Call the logout function and redirect to the login page
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if (is_post()) {
     $formType = post('form_type'); // Fetch the hidden input field
+    if (isset($_POST['request_otp'])) { // Handle OTP request
+        header('Content-Type: text/plain'); // Set response type to plain text
+        ob_clean(); // Clear any output buffer before sending the response
+        try {
+            $email = trim($_POST['email']);
 
-    if ($formType === 'personal_info') {
-        // Handle personal info update
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                echo 'Invalid email format.';
+                exit;
+            }
+
+            // Generate OTP
+            $otp = rand(100000, 999999);
+            $_SESSION['otp'] = $otp;
+            $_SESSION['otp_email'] = $email;
+
+            $m = get_mail();
+            $m->addAddress($email);
+            $m->isHTML(true);
+            $m->Subject = 'Your OTP for Email Verification';
+            $m->Body = "<p>Your OTP is <b>$otp</b>. Please use it to verify your email address update.</p>";
+
+            if ($m->send()) {
+                echo 'Success';
+            } else {
+                echo 'Failed to send OTP.';
+            }
+        } catch (Exception $e) {
+            echo 'Unexpected server error occurred.';
+        }
+        exit; // Stop further execution
+    } elseif ($formType === 'personal_info') {
         $username = trim($_POST['username']);
         $email = trim($_POST['email']);
         $phone = trim($_POST['phone']);
+        $otpEntered = trim(post('otp'));
         $profilePic = get_file('profile-pic');
 
         if (!$username || !$email || !$phone) {
             temp('popup-msg', ['msg' => 'All fields are required.', 'isSuccess' => false]);
             redirect();
         }
+
         if (!is_email($email)) {
             temp('popup-msg', ['msg' => 'Invalid email format.', 'isSuccess' => false]);
             redirect();
+        }
+
+        if ($email !== $_user->email) { // Email update requires OTP verification
+            if (empty($otpEntered)) {
+                temp('popup-msg', ['msg' => 'Please enter the OTP sent to your email.', 'isSuccess' => false]);
+                redirect();
+            }
+
+            if (!isset($_SESSION['otp']) || $_SESSION['otp_email'] !== $email) {
+                temp('popup-msg', ['msg' => 'No OTP found or mismatch. Please request OTP again.', 'isSuccess' => false]);
+                redirect();
+            }
+
+            if ($otpEntered != $_SESSION['otp']) {
+                temp('popup-msg', ['msg' => 'Invalid OTP. Please check your email.', 'isSuccess' => false]);
+                redirect();
+            }
+
+            // Clear OTP session on successful verification
+            unset($_SESSION['otp']);
+            unset($_SESSION['otp_email']);
         }
 
         $profileImage = $_user->profile_image;
@@ -59,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $action = post('action');
         $index = post('index');
         $banks = json_decode($_user->banks ?? '[]', true);
-    
+
         if ($action === 'save-bank') {
             // Add a new bank
             $bankData = [
@@ -67,12 +119,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'cvv' => trim(post('cvv')),
                 'expiry' => trim(post('expiry-date'))
             ];
-    
+
             if (in_array('', $bankData)) {
                 temp('popup-msg', ['msg' => 'All fields are required for adding a bank.', 'isSuccess' => false]);
                 redirect();
             }
-    
+
             // Check for duplicate account numbers
             foreach ($banks as $bank) {
                 if ($bank['accNum'] === $bankData['accNum']) {
@@ -80,14 +132,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     redirect();
                 }
             }
-    
+
             // Add the bank
             $banks[] = $bankData;
             $banksJson = json_encode($banks);
-    
+
             $stmt = $_db->prepare("UPDATE customers SET banks = ? WHERE customer_id = ?");
             $stmt->execute([$banksJson, $_user->customer_id]);
-    
+
             $_user->banks = $banksJson;
             temp('popup-msg', ['msg' => 'Bank added successfully.', 'isSuccess' => true]);
         } elseif ($action === 'edit-bank' && is_numeric($index)) {
@@ -97,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 temp('popup-msg', ['msg' => 'Invalid expiry date format.', 'isSuccess' => false]);
                 redirect();
             }
-    
+
             // Check for duplicate account numbers (excluding the current index being edited)
             $newAccNum = trim(post('acc-num'));
             foreach ($banks as $i => $bank) {
@@ -106,18 +158,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     redirect();
                 }
             }
-    
+
             $banks[$index] = [
                 'accNum' => $newAccNum,
                 'cvv' => trim(post('cvv')),
                 'expiry' => $expiry,
             ];
-    
+
             // Update the database
             $banksJson = json_encode($banks);
             $stmt = $_db->prepare("UPDATE customers SET banks = ? WHERE customer_id = ?");
             $stmt->execute([$banksJson, $_user->customer_id]);
-    
+
             $_user->banks = $banksJson;
             temp('popup-msg', ['msg' => 'Bank updated successfully.', 'isSuccess' => true]);
         } elseif ($action === 'delete-bank' && is_numeric($index)) {
@@ -126,10 +178,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 unset($banks[$index]);
                 $banks = array_values($banks); // Re-index the array
                 $banksJson = json_encode($banks);
-    
+
                 $stmt = $_db->prepare("UPDATE customers SET banks = ? WHERE customer_id = ?");
                 $stmt->execute([$banksJson, $_user->customer_id]);
-    
+
                 $_user->banks = $banksJson;
                 temp('popup-msg', ['msg' => 'Bank deleted successfully.', 'isSuccess' => true]);
             } else {
@@ -262,14 +314,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <p>Drop your image here</p>
                 </div>
             </div>
-            <div>
+            <div id="personal-info-input-container">
                 <div class="input-subcontainer">
                     <input type="text" name="username" value="<?= $_user->username ?? '' ?>" class="input-box" spellcheck="false" required />
                     <label for="username" class="label">Username</label>
                 </div>
                 <div class="input-subcontainer">
-                    <input type="text" name="email" value="<?= $_user->email ?? '' ?>" class="input-box" spellcheck="false" required />
+                    <input type="text" name="email" id="email" value="<?= $_user->email ?? '' ?>" class="input-box" spellcheck="false" required />
                     <label for="email" class="label">Email</label>
+                </div>
+                <div class="d-flex justify-content-space-around">
+                    <div class="input-subcontainer">
+                        <input type="text" name="otp" class="input-box" spellcheck="false" placeholder=" " />
+                        <label for="otp" class="label">OTP</label>
+                    </div>
+                    <button type="button" id="request-otp-btn">Request OTP</button>
                 </div>
                 <div class="input-subcontainer">
                     <input type="text" name="phone" value="<?= $_user->contact_num ?? '' ?>" class="input-box" spellcheck="false" required />
@@ -320,11 +379,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="hidden" name="action" id="bank-action" value="save-bank" />
                 <input type="hidden" name="index" id="bank-index" value="" />
                 <div class="input-subcontainer">
-                    <input type="text" name="acc-num" id="bank-account-input" class="input-box" required />
+                    <input type="text" name="acc-num" id="bank-account-input" class="input-box" placeholder=" " required />
                     <label for="acc-num" class="label">Account Number</label>
                 </div>
                 <div class="input-subcontainer">
-                    <input type="text" name="cvv" id="bank-cvv-input" class="input-box" required />
+                    <input type="text" name="cvv" id="bank-cvv-input" class="input-box" placeholder=" " required />
                     <label for="cvv" class="label">CVV</label>
                 </div>
                 <div class="input-subcontainer">
@@ -370,9 +429,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="hidden" name="form_type" value="address_management" />
             <input type="hidden" name="action" id="action" value="save-address" />
             <input type="hidden" name="index" id="address-index" value="" />
-            <div class="input-subcontainer" id="address-input-container">
-                <input type="text" name="address" id="address-input" class="input-box" spellcheck="false" required />
-                <label for="address" class="label">New Address</label>
+            <div style="position: relative;">
+                <input
+                    id="address-input"
+                    type="text"
+                    placeholder="Enter your address"
+                    autocomplete="off"
+                    name="address"
+                    class="input-box" />
+            </div>
+
+            <div id="location-container">
+                <div id="map" style="width: 100%; height: 400px; margin-top: 20px;"></div>
+                <div id="coordinates">
+                    <p>Latitude: <span id="latitude">0</span></p>
+                    <p>Longitude: <span id="longitude">0</span></p>
+                </div>
             </div>
             <button class="btn" type="submit" id="save-address-btn">Add Address</button>
         </form>
@@ -415,17 +487,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form id="change-password-container" action="" method="post">
             <input type="hidden" name="form_type" value="change_password" />
             <div class="input-subcontainer">
-                <input type="password" name="old-password" id="old-password" class="input-box" spellcheck="false" required />
+                <input type="password" name="old-password" id="old-password" class="input-box" spellcheck="false" placeholder=" " required />
                 <label for="old-password" class="label">Old Password</label>
                 <i class="ti ti-eye-off" id="toggleOldPassword"></i>
             </div>
             <div class="input-subcontainer">
-                <input type="password" name="new-password" id="new-password" class="input-box" spellcheck="false" required />
+                <input type="password" name="new-password" id="new-password" class="input-box" spellcheck="false" placeholder=" " required />
                 <label for="new-password" class="label">New Password</label>
                 <i class="ti ti-eye-off" id="toggleNewPassword"></i>
             </div>
             <div class="input-subcontainer">
-                <input type="password" name="confirm-password" id="confirm-password" class="input-box" spellcheck="false" required />
+                <input type="password" name="confirm-password" id="confirm-password" class="input-box" spellcheck="false" placeholder=" " required />
                 <label for="confirm-password" class="label">Confirm Password</label>
                 <i class="ti ti-eye-off" id="toggleConfirmPassword"></i>
             </div>
@@ -441,5 +513,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script src="../js/showPassword.js"></script>
 <script src="../js/paymentMethodManagement.js"></script>
 <script src="../js/addressManagement.js"></script>
+<script src="../js/requestOTP.js"></script>
+<script src="../js/googleMap.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBFPpOlKxMJuu6PxnVrwxNd1G6vERpptro&libraries=places"></script>;
+
 
 <?php include '../_foot.php'; ?>

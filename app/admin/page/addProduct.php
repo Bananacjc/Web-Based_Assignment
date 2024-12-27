@@ -68,7 +68,7 @@ if (is_post()) {
         }
 
         if (empty($_err)) {
-            $categoryImagePath = save_photo($categoryImage, '../../uploads/product_images');
+            $categoryImagePath = save_photo($categoryImage, '../../uploads/category_images');
             try {
                 $stmt = $_db->prepare("INSERT INTO categories (category_name, category_image) VALUES (?, ?)");
                 $stmt->execute([$newCategoryName, $categoryImagePath]);

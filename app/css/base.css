@@ -249,6 +249,10 @@ select {
 }
 
 /* display */
+.d-none {
+    display: none !important;
+}
+
 .d-flex {
     display: -webkit-box !important;
     display: -ms-flexbox !important;
