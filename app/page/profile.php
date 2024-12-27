@@ -197,15 +197,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div>
                 <div class="input-subcontainer">
-                    <input type="text" name="username" value="<?= $_user->username ?? '' ?>" class="input-box" spellcheck="false" />
+                    <input type="text" name="username" value="<?= $_user->username ?? '' ?>" class="input-box" spellcheck="false" required/>
                     <label for="username" class="label">Username</label>
                 </div>
                 <div class="input-subcontainer">
-                    <input type="text" name="email" value="<?= $_user->email ?? '' ?>" class="input-box" spellcheck="false" />
+                    <input type="text" name="email" value="<?= $_user->email ?? '' ?>" class="input-box" spellcheck="false" required />
                     <label for="email" class="label">Email</label>
                 </div>
                 <div class="input-subcontainer">
-                    <input type="text" name="phone" value="<?= $_user->contact_num ?? '' ?>" class="input-box" spellcheck="false" />
+                    <input type="text" name="phone" value="<?= $_user->contact_num ?? '' ?>" class="input-box" spellcheck="false" required />
                     <label for="phone" class="label">Phone</label>
                 </div>
                 <button class="btn" type="submit">Save</button>
@@ -304,7 +304,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="hidden" name="action" id="action" value="save-address" />
             <input type="hidden" name="index" id="address-index" value="" />
             <div class="input-subcontainer" id="address-input-container">
-                <input type="text" name="address" id="address-input" class="input-box" spellcheck="false" />
+                <input type="text" name="address" id="address-input" class="input-box" spellcheck="false" required/>
                 <label for="address" class="label">New Address</label>
             </div>
             <button class="btn" type="submit" id="save-address-btn">Add Address</button>
@@ -347,9 +347,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h2>Change Password</h2>
         <form id="change-password-container" action="ChangePassword" method="post">
             <div class="input-subcontainer">
-                <input type="password" name="password" id="password" class="input-box" spellcheck="false" required />
-                <label for="password" class="label">Password</label>
-                <i class="ti ti-eye-off" id="togglePassword"></i>
+                <input type="password" name="old-password" id="old-password" class="input-box" spellcheck="false" required />
+                <label for="old-password" class="label">Old Password</label>
+                <i class="ti ti-eye-off" id="toggleOldPassword"></i>
+            </div>
+            <div class="input-subcontainer">
+                <input type="password" name="new-password" id="new-password" class="input-box" spellcheck="false" required />
+                <label for="new-password" class="label">New Password</label>
+                <i class="ti ti-eye-off" id="toggleNewPassword"></i>
             </div>
             <div class="input-subcontainer">
                 <input type="password" name="confirm-password" id="confirm-password" class="input-box" spellcheck="false" required />
