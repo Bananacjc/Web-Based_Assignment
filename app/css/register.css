@@ -188,6 +188,12 @@ body {
     color: #EFEFEF;
 }
 
+.ti.ti-check {
+    color: #0fa059;
+    font-size: 14px;
+    font-weight: 900;
+}
+
 #login-container {
     display: flex;
     justify-content: center;
