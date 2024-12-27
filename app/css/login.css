@@ -121,35 +121,6 @@ body {
     margin-right: 8px; /* Space between checkbox and label */
 }
 
-input[type="checkbox"] {
-    appearance: none; /* For modern browsers */
-    -webkit-appearance: none; /* For Safari */
-    -moz-appearance: none; /* For older Firefox */
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--color-grey);
-    border-radius: 4px;
-    cursor: pointer;
-    position: relative;
-}
-
-/* Change the background color when checked */
-input[type="checkbox"]:checked {
-    background-color: var(--color-green);
-    border-color: var(--color-green);
-}
-
-/* Optional: Add a checkmark */
-input[type="checkbox"]:checked::after {
-    content: "\01F5F8";
-    color: var(--color-black-pure);
-    font-size: 16px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
 #remember-me{
     color: var(--color-grey);
 }
