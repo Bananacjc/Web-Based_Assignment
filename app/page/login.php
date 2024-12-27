@@ -80,7 +80,7 @@ if (is_post()) {
                         <?= html_checkbox('remember_me', 'Remember Me', '', "id='remember-me'") ?>
                     </div>
                     <div>
-                        <a href="ForgetPassword.php" id="forgotpass" class="hover-underline-anim">Forgot your password?</a>
+                        <a href="forget_password.php" id="forgotpass" class="hover-underline-anim">Forgot your password?</a>
                     </div>
                 </div>
                 <button id="loginbtn" type="submit">Login</button>
