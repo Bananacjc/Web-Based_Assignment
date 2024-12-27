@@ -57,26 +57,30 @@ require_login();
                     ];
                 }
             }
-
-            
         ?>
-        <?= html_select('selectPayment', $paymentMethod, '- Choose a payment method -', "class='d-flex flex-wrap w-100 justify-content-space-between'") ?>
         <div class="billing-detail-container">
-            <label for="name" class="normal-label">Name</label>
+            <label for="uPaymentMethod" class="normal-label">Payment Method</label>
+            <?= html_select('selectPayment', $paymentMethod, '- Choose a payment method -') ?>
+        </div>
+       
+        <div class="billing-detail-container">
+            <label for="uName" class="normal-label">Name</label>
             <?php $GLOBALS['uName'] = $uName ?>
-            <?= html_text('uName', "class='sm-input-box' spellcheck='false'") ?>
+            <?= html_text('uName', "class='sm-input-box w-50' spellcheck='false'") ?>
         </div>
         <div class="billing-detail-container">
-            <label for="phone" class="normal-label">Phone</label>
+            <label for="uPhone" class="normal-label">Phone</label>
             <?php $GLOBALS['uPhone'] = $uPhone ?>
-            <?= html_text('uPhone', "class='sm-input-box' spellcheck='false'") ?>
+            <?= html_text('uPhone', "class='sm-input-box w-50' spellcheck='false'") ?>
         </div>
         <div class="billing-detail-container">
-            <label for="address" class="normal-label">Address</label>
+            <label for="uAddress" class="normal-label">Address</label>
             <?php if ($addressOption){
-                html_select('selectAddress', $addressOption, '- Choose a delivery address -', "class='d-flex flex-wrap w-100 justify-content-space-between'");
+                html_select('selectAddress', $addressOption, '- Choose a delivery address -');
             } ?>
-            <textarea name="address" class="bg-input-box" rows="4" cols="50" placeholder="<%= customer.getAddress()%>"></textarea>
+            <br>
+            <?= html_textarea('uAddress', "class='bg-input-box w-100' rows='4' cols='50'")?>
+            
         </div>
         <div class="payment-method-container" id="bank-detail" style="display: none;">
             <div class="billing-detail-container">
