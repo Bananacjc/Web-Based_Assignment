@@ -11,22 +11,16 @@ if (is_post()) {
     $action = req('action');
 
     if ($action === 'changeBankDetails' && isset($paymentMethod)) {
-        $stmt = $_db->prepare('SELECT banks FROM customers WHERE customer_id = ?');
-        $stmt->execute([$_user->customer_id]);
-        $banksRow = $stmt->fetch(PDO::FETCH_OBJ);
+        $banks = json_decode($_uesr->banks, true);
         $bankDetails = null;
 
-        if ($banksRow && $banksRow->banks) {
-            $banks = json_decode($banksRow->banks, true);
-            if (json_last_error() === JSON_ERROR_NONE) {
-                foreach ($banks as $bank) {
-                    if ($bank['accNum'] === $paymentMethod) {
-                        $bankDetails = $bank;
-                        break;
-                    }
-                }
+        foreach($banks as $bank) {
+            if ($paymentMethod === $bank) {
+                $bankDetails = $bank;
+                break;
             }
         }
+
         
         ob_end_clean();
         if ($bankDetails) {

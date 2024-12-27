@@ -519,10 +519,10 @@ function set_cart($cart = [])
 
     // Encode cart into json
     $cart_json = json_encode($cart);
-
     if (json_last_error() == JSON_ERROR_NONE) {
         try {
             $stmt->execute([$cart_json, $_user->customer_id]);
+            $_user->cart = $cart_json;
         } catch (PDOException $e) {
             throw new PDOException("Database Error: " . $e->getMessage(), (int)$e->getCode());
         }
@@ -548,13 +548,12 @@ function update_cart($id, $unit)
     }
 
     // Convert to json
-
     $cart_json = json_encode($cart);
     if (json_last_error() == JSON_ERROR_NONE) {
-
         // Write to db
         try {
             $stmt->execute([$cart_json, $_user->customer_id]);
+            $_user->cart = $cart_json;
         } catch (PDOException $e) {
             throw new PDOException("Database Error: " . $e->getMessage(), (int)$e->getCode());
         }

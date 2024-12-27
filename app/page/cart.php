@@ -94,7 +94,6 @@ require_login();
                 </td>
                 <!-- Remove -->
                 <td class="action">
-
                     <button class="cart-remove-btn" type="button" data-product-id="<?= $pID ?>" data-action="remove">
                         Remove from Cart
                     </button>

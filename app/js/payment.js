@@ -63,5 +63,7 @@ function updateAddress(address){
                 }
             }
         })
+    } else {
+        $('#uAddress').val('');
     }
 }

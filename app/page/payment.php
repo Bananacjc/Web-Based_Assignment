@@ -4,21 +4,18 @@ $_css = '../css/payment.css';
 require '../_base.php';
 include '../_head.php';
 
-if (is_post()) {
-}
+require_login();
+reset_user();
 
 // Initialize cart
 $cart = get_cart();
-
-// Prepare Stmt
-$get_product_stmt = 'SELECT * FROM products WHERE product_id = ?';
 
 if (!$cart) {
     temp('popup-msg', ['msg' => 'Cart is Empty', 'isSuccess' => false]);
     redirect('cart.php');
 }
 
-require_login();
+
 
 ?>
 <h1 class="h1 header-banner">Payment</h1>
@@ -26,27 +23,23 @@ require_login();
     <div id="billing-details-container">
         <h3>Billing Details</h3>
         <?php
-        $stmt = $_db->prepare('SELECT * FROM customers WHERE customer_id = ?');
-        $stmt->execute([$_user->customer_id]);
-        $currentUser = $stmt->fetch();
-
-        $uName = $currentUser->username;
-        $uEmail = $currentUser->email;
-        $uPhone = $currentUser->contact_num;
+        $uName = $_user->username;
+        $uEmail = $_user->email;
+        $uPhone = $_user->contact_num;
 
         $paymentMethod = [];
         $addressOption = [];
 
-        if ($currentUser->banks) {
-            $banks = json_decode($currentUser->banks, true);
+        if ($_user->banks) {
+            $banks = json_decode($_user->banks, true);
 
-            foreach ($banks as $index => $bank) {
+            foreach ($banks as $bank) {
                 $paymentMethod[$bank['accNum']] = $bank['accNum'];
             }
         }
 
-        if ($currentUser->addresses) {
-            $addresses = json_decode($currentUser->addresses, true);
+        if ($_user->addresses) {
+            $addresses = json_decode($_user->addresses, true);
 
             foreach ($addresses as $index => $address) {
                 $addressOption[$address] = $address;
@@ -90,12 +83,9 @@ require_login();
                 html_select('selectAddress', $addressOption, '- Decide Later -');
             } ?>
             <br>
-            <label for="uAddress" class="normal-label">or Manually:</label>
+            <label for="uAddress" class="normal-label">or Enter Manually:</label>
             <?= html_textarea('uAddress', "class='bg-input-box w-100' rows='4' cols='50'") ?>
-
         </div>
-
-
     </div>
 
     <div id='order-summary-container'>
@@ -116,7 +106,7 @@ require_login();
                 <?php
                 $pTotal = 0;
                 $shippingTotal = 0; //TODO
-                $stmt = $_db->prepare($get_product_stmt);
+                $stmt = $_db->prepare('SELECT * FROM products WHERE product_id = ?');
                 ?>
                 <?php foreach ($cart as $id => $quantity): ?>
                     <?php
@@ -160,6 +150,11 @@ require_login();
                         <?= html_select('promo', $promo_code, '- Choose a promo code -', 'data-select-onchange') ?>
                     </td>
                     <td>AJAX</td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <hr>
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="3">TOTAL PAYMENT :</td>

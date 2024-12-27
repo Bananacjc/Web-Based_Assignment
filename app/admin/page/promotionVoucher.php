@@ -34,7 +34,6 @@ if ($search) {
     $params[] = "%$search%";
     $params[] = "%$search%";
     $params[] = "%$search%";
-
 }
 
 if ($searchStatus) {
@@ -183,7 +182,7 @@ $promotions = $stm->fetchAll();
     </div>
 
     <div style="margin: 20px;">
-        <button id="addPromotionBtn" class="add-button" onclick="showAddForm()">Add new customer</button>
+        <button id="addPromotionBtn" class="add-button" onclick="showAddForm()">Add new promotions</button>
     </div>
     <div id="viewPromoModal" class="modal">
         <div class="modal-content">
