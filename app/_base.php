@@ -275,6 +275,13 @@ function html_time($key, $attr = '')
     echo "<input type='time' id='$key' name='$key' value='$value' $attr>";
 }
 
+// Generate <input type='datetime-local'>
+function html_datetime($key, $attr = '')
+{
+    $value = encode($GLOBALS[$key] ?? '');
+    echo "<input type='datetime-local' id='$key' name='$key' value='$value' $attr>";
+}
+
 // Generate <textarea>
 function html_textarea($key, $attr = '')
 {
@@ -452,13 +459,6 @@ function auth(...$roles)
 // ============================================================================
 // Email Functions
 // ============================================================================
-
-// Demo Accounts:
-// --------------
-// AACS3173@gmail.com           npsg gzfd pnio aylm
-// BAIT2173.email@gmail.com     ytwo bbon lrvw wclr
-// liaw.casual@gmail.com        wtpa kjxr dfcb xkhg
-// liawcv1@gmail.com            obyj shnv prpa kzvj
 
 // Initialize and return mail object
 function get_mail()

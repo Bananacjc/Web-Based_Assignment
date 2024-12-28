@@ -381,6 +381,11 @@ Special CSS
 ===================================================================
 */
 
+.number-figure {
+    font-family: monospace !important;
+    font-size: 16px !important;
+
+}
 
 .text-hover-underline:hover {
     text-decoration: underline !important;
@@ -586,3 +591,15 @@ Source: https://stackoverflow.com/questions/54616139/how-to-animate-underline-fr
 input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0px 1000px var(--color-white-pure) inset !important;
 }
+
+.pac-container {
+    z-index: 10000 !important; /* Ensures it's above all elements */
+    position: absolute !important;
+  }
+  
+  
+  .pac-container .pac-item {
+    font-family: "Inter", sans-serif; /* Match the form style */
+    font-size: 14px; /* Adjust font size */
+  }
+  

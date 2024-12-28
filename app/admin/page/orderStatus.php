@@ -217,22 +217,22 @@ $orders = $stm->fetchAll();
                 <br><br>
 
                 <label for="sub_total">Sub Total(RM):</label>
-                <?php html_number('sub_total'); ?>
+                <?php html_text('sub_total'); ?>
 
                 <label for="shipping_fee">Shipping Fee(RM):</label>
-                <?php html_number('shipping_fee'); ?>
+                <?php html_text('shipping_fee'); ?>
 
                 <label for="payment_method">Payment Method:</label>
                 <?php html_text('payment_method'); ?>
 
                 <label for="order_time">Order Time:</label>
-                <?php html_date('order_time'); ?>
+                <?php html_datetime('order_time'); ?>
                 <br><br>
                 <label for="status">Status:</label>
                 <?php html_select('status', [
                     'PAID' => 'Paid',
                     'SHIPPING' => 'Shipping',
-                    'DELIEVERED' => 'Delivered'
+                    'DELIVERED' => 'Delivered'
                 ], '- Select Status -', 'required'); ?>
 
                 <button type="submit" class="action-button" onclick="confirmAddOrder()">Add Order</button>

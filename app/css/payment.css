@@ -19,8 +19,7 @@
     color: #1D1D1D;
 }
 
-.sm-input-box, 
-.bg-input-box{
+.sm-input-box {
     padding: 16px 40px 16px 16px;
     border: 1px solid var(--color-grey);
     border-radius: 8px;
@@ -43,6 +42,10 @@
     display: flex;
     flex-direction: column;
     margin: 20px 0;
+}
+
+.address-subcontainer {
+    margin: 10px 10px 0 0;
 }
 
 #summary-table,
@@ -74,4 +77,31 @@
     border-top: solid #ccc 1px;
     border-bottom: solid #ccc 1px;
     padding: 20px 0;    
+}
+
+#pay-button,
+#use-my-location-btn{
+    background-color: var(--color-mint);
+    color: var(--color-white-pure);
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+    display: block;
+    width: 50%;
+    margin: 15px 0;
+}
+
+#pay-button {
+    margin: 15px auto;
+}
+
+#pay-button:hover,
+#use-my-location-btn:hover {
+    background-color: var(--color-black-pure);
+    color: var(--color-white-crystal);
 }
