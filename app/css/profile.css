@@ -354,7 +354,7 @@
     display: flex;
 }
 
-.reviewbtn{
+.reviewbtn {
     margin: 10px auto;
     padding: 15px 15px;
     border: none;
@@ -369,6 +369,22 @@
     cursor: pointer;
     color: #000000;
     transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.no-action-btn {
+    margin: 10px auto;
+    padding: 15px 15px;
+    border: none;
+    border-radius: 8px;
+    font-family: "Inter", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    font-size: 16px;
+    background-color: var(--color-black-pure);
+    text-align: center;
+    text-decoration: none;
+    cursor: not-allowed;
+    color: var(--color-white-pure);
 }
 
 .ti.ti-circle-filled {

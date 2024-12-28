@@ -357,19 +357,19 @@ if (is_post()) {
                     $banks = json_decode($_user->banks ?? '[]', true);
                     foreach ($banks as $index => $bank) {
                         echo "<tr>
-            <td>" . ($index + 1) . "</td>
-            <td class='bank-account'>{$bank['accNum']}</td>
-            <td class='bank-cvv'>{$bank['cvv']}</td>
-            <td class='bank-expiry'>{$bank['expiry']}</td>
-            <td class='text-center'>
-                <button class='btn edit-bank-btn' data-index='$index'>
-                    <i class='ti ti-edit'></i>
-                </button>
-                <button class='btn delete-bank-btn' data-index='$index'>
-                    <i class='ti ti-trash'></i>
-                </button>
-            </td>
-        </tr>";
+                                <td>" . ($index + 1) . "</td>
+                                <td class='bank-account'>{$bank['accNum']}</td>
+                                <td class='bank-cvv'>{$bank['cvv']}</td>
+                                <td class='bank-expiry'>{$bank['expiry']}</td>
+                                <td class='text-center'>
+                                    <button class='btn edit-bank-btn' data-index='$index'>
+                                        <i class='ti ti-edit'></i>
+                                    </button>
+                                    <button class='btn delete-bank-btn' data-index='$index'>
+                                        <i class='ti ti-trash'></i>
+                                    </button>
+                                </td>
+                            </tr>";
                     }
                     ?>
                 </tbody>
@@ -410,17 +410,17 @@ if (is_post()) {
                 $addresses = json_decode($_user->addresses ?? '[]', true);
                 foreach ($addresses as $index => $address) {
                     echo "<tr data-index='$index'>
-            <td>" . ($index + 1) . "</td>
-            <td class='address-text'>$address</td>
-            <td class='text-center'>
-                <button class='btn edit-address-btn' data-index='$index'>
-                    <i class='ti ti-edit'></i>
-                </button>
-                <button class='btn delete-address-btn' data-index='$index'>
-                    <i class='ti ti-trash'></i>
-                </button>
-            </td>
-        </tr>";
+                            <td>" . ($index + 1) . "</td>
+                            <td class='address-text'>$address</td>
+                            <td class='text-center'>
+                                <button class='btn edit-address-btn' data-index='$index'>
+                                    <i class='ti ti-edit'></i>
+                                </button>
+                                <button class='btn delete-address-btn' data-index='$index'>
+                                    <i class='ti ti-trash'></i>
+                                </button>
+                            </td>
+                        </tr>";
                 }
                 ?>
             </tbody>
@@ -449,6 +449,14 @@ if (is_post()) {
             <button class="btn" type="submit" id="save-address-btn">Add Address</button>
         </form>
     </div>
+    <?php
+    $orderHistory = []; // Initialize an empty array for order history
+
+    // Fetch order history for the logged-in user
+    $stmt = $_db->prepare("SELECT * FROM orders WHERE customer_id = ? ORDER BY order_time DESC");
+    $stmt->execute([$_user->customer_id]);
+    $orderHistory = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    ?>
     <div class="content" id="order-history-content" style="display: none;">
         <h2>Order History</h2>
         <table class="table">
@@ -463,25 +471,42 @@ if (is_post()) {
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>
-                        <p class="order-id">ORD-20241201-g9hsaP</p>
-                    </td>
-                    <td>
-                        <p class="date">1 Dec 2024</p>
-                    </td>
-                    <td>
-                        <p class="time">12.00pm</p>
-                    </td>
-                    <td class="total-price">123.45</td>
-                    <td class="delivery-status">Delivered</td>
-                    <td class="action">
-                        <a class="reviewbtn" href=""><span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i></a>
-                    </td>
-                </tr>
+                <?php if (!empty($orderHistory)): ?>
+                    <?php foreach ($orderHistory as $order): ?>
+                        <tr>
+                            <td>
+                                <p class="order-id"><?= $order['order_id'] ?></p>
+                            </td>
+                            <td>
+                                <p class="date"><?= date('d M Y', strtotime($order['order_time'])) ?></p>
+                            </td>
+                            <td>
+                                <p class="time"><?= date('h:i A', strtotime($order['order_time'])) ?></p>
+                            </td>
+                            <td class="total-price"><?= number_format($order['total'], 2) ?></td>
+                            <td class="delivery-status"><?= $order['status'] ?></td>
+                            <td class="action">
+                                <?php if ($order['status'] === 'DELIVERED'): ?>
+                                    <a class="reviewbtn" href="review.php?order_id=<?= urlencode($order['order_id']) ?>">
+                                        <span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i>
+                                    </a>
+                                <?php else: ?>
+                                    <a class="no-action-btn">
+                                        <span>No Action</i>
+                                    </a>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="6" class="text-center">No orders found.</td>
+                    </tr>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
+
     <div class="content" id="change-password-content" style="display: none;">
         <h2>Change Password</h2>
         <form id="change-password-container" action="" method="post">

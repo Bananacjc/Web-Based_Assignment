@@ -225,7 +225,7 @@ $orders = $stm->fetchAll();
                 <?php html_select('status', [
                     'PAID' => 'Paid',
                     'SHIPPING' => 'Shipping',
-                    'DELIEVERED' => 'Delivered'
+                    'DELIVERED' => 'Delivered'
                 ], '- Select Status -', 'required'); ?>
 
                 <button type="submit" class="action-button" onclick="confirmAddOrder()">Add Order</button>

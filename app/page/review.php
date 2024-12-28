@@ -90,18 +90,6 @@ include '../_head.php';
     }
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script type="text/javascript">
-    let status = document.getElementById("status").value;
-
-    if (status === "reviewSuccess") {
-        swal.fire("Congratulations", "Review submitted successfully.", "success");
-    }
-    if (status === "reviewFail") {
-        swal.fire("Sorry", "Review submit failed.", "error");
-    }
-</script>
-
 <?php include '../_foot.php'; ?>
 
 </body>
