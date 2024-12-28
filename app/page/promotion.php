@@ -40,7 +40,7 @@ if (is_post()) {
         $userPromos = json_decode($_user->promotion_records, true);
 
         $userPromos[$promoID] = [
-            "promoLimit" => $promoLimit
+            "promoLimit" => $promoLimit == 0 ? 99999 : $promoLimit
         ];
 
         $stmt = $_db->prepare('UPDATE customers SET promotion_records = ? WHERE customer_id = ?');

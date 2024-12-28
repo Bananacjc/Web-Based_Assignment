@@ -72,7 +72,7 @@ if (is_post()) {
     }
 
     if ($action === 'changePromo' && isset($selectedPromoID) && $selectedPromoID) {
-        $stmt = $_db->prepare('SELECT promo_id, promo_code, promo_amount FROM promotions WHERE promo_id = ?');
+        $stmt = $_db->prepare('SELECT promo_amount FROM promotions WHERE promo_id = ?');
         $stmt->execute([$selectedPromoID]);
         $promotion = $stmt->fetch(PDO::FETCH_ASSOC);
     
@@ -84,8 +84,8 @@ if (is_post()) {
             ]);
         } else {
             echo json_encode([
-                'success' => false,
-                'message' => 'Promotion not found.'
+                'success' => true,
+                'message' => 0
             ]);
         }
         exit();

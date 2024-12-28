@@ -40,8 +40,8 @@ if (is_post()) {
         $_err['promo_amount'] = "Promo Amount must be a non-negative number for Promo ID: $promo_id.";
     }
 
-    if (!is_numeric($limit_usage) || $limit_usage < 1) {
-        $_err['limit_usage'] = "Usage Limit must be greater than or equal to 1 for Promo ID: $promo_id.";
+    if (!is_numeric($limit_usage) || $limit_usage < 0) {
+        $_err['limit_usage'] = "Usage Limit must be greater than or equal to 0 for Promo ID: $promo_id.";
     }
 
     if (empty($start_date) || empty($end_date)) {
