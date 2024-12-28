@@ -48,12 +48,10 @@ if ($bannedFilter === '0' || $bannedFilter === '1') {
     $params[] = $bannedFilter;
 }
 
-// Pagination settings
 $page = req('page', 1);
 $limit = 10; // Number of items per page
 $offset = ($page - 1) * $limit;
 
-// Count total records for pagination
 $countQuery = "SELECT COUNT(*) AS total FROM customers $whereClause";
 $countStmt = $_db->prepare($countQuery);
 $countStmt->execute($params);

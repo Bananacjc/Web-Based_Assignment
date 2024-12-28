@@ -22,17 +22,17 @@ $user3Role = ['MANAGER', 'STAFF', 'DELIVERY_GUY'];
 
 <body>
 
-<?php 
-$info = temp('info');
-if (!empty($info)) {
-    echo "<div id='info'>" . (is_array($info) ? implode(", ", $info) : $info) . "</div>";
-}
+    <?php
+    $info = temp('info');
+    if (!empty($info)) {
+        echo "<div id='info'>" . (is_array($info) ? implode(", ", $info) : $info) . "</div>";
+    }
 
-$error = temp('error');
-if (!empty($error)) {
-    echo "<div id='error'>" . (is_array($error) ? implode("<br>", $error) : $error) . "</div>";
-}
-?>
+    $error = temp('error');
+    if (!empty($error)) {
+        echo "<div id='error'>" . (is_array($error) ? implode("<br>", $error) : $error) . "</div>";
+    }
+    ?>
 
 
 
@@ -98,28 +98,36 @@ if (!empty($error)) {
                     <?php endif ?>
 
                     <?php if (in_array($_user?->role, $userRole)): ?>
-                    <li class="sidebar-item">
-                        <a href="promotionVoucher.php?title=Promotion" class="sidebar-link">
-                            <span class="icon">📋</span>
-                            <span class="label">Promotion Voucher</span>
-                        </a>
-                    <?php endif ?>
+                        <li class="sidebar-item">
+                            <a href="promotionVoucher.php?title=Promotion" class="sidebar-link">
+                                <span class="icon">🎫</span>
+                                <span class="label">Promotion Voucher</span>
+                            </a>
+                        <?php endif ?>
+
+                        <?php if (in_array($_user?->role, $userRole)): ?>
+                        <li class="sidebar-item">
+                            <a href="category.php?title=Product Category" class="sidebar-link">
+                                <span class="icon">🏷️</span>
+                                <span class="label">Product Category</span>
+                            </a>
+                        <?php endif ?>
 
 
-                    <li class="sidebar-item">
-                        <a href="#" class="sidebar-link" onclick="toggleSubMenu()">
-                            <span class="icon">⚙️</span>
-                            <span class="label">Settings</span>
-                        </a>
-                        <ul id="settings-menu" class="nested-menu">
-                            <li class="nested-item">
-                                <a href="accountProfile.php?title=Account" class="nested-link">Account</a>
-                            </li>
-                            <li class="nested-item">
-                                <a href="logout.php" class="nested-link">Log Out</a>
-                            </li>
-                        </ul>
-                    </li>
+                        <li class="sidebar-item">
+                            <a href="#" class="sidebar-link" onclick="toggleSubMenu()">
+                                <span class="icon">⚙️</span>
+                                <span class="label">Settings</span>
+                            </a>
+                            <ul id="settings-menu" class="nested-menu">
+                                <li class="nested-item">
+                                    <a href="accountProfile.php?title=Account" class="nested-link">Account</a>
+                                </li>
+                                <li class="nested-item">
+                                    <a href="logout.php" class="nested-link">Log Out</a>
+                                </li>
+                            </ul>
+                        </li>
             </ul>
         </div>
     </div>

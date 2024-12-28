@@ -29,6 +29,7 @@ $fields = [
 
 $order_id = req('order_id');
 $customer_id = req('customer_id');
+$status = req('status');
 
 $sort = req('sort');
 key_exists($sort, $fields) || $sort = 'order_id';
@@ -40,22 +41,28 @@ $page = req('page', 1);
 $limit = 10;
 $offset = ($page - 1) * $limit;
 
-$total_orders_query = 'SELECT COUNT(*) FROM orders WHERE order_id LIKE ? AND customer_id LIKE ?';
+$where_clauses = ['order_id LIKE ? AND customer_id LIKE ?'];
+$params = ["%$order_id%", "%$customer_id%"];
+
+if (!empty($status)) {
+    $where_clauses[] = "status = ?";
+    $params[] = $status;
+}
+
+$total_orders_query = 'SELECT COUNT(*) FROM orders WHERE ' . implode(' AND ', $where_clauses);
 $total_orders_stm = $_db->prepare($total_orders_query);
-$total_orders_stm->execute(["%$order_id%", "%$customer_id%"]);
+$total_orders_stm->execute($params);
 $total_orders = $total_orders_stm->fetchColumn();
 $total_pages = ceil($total_orders / $limit);
 
-// Fetch filtered data with optional filters
 $query = "
     SELECT * FROM orders 
-    WHERE order_id LIKE ? 
-    AND customer_id LIKE ?
-    ORDER BY  $sort $dir
+    WHERE " . implode(' AND ', $where_clauses) . "
+    ORDER BY $sort $dir
     LIMIT $limit OFFSET $offset";
 
 $stm = $_db->prepare($query);
-$stm->execute(["%$order_id%", "%$customer_id%"]);
+$stm->execute($params);
 $orders = $stm->fetchAll();
 ?>
 
@@ -63,12 +70,16 @@ $orders = $stm->fetchAll();
     <h1>ORDERS</h1>
 
     <form>
-        <?= html_search('order_id', 'Search Order ID', $order_id) ?>
-        <?= html_search('customer_id', 'Search Customer ID', $customer_id) ?>
-
-        <button>Search</button>
+        <?= html_search('order_id', '', 'Search Order Id') ?>
+        <?= html_search('customer_id', '', 'Search Customer Id') ?>
+        <select name="status" id="status">
+            <option value="">All Statuses</option> <!-- Add an option for all statuses -->
+            <option value="PAID" <?= $status === 'PAID' ? 'selected' : '' ?>>Paid</option>
+            <option value="SHIPPING" <?= $status === 'SHIPPING' ? 'selected' : '' ?>>Shipping</option>
+            <option value="DELIVERED" <?= $status === 'DELIVERED' ? 'selected' : '' ?>>Delivered</option>
+        </select>
+        <button type="submit">Search</button>
     </form>
-
     <form method="post" id="f">
         <button formaction="deleteOrder.php" onclick="return confirmDelete()">Delete</button>
     </form>
@@ -89,12 +100,12 @@ $orders = $stm->fetchAll();
                     </td>
                     <td><?= $o->order_id ?></td>
                     <td><?= $o->customer_id ?></td>
-                    <td><?= $o->order_items ?></td>
+                    <td><?= plainTextJson($o->order_items) ?></td>
                     <td><?= $o->promo_amount ?></td>
                     <td><?= $o->subtotal ?></td>
                     <td><?= $o->shipping_fee ?></td>
                     <td><?= $o->total ?></td>
-                    <td><?= $o->payment_method ?></td>
+                    <td><?= plainTextJson($o->payment_method) ?></td>
                     <td><?= $o->order_time ?></td>
                     <td><?= $o->status ?></td>
 
@@ -158,7 +169,7 @@ $orders = $stm->fetchAll();
 
 
     <div style="margin: 20px;">
-        <button id="addOrderBtn" class="add-button" onclick="showAddForm()">Add New Order</button>
+        <button id="addOrderBtn" class="button action-button" onclick="showAddForm()">Add New Order</button>
     </div>
 
 
@@ -170,10 +181,10 @@ $orders = $stm->fetchAll();
                 <p><strong>Order ID:</strong> <span id="viewOrderID"></span></p>
                 <p><strong>Customer ID:</strong> <span id="viewCusId"></span></p>
                 <p><strong>Order Items:</strong> <span id="viewOrderItems"></span></p>
-                <p><strong>Promo Amount:</strong> <span id="viewPromoAmount"></span></p>
-                <p><strong>Sub Total:</strong> <span id="viewSubTotal"></span></p>
-                <p><strong>Shipping Fee:</strong> <span id="viewShippingFee"></span></p>
-                <p><strong>Total:</strong> <span id="viewTotal"></span></p>
+                <p><strong>Promo Amount(RM):</strong> <span id="viewPromoAmount"></span></p>
+                <p><strong>Sub Total(RM):</strong> <span id="viewSubTotal"></span></p>
+                <p><strong>Shipping Fee(RM):</strong> <span id="viewShippingFee"></span></p>
+                <p><strong>Total(RM):</strong> <span id="viewTotal"></span></p>
                 <p><strong>Payment Method:</strong> <span id="viewPaymentMethod"></span></p>
                 <p><strong>Order Time:</strong> <span id="viewOrderTime"></span></p>
                 <p><strong>Status:</strong> <span id="viewStatus"></span></p>
@@ -194,14 +205,14 @@ $orders = $stm->fetchAll();
                 <?php html_text('order_items'); ?>
                 <br><br>
 
-                <label for="promo_amount">Promo Amount:</label>
+                <label for="promo_amount">Promo Amount(RM):</label>
                 <?php html_text('promo_amount'); ?>
                 <br><br>
 
-                <label for="sub_total">Sub Total:</label>
+                <label for="sub_total">Sub Total(RM):</label>
                 <?php html_number('sub_total'); ?>
 
-                <label for="shipping_fee">Shipping Fee:</label>
+                <label for="shipping_fee">Shipping Fee(RM):</label>
                 <?php html_number('shipping_fee'); ?>
 
                 <label for="payment_method">Payment Method:</label>
@@ -239,14 +250,14 @@ $orders = $stm->fetchAll();
                 <?php html_text('order_items'); ?>
                 <br><br>
 
-                <label for="promo_amount">Promo Amount:</label>
+                <label for="promo_amount">Promo Amount(RM):</label>
                 <?php html_text('promo_amount'); ?>
                 <br><br>
 
-                <label for="sub_total">Sub Total:</label>
+                <label for="sub_total">Sub Total(RM):</label>
                 <?php html_number('sub_total'); ?>
 
-                <label for="shipping_fee">Shipping Fee:</label>
+                <label for="shipping_fee">Shipping Fee(RM):</label>
                 <?php html_number('shipping_fee'); ?>
 
 

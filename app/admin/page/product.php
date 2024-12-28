@@ -81,7 +81,6 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
     </form>
 
     <form method="post" id="f">
-        <button formaction="restore.php">Restore</button>
         <button formaction="delete.php" onclick="return confirmDelete()">Delete</button>
     </form>
 
