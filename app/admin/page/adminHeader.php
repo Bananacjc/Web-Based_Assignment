@@ -146,9 +146,8 @@ $user3Role = ['MANAGER', 'STAFF', 'DELIVERY_GUY'];
                 </label> <?php echo $pageTitle; ?>
             </h1>
 
-            <div class="search-wrapper">
-                <span class="las la-search"></span>
-                <input type="search" placeholder="Search Here" />
+            <div >
+              
             </div>
             <div class="user-wrapper">
                 <?php if ($_user): ?>

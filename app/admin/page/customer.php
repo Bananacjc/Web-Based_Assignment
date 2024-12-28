@@ -147,12 +147,12 @@ $customers = $stm->fetchAll();
                             <?php if ($c->banned == 0): ?>
                                 <form action="banCustomer.php" method="POST" style="display:inline;">
                                     <input type="hidden" name="customer_id" value="<?= $c->customer_id ?>">
-                                    <button type="submit" class="button ban-action-button" onclick="confirmBlock()">Ban</button>
+                                    <button type="submit" class="button ban-action-button" onclick="return confirmBlock()">Ban</button>
                                 </form>
                             <?php else: ?>
                                 <form action="unbanCustomer.php" method="POST" style="display:inline;">
                                     <input type="hidden" name="customer_id" value="<?= $c->customer_id ?>">
-                                    <button type="submit" class="button unban-action-button" onclick="confirmUnblock()">Unban</button>
+                                    <button type="submit" class="button unban-action-button" onclick="return confirmUnblock()">Unban</button>
                                 </form>
                             <?php endif; ?>
                         </td>

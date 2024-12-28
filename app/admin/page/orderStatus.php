@@ -71,7 +71,7 @@ $orders = $stm->fetchAll();
     <h1>ORDERS</h1>
 
     <form>
-        <?= html_search('search', '', 'Search by Order ID or Customer ID') ?> 
+        <?= html_search('search', '', 'Search by Order ID or Customer ID') ?>
 
         <select name="status" id="status">
             <option value="">All Statuses</option>
@@ -83,12 +83,12 @@ $orders = $stm->fetchAll();
     </form>
 
     <?php if ($_user->role == 'MANAGER'): ?>
-    <form method="post" id="f">
-        <button class="delete-btn" formaction="deleteOrder.php" onclick="return confirmDelete()">Batch Delete</button>
-    </form>
+        <form method="post" id="f">
+            <button class="delete-btn" formaction="deleteOrder.php" onclick="return confirmDelete()">Batch Delete</button>
+        </form>
     <?php endif; ?>
 
-    
+
 
     <p><?= count($orders) ?> order(s) on this page | Total: <?= $total_orders ?> order(s)</p>
 
@@ -114,9 +114,25 @@ $orders = $stm->fetchAll();
                     <td><?= plainTextJson($o->payment_method) ?></td>
                     <td><?= $o->order_time ?></td>
                     <td><?= $o->status ?></td>
-
-                    <?php if ($_user->role == 'MANAGER'): ?>
                     <td>
+
+                        <?php if ($_user->role == 'STAFF'): ?>
+                            <button class="button view-action-button" onclick="showViewOrderForm(
+    '<?= $o->order_id ?>', 
+    '<?= $o->customer_id ?>', 
+    '<?= plainTextJson($o->order_items) ?>', 
+    '<?= $o->promo_amount ?>', 
+    '<?= $o->subtotal ?>', 
+    '<?= $o->shipping_fee ?>', 
+    '<?= $o->total ?>', 
+    '<?= plainTextJson($o->payment_method) ?>', 
+    '<?= $o->order_time ?>', 
+    '<?= $o->status ?>')">View
+                            </button>
+                        <?php endif; ?>
+
+
+                        <?php if ($_user->role == 'MANAGER'): ?>
                         <button class="button action-button" onclick="showUpdateOrderForm(
                             '<?= $o->order_id ?>', 
                             '<?= $o->customer_id ?>', 
@@ -135,22 +151,11 @@ $orders = $stm->fetchAll();
                             <input type="hidden" name="id" value="<?= $o->order_id ?>">
                             <button type="submit" class="button delete-action-button" onclick="return confirmDelete();">Delete</button>
                         </form>
+                    <?php endif; ?>
 
-                        <button class="button view-action-button" onclick="showViewOrderForm(
-    '<?= $o->order_id ?>', 
-    '<?= $o->customer_id ?>', 
-    '<?= plainTextJson($o->order_items) ?>', 
-    '<?= $o->promo_amount ?>', 
-    '<?= $o->subtotal ?>', 
-    '<?= $o->shipping_fee ?>', 
-    '<?= $o->total ?>', 
-    '<?= plainTextJson($o->payment_method) ?>', 
-    '<?= $o->order_time ?>', 
-    '<?= $o->status ?>')">View
-                        </button>
 
                     </td>
-                    <?php endif; ?>
+
                 </tr>
             <?php endforeach ?>
 
@@ -158,20 +163,20 @@ $orders = $stm->fetchAll();
     </table>
 
     <div class="pagination">
-            <?php if ($page > 1): ?>
-                <a href="?page=1" class="first-page">First</a>
-                <a href="?page=<?= $page - 1 ?>" class="prev-page">Prev</a>
-            <?php endif; ?>
+        <?php if ($page > 1): ?>
+            <a href="?page=1" class="first-page">First</a>
+            <a href="?page=<?= $page - 1 ?>" class="prev-page">Prev</a>
+        <?php endif; ?>
 
-            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                <a href="?page=<?= $i ?>" class="page-number <?= $i == $page ? 'active' : '' ?>"><?= $i ?></a>
-            <?php endfor; ?>
+        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+            <a href="?page=<?= $i ?>" class="page-number <?= $i == $page ? 'active' : '' ?>"><?= $i ?></a>
+        <?php endfor; ?>
 
-            <?php if ($page < $total_pages): ?>
-                <a href="?page=<?= $page + 1 ?>" class="next-page">Next</a>
-                <a href="?page=<?= $total_pages ?>" class="last-page">Last</a>
-            <?php endif; ?>
-        </div>
+        <?php if ($page < $total_pages): ?>
+            <a href="?page=<?= $page + 1 ?>" class="next-page">Next</a>
+            <a href="?page=<?= $total_pages ?>" class="last-page">Last</a>
+        <?php endif; ?>
+    </div>
 
 
     <div style="margin: 20px;">
@@ -292,4 +297,3 @@ $orders = $stm->fetchAll();
 </div>
 
 </html>
-

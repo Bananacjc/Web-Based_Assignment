@@ -77,9 +77,12 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
         <button>Search</button>
     </form>
 
+    <?php if ($_user?->role == 'MANAGER'): ?>
+
     <form method="post" id="f">
         <button class="delete-btn" formaction="delete.php" onclick="return confirmDelete()">Batch Delete</button>
     </form>
+    <?php endif; ?>
 
     <p><?= count($arr) ?> product(s) on this page | Total: <?= $total_products ?> product(s)</p>
 

@@ -2,17 +2,13 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="../css/productStaffAdmin.css" />
+    <link rel="stylesheet" href="../css/orderStatus.css" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Review Management</title>
 </head>
-
 <?php
-
 include 'adminHeader.php';
 
-?>
-<?php
 $fields = [
     '',
     'review_id' => 'Review ID',
@@ -27,52 +23,76 @@ $fields = [
 
 $search = req('search');
 $sort = req('sort');
+$filter_rating = req('filter_rating');
+
 key_exists($sort, $fields) || $sort = 'product_id';
 
 $dir = req('dir');
 in_array($dir, ['asc', 'desc']) || $dir = 'asc';
 
 $page = req('page', 1);
-$limit = 5;
+$limit = 10;
 $offset = ($page - 1) * $limit;
 
-$total_review_query = "
-    SELECT COUNT(*) 
-    FROM reviews 
-    WHERE review_id LIKE ? 
-       OR product_id LIKE ? 
-       OR customer_id LIKE ?";
-$total_review_stm = $_db->prepare($total_review_query);
-$total_review_stm->execute(["%$search%", "%$search%", "%$search%"]);
-$total_review = $total_review_stm->fetchColumn();
-$total_pages = ceil($total_review / $limit);
+$rating_condition = $filter_rating ? "AND  rating = ?" : "";
 
 $query = "
     SELECT r.review_id, r.customer_id, r.product_id, r.rating, r.comment, r.review_image, r.comment_date_time, p.product_name
     FROM reviews r
     JOIN products p ON r.product_id = p.product_id
-    WHERE r.review_id LIKE ? 
+    WHERE (r.review_id LIKE ? 
        OR r.product_id LIKE ? 
-       OR r.customer_id LIKE ?
+       OR r.customer_id LIKE ?)
+       $rating_condition
     ORDER BY $sort $dir
     LIMIT $limit OFFSET $offset";
 
-$stm = $_db->prepare($query);
-$stm->execute(["%$search%", "%$search%", "%$search%"]);
-$reviews = $stm->fetchAll();
-?>
+// Prepare the parameters for the query
+$params = ["%$search%", "%$search%", "%$search%"];
+if ($filter_rating) {
+    $params[] = $filter_rating; // Add rating filter to params
+}
 
+// Execute the query
+$stm = $_db->prepare($query);
+$stm->execute($params);
+$reviews = $stm->fetchAll();
+
+$total_review_query = "
+    SELECT COUNT(*) 
+    FROM reviews 
+    WHERE (review_id LIKE ? 
+       OR product_id LIKE ? 
+       OR customer_id LIKE ?)
+       $rating_condition";
+
+$total_review_stm = $_db->prepare($total_review_query);
+$total_review_stm->execute($params);
+$total_review = $total_review_stm->fetchColumn();
+$total_pages = ceil($total_review / $limit);
+?>
 
 <div class="main">
     <h1>Review Management</h1>
     <form>
-        <input type="text" name="search" placeholder="Search Review Id,Product Id,Customer Id" value="<?= htmlspecialchars($search) ?>">
+        <input type="search" name="search" placeholder="Search Review Id,Product Id,Customer Id" value="<?= htmlspecialchars($search) ?>">
+        <select name="filter_rating">
+            <option value="">All Ratings</option>
+            <option value="1" <?= $filter_rating === '1' ? 'selected' : '' ?>>1</option>
+            <option value="2" <?= $filter_rating === '2' ? 'selected' : '' ?>>2</option>
+            <option value="3" <?= $filter_rating === '3' ? 'selected' : '' ?>>3</option>
+            <option value="4" <?= $filter_rating === '4' ? 'selected' : '' ?>>4</option>
+            <option value="5" <?= $filter_rating === '5' ? 'selected' : '' ?>>5</option>
+        </select>
+
         <button type="submit">Search</button>
     </form>
+    <?php if ($_user?->role == 'MANAGER'): ?>
 
-    <form method="post" id="f">
-        <button formaction="deleteReview.php" onclick="return confirmDelete()">Delete</button>
-    </form>
+        <form method="post" id="f">
+            <button class="delete-btn" formaction="deleteReview.php" onclick="return confirmDelete()">Batch Delete</button>
+        </form>
+    <?php endif; ?>
 
     <p><?= count($reviews) ?> review(s) on this page | Total: <?= $total_review ?> review(s)</p>
     <table id="reviewTable" class="data-table">
@@ -99,8 +119,12 @@ $reviews = $stm->fetchAll();
                         <img src="../../uploads/review_images/<?= $r->review_image ?>" class="resized-image">
                     </td>
                     <td><?= $r->comment_date_time ?></td>
-                    <td>
-                        <button class="action-button" onclick="showViewReviewForm(
+
+
+                    <?php if ($_user?->role == 'STAFF'): ?>
+                       <td>
+
+                            <button class="button view-action-button" onclick="showViewReviewForm(
                             '<?= $r->review_id ?>',
                             '<?= $r->customer_id ?>',
                             '<?= $r->product_id ?>',
@@ -109,8 +133,11 @@ $reviews = $stm->fetchAll();
                             '<?= $r->review_image ?>',
                             '<?= $r->comment_date_time ?>'
                         )">View</button>
+                        <?php endif; ?>
 
-                        <button class="action-button" onclick="showUpdateForm(
+                        <?php if ($_user?->role == 'MANAGER'): ?>
+
+                            <button class="button action-button" onclick="showUpdateForm(
                             '<?= $r->review_id ?>',
                             '<?= $r->customer_id ?>',
                             '<?= $r->product_id ?>',
@@ -120,11 +147,15 @@ $reviews = $stm->fetchAll();
                             '<?= $r->comment_date_time ?>'
                         )">Update</button>
 
-                        <form action="deleteReview.php" method="post" style="display: inline;" onsubmit="return confirmDelete();">
-                            <input type="hidden" name="id" value="<?= $r->review_id ?>">
-                            <button type="submit" class="button delete-action-button">Delete</button>
-                        </form>
-                    </td>
+                            <form action="deleteReview.php" method="post" style="display: inline;" onsubmit="return confirmDelete();">
+                                <input type="hidden" name="id" value="<?= $r->review_id ?>">
+                                <button type="submit" class="button delete-action-button">Delete</button>
+                            </form>
+
+
+                        </td>
+                    <?php endif; ?>
+
                 </tr>
             <?php endforeach; ?>
         </tbody>
@@ -146,6 +177,9 @@ $reviews = $stm->fetchAll();
             <a href="?page=<?= $total_pages ?>" class="last-page">Last</a>
         <?php endif; ?>
     </div>
+
+
+
 
     <div id="viewReviewModal" class="modal" style="margin-top: 80px;">
         <div class="modal-content">
