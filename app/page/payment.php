@@ -42,7 +42,12 @@ if (!$cart) {
             $addresses = json_decode($_user->addresses, true);
 
             foreach ($addresses as $index => $address) {
-                $addressOption[$address] = $address;
+                $addressOption[$index] =
+                    $address['line_1'] . ', ' .
+                    $address['village'] . ', ' .
+                    $address['postal_code'] . ' ' .
+                    $address['city'] . ', ' .
+                    $address['state'];
             }
         }
         ?>
@@ -86,17 +91,37 @@ if (!$cart) {
             } ?>
             <br>
             <label for="uAddress" class="normal-label">Enter Manually:</label>
-            <div style="position: relative;">
-                <input
-                    id="address-input"
-                    type="text"
-                    placeholder="Enter your address"
-                    autocomplete="off"
-                    name="uAddress"
-                    class="sm-input-box w-100" />
+            <div>
+                <div class="address-subcontainer">
+                    <label for="line-1" class="label">Address Line 1</label><br>
+                    <input id="line-1" type="text" name="line_1" class="sm-input-box w-100" placeholder=" " required />
+                </div>
+                <div class="address-subcontainer">
+                    <label for="village" class="label">Village</label><br>
+                    <input id="village" type="text" name="village" class="sm-input-box w-100" placeholder=" " />
+
+                </div>
+                <div class="d-flex flex-direction-row">
+                    <div class="address-subcontainer">
+                        <label for="postal-code" class="label">Postal Code</label><br>
+                        <input id="postal-code" type="text" name="postal_code" class="sm-input-box w-100" placeholder=" " required />
+
+                    </div>
+                    <div class="address-subcontainer">
+                        <label for="city" class="label">City</label><br>
+                        <input id="city" type="text" name="city" class="sm-input-box w-100" placeholder=" " required />
+
+                    </div>
+                </div>
+                <div class="address-subcontainer" style="position: relative;">
+                    <label for="state" class="label">State</label><br>
+                    <input id="state" type="text" name="state" class="sm-input-box w-50" placeholder=" " required />
+
+                </div>
             </div>
-            <div id="location-container">
-                <div id="map" style="width: 100%; height: 400px; margin-top: 20px;"></div>
+            <div id="map-container">
+                <div id="map" style="width: 100%; height: 300px; margin-top: 20px;"></div>
+                <button class="btn" id="use-my-location-btn">Use My Location</button>
                 <div id="coordinates" class="d-none">
                     <p>Latitude: <span id="latitude">0</span></p>
                     <p>Longitude: <span id="longitude">0</span></p>

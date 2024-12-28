@@ -13,9 +13,6 @@ $uEmail = post('uEmail');
 $uPhone = post('uPhone');
 $cartDetails = json_decode(post('cart'));
 
-
-
-
 if (!$uName || !$uEmail || !$uPhone || !$cartDetails) {
     temp('popup-msg', ['msg' => 'All fields are required.', 'isSuccess' => false]);
     redirect('payment.php');
