@@ -1,5 +1,6 @@
 
 <?php
+
 ob_start();
 require_once '../_base.php';
 
@@ -8,20 +9,21 @@ if (is_post()) {
 
     $paymentMethod = req('selectPayment');
     $selectedAddress = req('selectAddress');
+    $selectedPromoID = req('selectPromo');
     $action = req('action');
 
-    if ($action === 'changeBankDetails' && isset($paymentMethod)) {
-        $banks = json_decode($_uesr->banks, true);
+    if ($action === 'changeBankDetails' && isset($paymentMethod) && $paymentMethod) {
+        $banks = json_decode($_user->banks, true);
         $bankDetails = null;
 
-        foreach($banks as $bank) {
-            if ($paymentMethod === $bank) {
+        foreach ($banks as $bank) {
+            if ($paymentMethod === $bank['accNum']) {
                 $bankDetails = $bank;
                 break;
             }
         }
 
-        
+
         ob_end_clean();
         if ($bankDetails) {
             echo json_encode([
@@ -31,42 +33,76 @@ if (is_post()) {
                     'cvvNum' => $bankDetails['cvv'],
                     'exDate' => $bankDetails['expiry']
                 ]
+
             ]);
-            exit();
         } else {
             echo json_encode([
-                'success' => false
+                'success' => false,
+                'message' => 'No such payment method'
             ]);
-            exit();
         }
+        exit();
     }
 
-   
-    if ($action === 'changeAddress' && isset($selectedAddress)) {
+
+    if ($action === 'changeAddress' && isset($selectedAddress) && $selectedAddress) {
         $addresses = json_decode($_user->addresses, true);
         $addressDetails = null;
 
-        foreach($addresses as $address) {
+        foreach ($addresses as $address) {
             if ($selectedAddress === $address) {
                 $addressDetails = $address;
                 break;
             }
         }
-        
+
         ob_end_clean();
         if ($addressDetails) {
             echo json_encode([
                 'success' => true,
                 'address' => $address
             ]);
-            exit();
         } else {
             echo json_encode([
                 'success' => false,
-                'message' => 'IDK'
+                'message' => 'No such address'
             ]);
-            exit();
         }
+        exit();
+    }
+
+    if ($action === 'changePromo' && isset($selectedPromoID) && $selectedPromoID) {
+
+        $stmt = $_db->prepare('SELECT * FROM promotions');
+        $stmt->execute([]);
+
+        $uPromotions = json_decode($_user->promotion_records, true);
+        $found = false;
+        $promoAmount = 0;
+
+        while ($promotion = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            if (isset($promotion[$selectedPromoID])) {
+                $promoAmount = $promotion['promo_amount'];
+                $found = true;
+                break;
+            }
+        }
+
+        ob_end_clean();
+        if ($found) {
+            echo json_encode([
+                'success' => true,
+                'promoAmount' => $promoAmount
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => $selectedPromoID
+            ]);
+        }
+        exit();
     }
 }
+
+?>
 

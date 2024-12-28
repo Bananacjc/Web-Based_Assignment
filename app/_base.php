@@ -453,13 +453,6 @@ function auth(...$roles)
 // Email Functions
 // ============================================================================
 
-// Demo Accounts:
-// --------------
-// AACS3173@gmail.com           npsg gzfd pnio aylm
-// BAIT2173.email@gmail.com     ytwo bbon lrvw wclr
-// liaw.casual@gmail.com        wtpa kjxr dfcb xkhg
-// liawcv1@gmail.com            obyj shnv prpa kzvj
-
 // Initialize and return mail object
 function get_mail()
 {
