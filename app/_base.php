@@ -471,10 +471,10 @@ function get_mail()
     $m->SMTPAuth = true;
     $m->Host = 'smtp.gmail.com';
     $m->Port = 587;
-    $m->Username = 'liaw.casual@gmail.com';
-    $m->Password = 'buvq yftx klma vezl';
+    $m->Username = 'bananasis.com@gmail.com';
+    $m->Password = 'lgxf qnts ffkt biaf';
     $m->CharSet = 'utf-8';
-    $m->setFrom($m->Username, '😺 Admin');
+    $m->setFrom($m->Username, '🍌BANANASIS👧🏻');
 
     return $m;
 }

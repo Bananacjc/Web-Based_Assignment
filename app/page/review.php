@@ -4,6 +4,8 @@ $_css = '../css/review.css';
 require '../_base.php';
 include '../_head.php';
 
+require_login();
+
 $orderID = $_GET['order_id'] ?? null;
 if (!$orderID) {
     temp('popup-msg', ['msg' => 'No order selected for review.', 'isSuccess' => false]);

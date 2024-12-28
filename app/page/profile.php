@@ -7,6 +7,8 @@ include '../_head.php';
 require_login();
 reset_user();
 
+$activeTab = $_GET['activeTab'] ?? 'personal-info-btn';
+
 // Handle logout directly if the logout query parameter is set
 if (isset($_GET['logout'])) {
     logout('/page/login.php'); // Call the logout function and redirect to the login page
@@ -193,7 +195,23 @@ if (is_post()) {
         $action = post('action');
         $index = post('index');
         $addresses = json_decode($_user->addresses ?? '[]', true);
-
+        $googleMapsApiKey = "AIzaSyBFPpOlKxMJuu6PxnVrwxNd1G6vERpptro";
+    
+        // Function to validate address using Google Maps Geocoding API
+        function validate_address_with_google($address, $apiKey)
+        {
+            $formattedAddress = urlencode("{$address['line_1']}, {$address['village']}, {$address['city']}, {$address['state']}, {$address['postal_code']}");
+            $apiUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=$formattedAddress&key=$apiKey";
+    
+            $response = file_get_contents($apiUrl);
+            if (!$response) {
+                return false; // API call failed
+            }
+    
+            $data = json_decode($response, true);
+            return isset($data['status']) && $data['status'] === 'OK'; // Address is valid if status is 'OK'
+        }
+    
         if ($action === 'save-address') {
             // Fetch structured address inputs
             $line_1 = trim(post('line_1'));
@@ -201,13 +219,13 @@ if (is_post()) {
             $postal_code = trim(post('postal_code'));
             $city = trim(post('city'));
             $state = trim(post('state'));
-
+    
             // Validate required fields
             if (!$line_1 || !$postal_code || !$city || !$state) {
                 temp('popup-msg', ['msg' => 'Please fill in all required fields.', 'isSuccess' => false]);
                 redirect();
             }
-
+    
             // Create structured address
             $newAddress = [
                 'line_1' => $line_1,
@@ -216,17 +234,34 @@ if (is_post()) {
                 'city' => $city,
                 'state' => $state,
             ];
-
-            // Fetch current addresses and add the new one
-            $addresses = json_decode($_user->addresses ?? '[]', true);
+    
+            // Validate the address with Google Maps
+            if (!validate_address_with_google($newAddress, $googleMapsApiKey)) {
+                temp('popup-msg', ['msg' => 'Invalid address. Please check the details.', 'isSuccess' => false]);
+                redirect();
+            }
+    
+            // Check for duplicate address
+            foreach ($addresses as $address) {
+                if (
+                    $address['line_1'] === $newAddress['line_1'] &&
+                    $address['village'] === $newAddress['village'] &&
+                    $address['postal_code'] === $newAddress['postal_code'] &&
+                    $address['city'] === $newAddress['city'] &&
+                    $address['state'] === $newAddress['state']
+                ) {
+                    temp('popup-msg', ['msg' => 'This address already exists.', 'isSuccess' => false]);
+                    redirect();
+                }
+            }
+    
+            // Add the new address
             $addresses[] = $newAddress;
-
-            // Save updated address list to the database
             $addressesJson = json_encode($addresses);
+    
             $stmt = $_db->prepare("UPDATE customers SET addresses = ? WHERE customer_id = ?");
             $stmt->execute([$addressesJson, $_user->customer_id]);
-
-            // Update the user session
+    
             $_user->addresses = $addressesJson;
             temp('popup-msg', ['msg' => 'Address added successfully.', 'isSuccess' => true]);
             redirect();
@@ -236,20 +271,44 @@ if (is_post()) {
             $postal_code = trim(post('postal_code'));
             $city = trim(post('city'));
             $state = trim(post('state'));
-
+    
             if ($line_1 && $postal_code && $city && $state && isset($addresses[$index])) {
-                $addresses[$index] = [
+                $updatedAddress = [
                     'line_1' => $line_1,
                     'village' => $village,
                     'postal_code' => $postal_code,
                     'city' => $city,
                     'state' => $state,
                 ];
+    
+                // Validate the address with Google Maps
+                if (!validate_address_with_google($updatedAddress, $googleMapsApiKey)) {
+                    temp('popup-msg', ['msg' => 'Invalid address. Please check the details.', 'isSuccess' => false]);
+                    redirect();
+                }
+    
+                // Check for duplicate address (excluding the current one being updated)
+                foreach ($addresses as $i => $address) {
+                    if (
+                        $i !== (int)$index &&
+                        $address['line_1'] === $updatedAddress['line_1'] &&
+                        $address['village'] === $updatedAddress['village'] &&
+                        $address['postal_code'] === $updatedAddress['postal_code'] &&
+                        $address['city'] === $updatedAddress['city'] &&
+                        $address['state'] === $updatedAddress['state']
+                    ) {
+                        temp('popup-msg', ['msg' => 'This address already exists.', 'isSuccess' => false]);
+                        redirect();
+                    }
+                }
+    
+                // Update the address
+                $addresses[$index] = $updatedAddress;
                 $addressesJson = json_encode($addresses);
-
+    
                 $stmt = $_db->prepare("UPDATE customers SET addresses = ? WHERE customer_id = ?");
                 $stmt->execute([$addressesJson, $_user->customer_id]);
-
+    
                 $_user->addresses = $addressesJson;
                 temp('popup-msg', ['msg' => 'Address updated successfully.', 'isSuccess' => true]);
             } else {
@@ -262,19 +321,18 @@ if (is_post()) {
                 unset($addresses[$index]);
                 $addresses = array_values($addresses); // Re-index the array
                 $addressesJson = json_encode($addresses);
-
+    
                 $stmt = $_db->prepare("UPDATE customers SET addresses = ? WHERE customer_id = ?");
                 $stmt->execute([$addressesJson, $_user->customer_id]);
-
+    
                 $_user->addresses = $addressesJson;
                 temp('popup-msg', ['msg' => 'Address deleted successfully.', 'isSuccess' => true]);
             } else {
                 temp('popup-msg', ['msg' => 'Invalid address deletion.', 'isSuccess' => false]);
             }
+            redirect();
         }
-
-        redirect(); // Reload the page to reflect changes
-    } elseif ($formType === 'change_password') {
+    }elseif ($formType === 'change_password') {
         // Handle change password
         $oldPassword = trim(post('old-password'));
         $newPassword = trim(post('new-password'));
@@ -321,21 +379,24 @@ if (is_post()) {
     }
 }
 ?>
+
+<script src="../js/profileSidebar.js"></script>
 <h1 class="h1 header-banner">Profile</h1>
 <div id="profile-container">
     <div class="sidebar">
         <ul>
-            <li id="personal-info-btn"><i class="ti ti-user"></i> Personal Info</li>
-            <li id="payment-method-btn"><i class="ti ti-credit-card"></i> Payment Method</li>
-            <li id="address-btn"><i class="ti ti-map-pins"></i>Address</li>
-            <li id="order-history-btn"><i class="ti ti-shopping-cart"></i> Order and Reviews</li>
-            <li id="change-password-btn"><i class="ti ti-lock"></i> Change Password</li>
+            <li id="personal-info-btn" class="<?= $activeTab === 'personal-info-btn' ? 'active' : '' ?>"><i class="ti ti-user"></i> Personal Info</li>
+            <li id="payment-method-btn" class="<?= $activeTab === 'payment-method-btn' ? 'active' : '' ?>"><i class="ti ti-credit-card"></i> Payment Method</li>
+            <li id="address-btn" class="<?= $activeTab === 'address-btn' ? 'active' : '' ?>"><i class="ti ti-map-pins"></i>Address</li>
+            <li id="order-history-btn" class="<?= $activeTab === 'order-history-btn' ? 'active' : '' ?>"><i class="ti ti-shopping-cart"></i> Order and Reviews</li>
+            <li id="change-password-btn" class="<?= $activeTab === 'change-password-btn' ? 'active' : '' ?>"><i class="ti ti-lock"></i> Change Password</li>
             <li id="logout-btn"><a href="?logout=true" id="logout-link"><i class="ti ti-logout"></i>Logout</a></li>
         </ul>
     </div>
-    <div class="content" id="personal-info-content" style="display: block;">
+    <div class="content" id="personal-info-content" style="display: <?= $activeTab === 'personal-info-btn' ? 'block' : 'none' ?>;">
         <h2>Personal Info</h2>
         <form id="personal-info-container" action="" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="activeTab" value="<?= $_GET['activeTab'] ?? 'personal-info-btn' ?>">
             <input type="hidden" name="form_type" value="personal_info" />
             <div class="input-file-container" id="drop-zone">
                 <div class="image-preview-container">
@@ -370,7 +431,7 @@ if (is_post()) {
             </div>
         </form>
     </div>
-    <div class="content" id="payment-method-content" style="display: none;">
+    <div class="content" id="payment-method-content" style="display: <?= $activeTab === 'payment-method-btn' ? 'block' : 'none' ?>;">
         <div id="payment-method-container">
             <!-- Bank Section -->
             <h2>Bank</h2>
@@ -407,6 +468,7 @@ if (is_post()) {
                 </tbody>
             </table>
             <form id="bank-form" action="" method="post">
+                <input type="hidden" name="activeTab" value="<?= $_GET['activeTab'] ?? 'personal-info-btn' ?>">
                 <input type="hidden" name="form_type" value="bank_management" />
                 <input type="hidden" name="action" id="bank-action" value="save-bank" />
                 <input type="hidden" name="index" id="bank-index" value="" />
@@ -426,7 +488,7 @@ if (is_post()) {
             </form>
         </div>
     </div>
-    <div class="content" id="address-content" style="display: none;">
+    <div class="content" id="address-content" style="display: <?= $activeTab === 'address-btn' ? 'block' : 'none' ?>;">
         <h2>Addresses</h2>
         <table class="table">
             <thead>
@@ -469,6 +531,7 @@ if (is_post()) {
             </tbody>
         </table>
         <form id="address-form" action="" method="post" class="d-flex">
+            <input type="hidden" name="activeTab" value="<?= $_GET['activeTab'] ?? 'personal-info-btn' ?>">
             <input type="hidden" name="form_type" value="address_management" />
             <input type="hidden" name="action" id="action" value="save-address" />
             <input type="hidden" name="index" id="address-index" value="" />
@@ -498,7 +561,7 @@ if (is_post()) {
             </div>
             <div id="map-container">
                 <div id="map" style="width: 100%; height: 300px; margin-top: 20px;"></div>
-                <button class="btn" id="use-my-location-btn">Use My Location</button>
+                <button class="btn" id="use-my-location-btn"><i class="ti ti-map-pin"></i>Use My Location</button>
                 <div id="coordinates">
                     <p>Latitude: <span id="latitude">0</span></p>
                     <p>Longitude: <span id="longitude">0</span></p>
@@ -514,7 +577,7 @@ if (is_post()) {
     $stmt->execute([$_user->customer_id]);
     $orderHistory = $stmt->fetchAll(PDO::FETCH_ASSOC);
     ?>
-    <div class="content" id="order-history-content" style="display: none;">
+    <div class="content" id="order-history-content" style="display: <?= $activeTab === 'order-history-btn' ? 'block' : 'none' ?>;">
         <h2>Order History</h2>
         <table class="table">
             <thead>
@@ -600,6 +663,9 @@ if (is_post()) {
                         </td>
                         <td class="delivery-status"><?= $order['status'] ?></td>
                         <td class="action">
+                            <a class="receiptbtn" href="receipt.php?order_id=<?= urlencode($order['order_id']) ?>">
+                                <span>View Receipt</span>
+                            </a>
                             <?php if ($order['status'] === 'DELIVERED'): ?>
                                 <?php if ($allReviewed): ?>
                                     <a class="reviewbtn" href="review.php?order_id=<?= urlencode($order['order_id']) ?>">
@@ -610,10 +676,6 @@ if (is_post()) {
                                         <span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i>
                                     </a>
                                 <?php endif; ?>
-                            <?php else: ?>
-                                <a class="no-action-btn">
-                                    <span>No Action</span>
-                                </a>
                             <?php endif; ?>
                         </td>
                     </tr>
@@ -621,9 +683,10 @@ if (is_post()) {
             </tbody>
         </table>
     </div>
-    <div class="content" id="change-password-content" style="display: none;">
+    <div class="content" id="change-password-content" style="display: <?= $activeTab === 'change-password-btn' ? 'block' : 'none' ?>;">
         <h2>Change Password</h2>
         <form id="change-password-container" action="" method="post">
+            <input type="hidden" name="activeTab" value="<?= $_GET['activeTab'] ?? 'personal-info-btn' ?>">
             <input type="hidden" name="form_type" value="change_password" />
             <div class="input-subcontainer">
                 <input type="password" name="old-password" id="old-password" class="input-box" spellcheck="false" placeholder=" " required />
@@ -646,7 +709,6 @@ if (is_post()) {
     </div>
     <!-- Add other content divs similarly with display: none; -->
 </div>
-<script src="../js/profileSidebar.js"></script>
 <script src="../js/imageDragAndDrop.js"></script>
 <script src="../js/inputHasContent.js"></script>
 <script src="../js/showPassword.js"></script>
