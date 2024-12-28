@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="../css/productStaffAdmin.css" />
+    <link rel="stylesheet" href="../css/orderStatus.css" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Product Management</title>
 </head>
@@ -10,7 +10,7 @@
 <?php
 
 
-include 'adminHeader.php' 
+include 'adminHeader.php'
 
 ?>
 <?php
@@ -41,7 +41,7 @@ $dir = req('dir');
 in_array($dir, ['asc', 'desc']) || $dir = 'asc';
 
 $page = req('page', 1);
-$limit = 10; 
+$limit = 10;
 $offset = ($page - 1) * $limit;
 
 $total_products_query = 'SELECT COUNT(*) FROM products WHERE product_name LIKE ? AND (category_name = ? OR ?)';
@@ -50,8 +50,6 @@ $total_products_stm->execute(["%$product_name%", $category_name, $category_name 
 $total_products = $total_products_stm->fetchColumn();
 $total_pages = ceil($total_products / $limit);
 
-
-// Fetch filtered data with optional filters
 $query = "
        SELECT p.*, c.category_image 
        FROM products p
@@ -65,7 +63,6 @@ $stm = $_db->prepare($query);
 $stm->execute(["%$product_name%", $category_name, $category_name == null]);
 $arr = $stm->fetchAll();
 
-// Fetch category options for dropdown
 $_categoryName = $_db->query('SELECT category_name, category_name FROM categories')
     ->fetchAll(PDO::FETCH_KEY_PAIR);
 ?>
@@ -73,22 +70,19 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
 
 <div class="main">
     <h1>PRODUCTS</h1>
-    
+
     <form>
-        <?= html_search('product_name', 'Search Product Name', $product_name) ?>
+        <?= html_search('product_name', '', 'Search Product Name') ?>
         <?= html_select('category_name', $_categoryName, 'All Categories', $category_name) ?>
         <button>Search</button>
     </form>
 
     <form method="post" id="f">
-        <button formaction="delete.php" onclick="return confirmDelete()">Delete</button>
+        <button class="delete-btn" formaction="delete.php" onclick="return confirmDelete()">Batch Delete</button>
     </form>
-
 
     <p><?= count($arr) ?> product(s) on this page | Total: <?= $total_products ?> product(s)</p>
 
-
-    <!-- Product Table -->
     <table id="productTable" class="data-table">
 
         <thead>
@@ -127,8 +121,7 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
 
                         <?php if ($_user?->role == 'MANAGER'): ?>
 
-
-                            <button class="action-button"  onclick="showUpdateProductForm(
+                            <button class="button action-button" onclick="showUpdateProductForm(
     '<?= $s->product_image ?>', 
     '<?= $s->product_id ?>', 
     '<?= $s->product_name ?>', 
@@ -143,34 +136,28 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
                             </button>
 
 
-                            <form action="delete.php" method="post" style="display: inline;">
+                            <form action="delete.php" method="post">
                                 <input type="hidden" name="id" value="<?= $s->product_id ?>">
-                                <button type="submit" class="delete-action-button" onclick="return confirmDelete();">Delete</button>
+                                <button type="submit" class="button delete-action-button" onclick="return confirmDelete();">Delete</button>
                             </form>
-                        <?php elseif ($_user?->role == 'STAFF'): ?>
-                            <button class="action-button" onclick="showAccessDenied()">Update</button>
-                            <button type="submit" class="deleteButton" onclick="showAccessDenied();">Delete</button>
-
-
-                            <div id="accessDeniedMessage" class="modal" style="margin-top: 80px; display: none;">
-                                <div class="modal-content">
-                                    <span class="close-button" onclick="hideAccessDenied()">&times;</span>
-                                    <p>You do not have the necessary permissions to update or delete products. Your role is restricted.</p>
-                                </div>
-                            </div>
-                        <?php else: ?>
-                            <div style="margin: 30px;">
-                                <button id="updateProductBtn" class="action-button" onclick="showAccessDenied()">Update</button>
-                            </div>
-                            <div id="accessDeniedMessage" class="modal" style="margin-top: 80px; display: none;">
-                                <div class="modal-content">
-                                    <span class="close-button" onclick="hideAccessDenied()">&times;</span>
-                                    <p>You do not have the necessary permissions to update or delete products. Your role is restricted.</p>
-                                </div>
-                            </div>
                         <?php endif; ?>
 
+                        <button class="button view-action-button" onclick="showViewForm(
+    '<?= $s->product_id ?>', 
+    '<?= $s->product_name ?>',
+         '<?= $s->product_image ?>', 
+
+    '<?= $s->category_name ?>', 
+    '<?= $s->price ?>', 
+    '<?= $s->description ?>', 
+    '<?= $s->current_stock ?>', 
+    '<?= $s->amount_sold ?>', 
+    '<?= $s->status ?>'
+    )">View
+                        </button>
                     </td>
+
+
             </tr>
         </tbody>
     <?php endforeach ?>
@@ -178,27 +165,26 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
     </table>
 
     <div class="pagination">
-    <?php if ($page > 1): ?>
-        <a href="?page=1&product_name=<?= urlencode($product_name) ?>&category_name=<?= urlencode($category_name) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="first-page">First</a>
-        <a href="?page=<?= $page - 1 ?>&product_name=<?= urlencode($product_name) ?>&category_name=<?= urlencode($category_name) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="prev-page">Prev</a>
-    <?php endif; ?>
+        <?php if ($page > 1): ?>
+            <a href="?page=1&product_name=<?= urlencode($product_name) ?>&category_name=<?= urlencode($category_name) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="first-page">First</a>
+            <a href="?page=<?= $page - 1 ?>&product_name=<?= urlencode($product_name) ?>&category_name=<?= urlencode($category_name) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="prev-page">Prev</a>
+        <?php endif; ?>
 
-    <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-        <a href="?page=<?= $i ?>&product_name=<?= urlencode($product_name) ?>&category_name=<?= urlencode($category_name) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>"
-           class="page-number <?= $i == $page ? 'active' : '' ?>">
-            <?= $i ?>
-        </a>
-    <?php endfor; ?>
+        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+            <a href="?page=<?= $i ?>&product_name=<?= urlencode($product_name) ?>&category_name=<?= urlencode($category_name) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>"
+                class="page-number <?= $i == $page ? 'active' : '' ?>">
+                <?= $i ?>
+            </a>
+        <?php endfor; ?>
 
-    <?php if ($page < $total_pages): ?>
-        <a href="?page=<?= $page + 1 ?>&product_name=<?= urlencode($product_name) ?>&category_name=<?= urlencode($category_name) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="next-page">Next</a>
-        <a href="?page=<?= $$total_pages ?>&product_name=<?= urlencode($product_name) ?>&category_name=<?= urlencode($category_name) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="last-page">Last</a>
-    <?php endif; ?>
-</div>
+        <?php if ($page < $total_pages): ?>
+            <a href="?page=<?= $page + 1 ?>&product_name=<?= urlencode($product_name) ?>&category_name=<?= urlencode($category_name) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="next-page">Next</a>
+            <a href="?page=<?= $$total_pages ?>&product_name=<?= urlencode($product_name) ?>&category_name=<?= urlencode($category_name) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="last-page">Last</a>
+        <?php endif; ?>
+    </div>
 
 
     <?php
-    $roles = ['MANAGER', 'STAFF'];
     $_categories = [];
     try {
         $stmt = $_db->query("SELECT category_name, category_image FROM categories");
@@ -210,72 +196,82 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
     ?>
 
 
-    <!-- Add Product Modal -->
-    <?php if (in_array($_user?->role, $roles)): ?>
-        <div style="margin: 30px;">
-            <button id="addProductBtn" class="action-button" onclick="showAddForm()">Add new product</button>
+    <div style="margin: 30px;">
+        <button id="addProductBtn" class="action-button" onclick="showAddForm()">Add new product</button>
+    </div>
+
+
+
+    <div id="viewModal" class="modal">
+        <div class="modal-content">
+            <form id='viewForm'>
+                <span class="close-button" onclick="hideViewForm()">&times;</span>
+                <h2>Product Details</h2>
+                <p><strong>Product ID:</strong> <span id="viewProductID"></span></p>
+                <p><strong>Product Name:</strong> <span id="viewProductName"></span></p>
+                <p><strong>Product Image:</strong> <span id="viewProductImage"></span></p>
+                <p><strong>Category Name:</strong> <span id="viewCategoryName"></span></p>
+                <p><strong>Price(RM):</strong> <span id="viewPrice"></span></p>
+                <p><strong>Description:</strong> <span id="viewDescription"></span></p>
+                <p><strong>Current Stock:</strong> <span id="viewCurrentStock"></span></p>
+                <p><strong>Amount Sold:</strong> <span id="viewAmountSold"></span></p>
+                <p><strong>Status:</strong> <span id="viewStatus"></span></p>
+                <button type="button" class="cancel-button" onclick="hideViewForm()">Close</button>
         </div>
+        </form>
 
-        <div id="addProductModal" class="modal" style="margin-top: 80px;">
-            <div class="modal-content">
-                <span class="close-button" onclick="hideAddForm()">&times;</span>
-                <form id="addForm" action="addProduct.php" method="POST" enctype="multipart/form-data" class="add-form">
-                    <input type="hidden" name="action" value="add">
-                    <label for="product_name">Product Name:</label>
-                    <?php html_text('product_name', 'required'); ?>
-                    <span class="error"><?php err('product_name'); ?></span><br><br>
+    </div>
 
-                    <label for="categories">Existing Categories:</label>
-                    <?php html_select('category_name', array_column($_categories, 'category_name', 'category_name'), '- Select Category -'); ?>
-                    <span class="error"><?php err('category_name'); ?></span><br><br>
+    <div id="addProductModal" class="modal" style="margin-top: 80px;">
+        <div class="modal-content">
+            <span class="close-button" onclick="hideAddForm()">&times;</span>
+            <form id="addForm" action="addProduct.php" method="POST" enctype="multipart/form-data" class="add-form">
+                <input type="hidden" name="action" value="add">
+                <label for="product_name">Product Name:</label>
+                <?php html_text('product_name', 'required'); ?>
+                <span class="error"><?php err('product_name'); ?></span><br><br>
 
-                    <label for="new_category_name">New Category Name:</label>
-                    <?php html_text('new_category_name'); ?><br><br>
+                <label for="categories">Existing Categories:</label>
+                <?php html_select('category_name', array_column($_categories, 'category_name', 'category_name'), '- Select Category -'); ?>
+                <span class="error"><?php err('category_name'); ?></span><br><br>
 
-                    <label for="new_category_image">New Category Image:</label>
-                    <?php html_file('new_category_image', 'image/*'); ?>
-                    <span class="error"><?php err('new_category_image'); ?></span><br><br>
+                <label for="new_category_name">New Category Name:</label>
+                <?php html_text('new_category_name'); ?><br><br>
 
-                    <label for="price">Price:</label>
-                    <?php html_number('price', '0', '', '0.01', 'required'); ?>
-                    <span class="error"><?php err('price'); ?></span><br><br>
+                <label for="new_category_image">New Category Image:</label>
+                <?php html_file('new_category_image', 'image/*'); ?>
+                <span class="error"><?php err('new_category_image'); ?></span><br><br>
 
-                    <label for="description">Description:</label>
-                    <?php html_textarea('description', 'required'); ?>
-                    <span class="error"><?php err('description'); ?></span><br><br>
+                <label for="price">Price:</label>
+                <?php html_number('price', '0', '', '0.01', 'required'); ?>
+                <span class="error"><?php err('price'); ?></span><br><br>
 
-                    <label for="current_stock">Current Stock:</label>
-                    <?php html_number('current_stock', '0', '', '1', 'required'); ?>
-                    <span class="error"><?php err('current_stock'); ?></span><br><br>
+                <label for="description">Description:</label>
+                <?php html_textarea('description', 'required'); ?>
+                <span class="error"><?php err('description'); ?></span><br><br>
 
-                    <label for="product_image">Product Image:</label>
-                    <?php html_file('product_image', 'image/*', 'required'); ?>
-                    <span class="error"><?php err('product_image'); ?></span><br><br>
+                <label for="current_stock">Current Stock:</label>
+                <?php html_number('current_stock', '0', '', '1', 'required'); ?>
+                <span class="error"><?php err('current_stock'); ?></span><br><br>
 
-                    <label for="status">Status:</label>
-                    <?php html_select('status', [
-                        'AVAILABLE' => 'Available',
-                        'UNAVAILABLE' => 'Unavailable',
-                        'OUT_OF_STOCK' => 'Out of Stock'
-                    ], '- Select Status -', 'required'); ?>
-                    <span class="error"><?php err('status'); ?></span><br><br>
+                <label for="product_image">Product Image:</label>
+                <?php html_file('product_image', 'image/*', 'required'); ?>
+                <span class="error"><?php err('product_image'); ?></span><br><br>
 
-                    <input type="submit" value="Add Product" onclick="return confirmAddProduct()">
-                    <button type="button" class="cancel-button" onclick="hideAddForm()">Cancel</button>
-                </form>
-            </div>
+                <label for="status">Status:</label>
+                <?php html_select('status', [
+                    'AVAILABLE' => 'Available',
+                    'UNAVAILABLE' => 'Unavailable',
+                    'OUT_OF_STOCK' => 'Out of Stock'
+                ], '- Select Status -', 'required'); ?>
+                <span class="error"><?php err('status'); ?></span><br><br>
+
+                <input type="submit" value="Add Product" onclick="return confirmAddProduct()">
+                <button type="button" class="cancel-button" onclick="hideAddForm()">Cancel</button>
+            </form>
         </div>
-    <?php else: ?>
-        <div style="margin: 30px;">
-            <button id="addProductBtn" class="action-button" onclick="showAccessDenied()">Add new product</button>
-        </div>
-        <div id="accessDeniedMessage" class="modal" style="margin-top: 80px; display: none;">
-            <div class="modal-content">
-                <span class="close-button" onclick="hideAccessDenied()">&times;</span>
-                <p>You do not have the necessary permissions to add a product.</p>
-            </div>
-        </div>
-    <?php endif; ?>
+    </div>
+
 
     <div id="updateModal" class="modal" style="margin-top: 80px;">
         <div class="modal-content">
@@ -343,6 +339,12 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
 
 
 <script>
+
+    
+function hideViewForm() {
+    document.getElementById('viewModal').style.display = 'none';
+}
+
     function showUpdateProductForm(productImage, productId, productName, category, price, productDescription, currentStock, amountSold, status) {
         var modal = document.getElementById('updateModal');
         var form = document.getElementById('updateForm');
@@ -355,15 +357,12 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
         form.elements['current_stock'].value = currentStock;
         form.elements['amount_sold'].value = amountSold;
 
-        // Set the status dropdown value
         form.elements['status'].value = status;
 
-        // Optionally set the image field if needed
         document.getElementById('currentImage').src = "/admin/uploads/product_images/" + productImage;
     }
 
 
-    // Function to hide the update product modal
     function hideUpdateProductForm() {
         document.getElementById('updateModal').style.display = "none";
     }
@@ -389,11 +388,28 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
     function hideAccessDenied() {
         document.getElementById('accessDeniedMessage').style.display = 'none';
     }
+
     function confirmAddProduct() {
         const confirmation = confirm("Are you sure you want to add this product?");
-        return confirmation; 
+        return confirmation;
+    }
+
+    function showViewForm(productId, productName, productImage,category, price, productDescription, currentStock, amountSold, status) {
+        var modal = document.getElementById('viewModal');
+        modal.style.display = 'block';
+        document.getElementById('viewProductID').innerText = productId;
+        document.getElementById('viewProductName').innerText = productName;
+        document.getElementById('viewProductImage').innerText = productImage;
+        document.getElementById('viewCategoryName').innerText = category;
+        document.getElementById('viewPrice').innerText = price;
+        document.getElementById('viewDescription').innerText = productDescription;
+        document.getElementById('viewCurrentStock').innerText = currentStock;
+        document.getElementById('viewAmountSold').innerText = amountSold;
+        document.getElementById('viewStatus').innerText = status;
+
     }
 </script>
+
 
 
 </html>

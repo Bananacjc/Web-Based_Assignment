@@ -18,7 +18,6 @@ if (is_post() && isset($_POST['request_otp'])) {
             exit;
         }
 
-        // Check if the email exists in the database
         $stmt = $_db->prepare("SELECT * FROM employees WHERE email = ?");
         $stmt->execute([$email]);
 
@@ -26,8 +25,6 @@ if (is_post() && isset($_POST['request_otp'])) {
             echo 'Email not found.';
             exit;
         }
-
-        // Generate OTP
         $otp = rand(100000, 999999);
         $_SESSION['otp'] = $otp;
         $_SESSION['otp_email'] = $email;

@@ -23,7 +23,7 @@ if (is_post()) {
             $employeeId = $_user->employee_id;
             $deletedProductIds = implode(', ', $id);
 
-            log_action($employeeId, 'Delete Customer', "Delete Customer: {$deletedProductIds}", $_db);
+            log_action($employeeId, 'Delete Customer', "Delete Customer: {$deletedProductIds }", $_db);
         }
 
 

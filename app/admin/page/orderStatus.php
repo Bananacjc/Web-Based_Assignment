@@ -2,7 +2,9 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="../css/productStaffAdmin.css" />
+    <link rel="stylesheet" href="../css/orderStatus.css" />
+    <script src="../js/orderStatus.js"></script>
+
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Order Management</title>
 </head>
@@ -27,8 +29,7 @@ $fields = [
     'Action'
 ];
 
-$order_id = req('order_id');
-$customer_id = req('customer_id');
+$searchTerm = req('search');
 $status = req('status');
 
 $sort = req('sort');
@@ -41,8 +42,8 @@ $page = req('page', 1);
 $limit = 10;
 $offset = ($page - 1) * $limit;
 
-$where_clauses = ['order_id LIKE ? AND customer_id LIKE ?'];
-$params = ["%$order_id%", "%$customer_id%"];
+$where_clauses = ['(order_id LIKE ? OR customer_id LIKE ?)'];
+$params = ["%$searchTerm%", "%$searchTerm%"];
 
 if (!empty($status)) {
     $where_clauses[] = "status = ?";
@@ -70,19 +71,24 @@ $orders = $stm->fetchAll();
     <h1>ORDERS</h1>
 
     <form>
-        <?= html_search('order_id', '', 'Search Order Id') ?>
-        <?= html_search('customer_id', '', 'Search Customer Id') ?>
+        <?= html_search('search', '', 'Search by Order ID or Customer ID') ?> 
+
         <select name="status" id="status">
-            <option value="">All Statuses</option> <!-- Add an option for all statuses -->
+            <option value="">All Statuses</option>
             <option value="PAID" <?= $status === 'PAID' ? 'selected' : '' ?>>Paid</option>
             <option value="SHIPPING" <?= $status === 'SHIPPING' ? 'selected' : '' ?>>Shipping</option>
             <option value="DELIVERED" <?= $status === 'DELIVERED' ? 'selected' : '' ?>>Delivered</option>
         </select>
         <button type="submit">Search</button>
     </form>
+
+    <?php if ($_user->role == 'MANAGER'): ?>
     <form method="post" id="f">
-        <button formaction="deleteOrder.php" onclick="return confirmDelete()">Delete</button>
+        <button class="delete-btn" formaction="deleteOrder.php" onclick="return confirmDelete()">Batch Delete</button>
     </form>
+    <?php endif; ?>
+
+    
 
     <p><?= count($orders) ?> order(s) on this page | Total: <?= $total_orders ?> order(s)</p>
 
@@ -109,6 +115,7 @@ $orders = $stm->fetchAll();
                     <td><?= $o->order_time ?></td>
                     <td><?= $o->status ?></td>
 
+                    <?php if ($_user->role == 'MANAGER'): ?>
                     <td>
                         <button class="button action-button" onclick="showUpdateOrderForm(
                             '<?= $o->order_id ?>', 
@@ -129,7 +136,7 @@ $orders = $stm->fetchAll();
                             <button type="submit" class="button delete-action-button" onclick="return confirmDelete();">Delete</button>
                         </form>
 
-                        <button class="button action-button" onclick="showViewOrderForm(
+                        <button class="button view-action-button" onclick="showViewOrderForm(
     '<?= $o->order_id ?>', 
     '<?= $o->customer_id ?>', 
     '<?= plainTextJson($o->order_items) ?>', 
@@ -143,6 +150,7 @@ $orders = $stm->fetchAll();
                         </button>
 
                     </td>
+                    <?php endif; ?>
                 </tr>
             <?php endforeach ?>
 
@@ -150,26 +158,24 @@ $orders = $stm->fetchAll();
     </table>
 
     <div class="pagination">
-        <?php if ($page > 1): ?>
-            <a href="?page=1&order_id=<?= urlencode($order_id) ?>&customer_id=<?= urlencode($customer_id) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="first-page">First</a>
-            <a href="?page=<?= $page - 1 ?>&order_id=<?= urlencode($order_id) ?>&customer_id=<?= urlencode($customer_id) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="prev-page">Prev</a>
-        <?php endif; ?>
+            <?php if ($page > 1): ?>
+                <a href="?page=1" class="first-page">First</a>
+                <a href="?page=<?= $page - 1 ?>" class="prev-page">Prev</a>
+            <?php endif; ?>
 
-        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-            <a href="?page=<?= $i ?>&order_id=<?= urlencode($order_id) ?>&customer_id=<?= urlencode($customer_id) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="page-number <?= $i == $page ? 'active' : '' ?>">
-                <?= $i ?>
-            </a>
-        <?php endfor; ?>
+            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                <a href="?page=<?= $i ?>" class="page-number <?= $i == $page ? 'active' : '' ?>"><?= $i ?></a>
+            <?php endfor; ?>
 
-        <?php if ($page < $total_pages): ?>
-            <a href="?page=<?= $page + 1 ?>&order_id=<?= urlencode($order_id) ?>&customer_id=<?= urlencode($customer_id) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="next-page">Next</a>
-            <a href="?page=<?= $total_pages ?>&order_id=<?= urlencode($order_id) ?>&customer_id=<?= urlencode($customer_id) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="last-page">Last</a>
-        <?php endif; ?>
-    </div>
+            <?php if ($page < $total_pages): ?>
+                <a href="?page=<?= $page + 1 ?>" class="next-page">Next</a>
+                <a href="?page=<?= $total_pages ?>" class="last-page">Last</a>
+            <?php endif; ?>
+        </div>
 
 
     <div style="margin: 20px;">
-        <button id="addOrderBtn" class="button action-button" onclick="showAddForm()">Add New Order</button>
+        <button id="addOrderBtn" class="add-button" onclick="showAddForm()">Add New Order</button>
     </div>
 
 
@@ -188,6 +194,7 @@ $orders = $stm->fetchAll();
                 <p><strong>Payment Method:</strong> <span id="viewPaymentMethod"></span></p>
                 <p><strong>Order Time:</strong> <span id="viewOrderTime"></span></p>
                 <p><strong>Status:</strong> <span id="viewStatus"></span></p>
+                <button type="button" class="cancel-button" onclick="hideViewForm()">Close</button>
         </div>
         </form>
     </div>
@@ -286,72 +293,3 @@ $orders = $stm->fetchAll();
 
 </html>
 
-<script>
-    function showViewOrderForm(orderId, customerId, orderItems, promo_amount, subtotal, shipping_fee, total, payment_method, order_time, status) {
-        var modal = document.getElementById('viewOrderModal');
-        modal.style.display = 'block';
-        document.getElementById('viewOrderID').innerText = orderId;
-        document.getElementById('viewCusId').innerText = customerId;
-        document.getElementById('viewPromoAmount').innerText = promo_amount;
-        document.getElementById('viewSubTotal').innerText = subtotal;
-        document.getElementById('viewShippingFee').innerText = shipping_fee;
-        document.getElementById('viewTotal').innerText = total;
-        document.getElementById('viewOrderItems').innerText = orderItems;
-        document.getElementById('viewPaymentMethod').innerText = payment_method;
-        document.getElementById('viewOrderTime').innerText = order_time;
-        document.getElementById('viewStatus').innerText = status;
-
-    }
-
-    function showUpdateOrderForm(orderId, customerId, orderItems, promoAmount, subtotal, shippingFee, paymentMethod, orderTime, status) {
-        var modal = document.getElementById('updateOrderModal');
-        var form = document.getElementById('updateForm');
-        modal.style.display = 'block';
-
-        form.elements['order_id'].value = orderId;
-        form.elements['customer_id'].value = customerId;
-        form.elements['order_items'].value = orderItems; // Fixed typo
-        form.elements['promo_amount'].value = promoAmount;
-        form.elements['sub_total'].value = subtotal; // Fixed typo
-        form.elements['shipping_fee'].value = shippingFee;
-        form.elements['payment_method'].value = paymentMethod;
-        form.elements['order_time'].value = orderTime; // Added missing field
-        form.elements['status'].value = status;
-    }
-
-
-
-
-    function hideUpdateForm() {
-        document.getElementById('updateOrderModal').style.display = 'none';
-    }
-
-
-
-    function hideViewForm() {
-        document.getElementById('viewOrderModal').style.display = 'none';
-    }
-
-    function hideAddForm() {
-        document.getElementById('addOrderModal').style.display = "none";
-    }
-
-    function hideUpdateForm() {
-        document.getElementById('updateOrderModal').style.display = "none";
-    }
-
-    function confirmDelete() {
-        return confirm("Are you sure you want to delete this voucher?");
-    }
-
-    function showAddForm() {
-        var modal = document.getElementById('addOrderModal');
-        modal.style.display = "block";
-    }
-
-
-    function confirmAddVoucher() {
-        const confirmation = confirm("Are you sure you want to add this voucher?");
-        return confirmation;
-    }
-</script>

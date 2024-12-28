@@ -52,14 +52,12 @@
         $params[] = $bannedFilter;
     }
 
-    // Count total records for pagination
     $totalEmployeesQuery = "SELECT COUNT(*) FROM employees $whereClause";
     $totalEmployeesStmt = $_db->prepare($totalEmployeesQuery);
     $totalEmployeesStmt->execute($params);
     $total_employees = $totalEmployeesStmt->fetchColumn();
     $totalPages = ceil($total_employees / $limit);
 
-    // Fetch employee records for the current page
     $query = "
     SELECT employee_id, employee_name, email,password, role, profile_image, banned 
     FROM employees
@@ -80,7 +78,7 @@
 
         <!-- Search and Filter Form -->
         <form method="get">
-            <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" id="search" placeholder="Search by name, ID, or email">
+            <input type="search" name="search" value="<?= htmlspecialchars($search) ?>" id="search" placeholder="Search by name, ID, or email">
             <select name="role">
                 <option value="">Select Role</option>
                 <?php foreach ($roles as $r): ?>
@@ -95,16 +93,14 @@
             <button type="submit">Search</button>
         </form>
 
-        <!-- Manager Actions -->
         <?php if ($_user?->role === 'MANAGER'): ?>
             <form method="post" id="f">
-                <button formaction="deleteStaff.php" onclick="return confirm('Are you sure you want to delete selected employees?')">Delete</button>
+                <button class="delete-btn" formaction="deleteStaff.php" onclick="return confirm('Are you sure you want to delete selected employees?')">Batch Delete</button>
             </form>
         <?php endif; ?>
 
         <p><?= count($employees) ?> employee(s) on this page | Total: <?= $total_employees ?> employee(s)</p>
 
-        <!-- Employees Table -->
         <table id="staffTable" class="data-table">
             <thead>
                 <tr>
@@ -274,10 +270,6 @@
         document.getElementById('updateEmployeeModal').style.display = 'none';
     }
 
-
-    function showAccessDenied() {
-        alert("You don't have permission to perform this action.");
-    }
 
     function confirmDelete() {
         return confirm('Are you sure you want to delete this customer?');

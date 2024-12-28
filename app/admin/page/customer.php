@@ -3,6 +3,7 @@
 
 <head>
     <link rel="stylesheet" href="../css/customer.css" />
+    <script src="../js/customer.js"></script>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Customer Management</title>
 </head>
@@ -34,22 +35,29 @@ if (!in_array($sort, $valid_sort_fields)) {
 
 $dir = req('dir');
 if (!in_array($dir, ['asc', 'desc'])) {
-    $dir = 'asc'; // Default direction
+    $dir = 'asc'; 
 }
 
-$username = req('username');
-$bannedFilter = req('banned_filter'); // Retrieve the banned filter value
-$bannedFilter = in_array($bannedFilter, ['0', '1', 'all']) ? $bannedFilter : 'all'; // Default to 'all'
+$searchTerm = req('search'); 
+$bannedFilter = req('banned_filter'); 
+$bannedFilter = in_array($bannedFilter, ['0', '1', 'all']) ? $bannedFilter : 'all'; 
 
-$whereClause = "WHERE username LIKE ?";
-$params = ["%$username%"];
+$whereClause = "WHERE 1=1"; 
+$params = [];
+
+if (!empty($searchTerm)) {
+    $whereClause .= " AND (username LIKE ? OR customer_id LIKE ?)";
+    $params[] = "%$searchTerm%";
+    $params[] = "%$searchTerm%";
+}
+
 if ($bannedFilter === '0' || $bannedFilter === '1') {
     $whereClause .= " AND banned = ?";
     $params[] = $bannedFilter;
 }
 
 $page = req('page', 1);
-$limit = 10; // Number of items per page
+$limit = 10; 
 $offset = ($page - 1) * $limit;
 
 $countQuery = "SELECT COUNT(*) AS total FROM customers $whereClause";
@@ -58,7 +66,6 @@ $countStmt->execute($params);
 $totalRecords = $countStmt->fetchColumn();
 $totalPages = ceil($totalRecords / $limit);
 
-// Fetch the records for the current page
 $query = "SELECT customer_id, username, email, contact_num, banks, ewallets, addresses, cart, promotion_records, profile_image, banned 
           FROM customers 
           $whereClause 
@@ -74,19 +81,22 @@ $customers = $stm->fetchAll();
 <div class="main">
     <h1>CUSTOMER MANAGEMENT</h1>
     <form>
-        <?= html_search('username', '', 'Search Customer Name') ?>
-        <select name="banned_filter" id="bannedFilter">
-            <option value="all" <?= $bannedFilter === 'all' ? 'selected' : '' ?>>All</option>
-            <option value="0" <?= $bannedFilter === '0' ? 'selected' : '' ?>>Active</option>
-            <option value="1" <?= $bannedFilter === '1' ? 'selected' : '' ?>>Blocked</option>
-        </select>
-        <button type="submit">Search</button>
+        <div class="form-group">
+            <?= html_search('search', '', 'Search by Customer ID or Username') ?>
+            <select name="banned_filter" id="bannedFilter">
+                <option value="all" <?= $bannedFilter === 'all' ? 'selected' : '' ?>>All</option>
+                <option value="0" <?= $bannedFilter === '0' ? 'selected' : '' ?>>Active</option>
+                <option value="1" <?= $bannedFilter === '1' ? 'selected' : '' ?>>Blocked</option>
+            </select>
+            <button type="submit">Search</button>
+        </div>
     </form>
+    <?php if ($_user->role == 'MANAGER'): ?>
 
-    <form method="post" id="f">
-        <button formaction="restore.php">Restore</button>
-        <button formaction="deleteCustomer.php" onclick="return confirmDelete()">Delete</button>
-    </form>
+        <form method="post" id="f">
+            <button class="delete-btn" formaction="deleteCustomer.php" onclick="return confirmDelete() "> Batch Delete</button>
+        </form>
+    <?php endif; ?>
 
     <p><?= count($customers) ?> customer(s) on this page | Total: <?= $totalRecords ?> customer(s)</p>
 
@@ -117,8 +127,10 @@ $customers = $stm->fetchAll();
                     <td>
                         <img src="../../uploads/profile_images/<?= $c->profile_image ?>" class="resized-image" alt="Profile Image">
                     </td>
-                    <td>
-                        <button class="button action-button" onclick="showUpdateCustomerForm(
+
+                    <?php if ($_user->role == 'MANAGER'): ?>
+                        <td>
+                            <button class="button action-button" onclick="showUpdateCustomerForm(
                             '<?= $c->customer_id ?>', 
                             '<?= $c->username ?>', 
                             '<?= $c->email ?>', 
@@ -129,25 +141,26 @@ $customers = $stm->fetchAll();
                             '<?= plainTextJson($c->cart) ?>', 
                             '<?= plainTextJson($c->promotion_records) ?>'
                         )">
-                            Update
-                        </button>
-                        <form action="deleteCustomer.php" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="<?= $c->customer_id ?>">
-                            <button type="submit" class="button delete-action-button" onclick="return confirmDelete();">Delete</button>
-                        </form>
-                        <?php if ($c->banned == 0): ?>
-                            <form action="banCustomer.php" method="POST" style="display:inline;">
-                                <input type="hidden" name="customer_id" value="<?= $c->customer_id ?>">
-                                <button type="submit" class="button ban-action-button" onclick="confirmBlock()">Ban</button>
+                                Update
+                            </button>
+                            <form action="deleteCustomer.php" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="<?= $c->customer_id ?>">
+                                <button type="submit" class="button delete-action-button" onclick="return confirmDelete();">Delete</button>
                             </form>
-                        <?php else: ?>
-                            <form action="unbanCustomer.php" method="POST" style="display:inline;">
-                                <input type="hidden" name="customer_id" value="<?= $c->customer_id ?>">
-                                <button type="submit" class="button unban-action-button" onclick="confirmUnblock()">Unban</button>
-                            </form>
-                        <?php endif; ?>
+                            <?php if ($c->banned == 0): ?>
+                                <form action="banCustomer.php" method="POST" style="display:inline;">
+                                    <input type="hidden" name="customer_id" value="<?= $c->customer_id ?>">
+                                    <button type="submit" class="button ban-action-button" onclick="confirmBlock()">Ban</button>
+                                </form>
+                            <?php else: ?>
+                                <form action="unbanCustomer.php" method="POST" style="display:inline;">
+                                    <input type="hidden" name="customer_id" value="<?= $c->customer_id ?>">
+                                    <button type="submit" class="button unban-action-button" onclick="confirmUnblock()">Unban</button>
+                                </form>
+                            <?php endif; ?>
+                        </td>
+                    <?php endif; ?>
 
-                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
@@ -156,20 +169,20 @@ $customers = $stm->fetchAll();
     <!-- Pagination Links -->
     <div class="pagination">
         <?php if ($page > 1): ?>
-            <a href="?page=1&username=<?= urlencode($username) ?>&banned_filter=<?= $bannedFilter ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="first-page">First</a>
+            <a href="?page=1&search=<?= urlencode($searchTerm) ?>$&banned_filter=<?= $bannedFilter ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="first-page">First</a>
             <a href="?page=<?= $page - 1 ?>&username=<?= urlencode($username) ?>&banned_filter=<?= $bannedFilter ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="prev-page">Prev</a>
         <?php endif; ?>
 
         <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-            <a href="?page=<?= $i ?>&username=<?= urlencode($username) ?>&banned_filter=<?= $bannedFilter ?>&sort=<?= $sort ?>&dir=<?= $dir ?>"
+            <a href="?page=<?= $i ?>&search=<?= urlencode($searchTerm)  ?>&banned_filter=<?= $bannedFilter ?>&sort=<?= $sort ?>&dir=<?= $dir ?>"
                 class="page-number <?= $i == $page ? 'active' : '' ?>">
                 <?= $i ?>
             </a>
         <?php endfor; ?>
 
         <?php if ($page < $totalPages): ?>
-            <a href="?page=<?= $page + 1 ?>&username=<?= urlencode($username) ?>&banned_filter=<?= $bannedFilter ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="next-page">Next</a>
-            <a href="?page=<?= $totalPages ?>&username=<?= urlencode($username) ?>&banned_filter=<?= $bannedFilter ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="last-page">Last</a>
+            <a href="?page=<?= $page + 1 ?>&search=<?= urlencode($searchTerm)  ?>&banned_filter=<?= $bannedFilter ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="next-page">Next</a>
+            <a href="?page=<?= $totalPages ?>&search=<?= urlencode($searchTerm)  ?>&banned_filter=<?= $bannedFilter ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="last-page">Last</a>
         <?php endif; ?>
     </div>
 
@@ -278,49 +291,6 @@ $customers = $stm->fetchAll();
     </div>
 
 </div>
-
-<script>
-    function showAddForm() {
-        document.getElementById("addCustomerModal").style.display = "block";
-    }
-
-    function hideAddForm() {
-        document.getElementById("addCustomerModal").style.display = "none";
-    }
-
-    function showUpdateCustomerForm(customerId, username, email, contactNum, banks, ewallets, addresses, cart, promotionRecords) {
-        var modal = document.getElementById('updateCustomerModal');
-        var form = document.getElementById('updateForm');
-        modal.style.display = "block";
-
-        form.elements['customer_id'].value = customerId;
-        form.elements['username'].value = username;
-        form.elements['email'].value = email;
-        form.elements['contact_num'].value = contactNum;
-        form.elements['banks'].value = banks;
-        form.elements['ewallets'].value = ewallets;
-        form.elements['addresses'].value = addresses;
-        form.elements['cart'].value = cart;
-        form.elements['promotion_records'].value = promotionRecords;
-    }
-
-
-    function hideUpdateForm() {
-        document.getElementById("updateCustomerModal").style.display = "none";
-    }
-
-    function confirmDelete() {
-        return confirm('Are you sure you want to delete this customer?');
-    }
-
-    function confirmBlock() {
-        return confirm('Are you sure you want to block this customer?');
-    }
-
-    function confirmUnblock() {
-        return confirm('Are you sure you want to unblock this customer?');
-    }
-</script>
 
 
 </html>

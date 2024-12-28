@@ -2,7 +2,6 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="../css/productStaffAdmin.css" />
     <link rel="stylesheet" href="../css/promotion.css" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Promotion Management</title>
@@ -90,8 +89,7 @@ $promotions = $stm->fetchAll();
         <button>Search</button>
     </form>
     <form method="post" id="f">
-        <button formaction="restorePromotion.php">Restore</button>
-        <button formaction="deleteVoucher.php" onclick="return confirmDelete()">Delete</button>
+        <button class="delete-btn" formaction="deleteVoucher.php" onclick="return confirmDelete()">Batch Delete</button>
     </form>
 
     <p><?= count($promotions) ?> promotion(s) on this page | Total: <?= $total_promotions ?> promotion(s)</p>
@@ -164,20 +162,17 @@ $promotions = $stm->fetchAll();
 
     <div class="pagination">
         <?php if ($page > 1): ?>
-            <a href="?page=1&search=<?= urlencode($search) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="first-page">First</a>
-            <a href="?page=<?= $page - 1 ?>&search=<?= urlencode($search) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="prev-page">Prev</a>
+            <a href="?page=1" class="first-page">First</a>
+            <a href="?page=<?= $page - 1 ?>" class="prev-page">Prev</a>
         <?php endif; ?>
 
         <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-            <a href="?page=<?= $i ?>&search=<?= urlencode($search) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>"
-                class="page-number <?= $i == $page ? 'active' : '' ?>">
-                <?= $i ?>
-            </a>
+            <a href="?page=<?= $i ?>" class="page-number <?= $i == $page ? 'active' : '' ?>"><?= $i ?></a>
         <?php endfor; ?>
 
         <?php if ($page < $total_pages): ?>
-            <a href="?page=<?= $page + 1 ?>&search=<?= urlencode($search) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="next-page">Next</a>
-            <a href="?page=<?= $total_pages ?>&search=<?= urlencode($search) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="last-page">Last</a>
+            <a href="?page=<?= $page + 1 ?>" class="next-page">Next</a>
+            <a href="?page=<?= $total_pages ?>" class="last-page">Last</a>
         <?php endif; ?>
     </div>
 
@@ -203,6 +198,8 @@ $promotions = $stm->fetchAll();
                 <p><strong>Start Date:</strong> <span id="viewStartDate"></span></p>
                 <p><strong>End Date:</strong> <span id="viewEndDate"></span></p>
                 <p><strong>Status:</strong> <span id="viewStatus"></span></p>
+                <button type="button" class="cancel-button" onclick="hideViewForm()">Cancel</button>
+
         </div>
         </form>
     </div>
@@ -255,6 +252,8 @@ $promotions = $stm->fetchAll();
                 <br><br>
 
                 <button type="submit" class="action-button" onclick="confirmAddVoucher()">Add Promotion</button>
+                <button type="button" class="cancel-button" onclick="hideAddForm()">Cancel</button>
+
             </form>
 
 
@@ -316,6 +315,8 @@ $promotions = $stm->fetchAll();
                 <br><br>
 
                 <button type="submit" class="action-button">Update Promotion</button>
+                <button type="button" class="cancel-button" onclick="hideUpdateForm()">Cancel</button>
+
             </form>
         </div>
     </div>
