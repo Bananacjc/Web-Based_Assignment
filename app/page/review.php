@@ -4,48 +4,10 @@ $_css = '../css/review.css';
 require '../_base.php';
 include '../_head.php';
 
-if (is_post()) {
-    $productID = post('orderItemId');
-    $rating = post('rating');
-    $comment = post('comment');
-    $customerID = $_user->customer_id;
-
-    // Validate inputs
-    if (!$productID || !$rating || !$comment) {
-        echo json_encode(['success' => false, 'message' => 'All fields are required.']);
-        exit;
-    }
-
-    // Check if the review already exists
-    $stmt = $_db->prepare("SELECT * FROM reviews WHERE customer_id = ? AND product_id = ?");
-    $stmt->execute([$customerID, $productID]);
-    if ($stmt->fetch()) {
-        echo json_encode(['success' => false, 'message' => 'You have already reviewed this product.']);
-        exit;
-    }
-
-    // Insert the review
-    $stmt = $_db->prepare("INSERT INTO reviews (review_id, customer_id, product_id, rating, comment, comment_date_time) VALUES (?, ?, ?, ?, ?, ?)");
-    $success = $stmt->execute([
-        generate_unique_id('REV', 'reviews', 'review_id', $_db), 
-        $customerID, 
-        $productID, 
-        $rating, 
-        $comment, 
-        date('Y-m-d H:i:s')
-    ]);
-
-    if ($success) {
-        echo json_encode(['success' => true, 'message' => 'Review submitted successfully.']);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Failed to submit review.']);
-    }
-}
-
-$orderID = $_GET['order_id'] ?? null; // Get the order ID from the query string
+$orderID = $_GET['order_id'] ?? null;
 if (!$orderID) {
     temp('popup-msg', ['msg' => 'No order selected for review.', 'isSuccess' => false]);
-    redirect('order_history.php');
+    redirect('profile.php');
 }
 
 // Fetch order details
@@ -55,7 +17,7 @@ $order = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$order) {
     temp('popup-msg', ['msg' => 'Order not found.', 'isSuccess' => false]);
-    redirect('order_history.php');
+    redirect('profile.php');
 }
 
 // Decode order items
@@ -76,6 +38,7 @@ foreach ($orderItems as $productID => $quantity) {
     $products[] = [
         'product' => $product,
         'quantity' => $quantity,
+        'review' => $review,
         'reviewed' => $review ? true : false,
     ];
 }
@@ -93,7 +56,7 @@ foreach ($orderItems as $productID => $quantity) {
         </tr>
     </thead>
     <tbody>
-        <?php foreach ($products as $item): 
+        <?php foreach ($products as $item):
             $product = $item['product'];
             $quantity = $item['quantity'];
             $subtotal = $product['price'] * $quantity;
@@ -112,9 +75,16 @@ foreach ($orderItems as $productID => $quantity) {
                     <?php if (!$item['reviewed']): ?>
                         <a class="reviewbtn" onclick="showModal('<?= $product['product_id'] ?>')"><span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i></a>
                     <?php else: ?>
-                        <a class="reviewbtn"><span>Reviewed&nbsp;&nbsp;</span><i class="ti ti-check"></i></a>
+                        <a class="editbtn" onclick="showModal('<?= $product['product_id'] ?>', true)">
+                            <span>Edit&nbsp;&nbsp;</span><i class="ti ti-edit"></i>
+                        </a>
+                        <a class="deletebtn" onclick="confirmDelete('<?= $product['product_id'] ?>')">
+                            <span>Delete&nbsp;&nbsp;</span><i class="ti ti-trash"></i>
+                        </a>
+
                     <?php endif; ?>
                 </td>
+
             </tr>
         <?php endforeach; ?>
     </tbody>
@@ -123,7 +93,7 @@ foreach ($orderItems as $productID => $quantity) {
 <div id="orderModal" class="modal" style="display:none;">
     <div class="modal-content">
         <span class="close" onclick="closeModal();"><i class="ti ti-x"></i></span>
-        <form action="ReviewForm" method="post">
+        <form id="reviewForm" action="review_handler.php?action=update&order_id=<?= urlencode($orderID) ?>" method="post" enctype="multipart/form-data">
             <input id="orderItemIdInput" type="hidden" name="orderItemId" value="">
             <div class="form-container">
                 <div class="rating-stars">
@@ -135,6 +105,24 @@ foreach ($orderItems as $productID => $quantity) {
                 </div>
                 <input id="ratingInput" type="hidden" name="rating" value="">
                 <textarea name="comment" id="comment" rows="4" cols="50" placeholder="Leave a comment"></textarea>
+
+                <!-- Drag and Drop Image Zone -->
+                <div class="input-file-container" id="drop-zone">
+                    <div class="image-preview-container">
+                        <img id="image-preview" src="" alt="Review Image Preview" />
+                    </div>
+                    <input type="file" name="review_image" id="image-input" class="input-file" accept="image/*" onchange="previewFile()" />
+                    <div class="drag-overlay" id="drag-overlay">
+                        <p>Drag your image here or click to upload</p>
+                    </div>
+                </div>
+
+                <!-- Checkbox to remove image -->
+                <div class="remove-image-container d-flex align-items-center">
+                    <input type="checkbox" name="remove_image" id="remove-image" value="1">
+                    <label for="remove-image">Remove existing image</label>
+                </div>
+
                 <button class="submitbtn" type="submit">Submit Review</button>
             </div>
         </form>
@@ -142,55 +130,131 @@ foreach ($orderItems as $productID => $quantity) {
 </div>
 
 <script>
-    // Show the modal
-    function showModal(orderItemId) {
+    function previewFile() {
+        const fileInput = document.getElementById('image-input');
+        const preview = document.getElementById('image-preview');
+        const file = fileInput.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                preview.src = reader.result;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.src = ""; // Reset preview if no file is selected
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('image-input');
+
+        // Prevent default behavior for drag events
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // Highlight drop zone when a file is dragged over
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+        });
+
+        // Handle dropped files
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            if (files && files.length > 0) {
+                fileInput.files = files; // Assign files to the input
+                previewFile(); // Preview the file
+            }
+        }
+
+        // Allow clicking the drop zone to open file dialog
+        dropZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+    });
+
+
+    function showModal(orderItemId, isEdit = false) {
         document.getElementById('orderItemIdInput').value = orderItemId;
+
+        const form = document.getElementById('reviewForm');
+        if (isEdit) {
+            // Set form action to update
+            form.action = `review_handler.php?action=update&order_id=<?= urlencode($orderID) ?>`;
+            const reviewData = <?= json_encode($products) ?>.find(
+                p => p.product.product_id === orderItemId
+            );
+            if (reviewData && reviewData.reviewed) {
+                document.getElementById('comment').value = reviewData.review.comment;
+                document.getElementById('ratingInput').value = reviewData.review.rating;
+                document.querySelectorAll('.rating-stars .star').forEach((star, index) => {
+                    star.classList.toggle('ti-star-filled', index < reviewData.review.rating);
+                });
+                if (reviewData.review.review_image) {
+                    document.getElementById('image-preview').src =
+                        '../uploads/review_images/' + reviewData.review.review_image;
+                }
+            }
+        } else {
+            // Set form action to create
+            form.action = `review_handler.php?action=create&order_id=<?= urlencode($orderID) ?>`;
+            resetModal(); // Clear the form for new review
+        }
+
         document.getElementById('orderModal').style.display = 'block';
     }
+
+    function resetModal() {
+        document.getElementById('comment').value = '';
+        document.getElementById('ratingInput').value = '';
+        document.getElementById('image-preview').src = '';
+        document.querySelectorAll('.rating-stars .star').forEach(star => {
+            star.classList.remove('ti-star-filled');
+        });
+    }
+
+    function confirmDelete(productId) {
+        if (confirm('Are you sure you want to delete this review?')) {
+            window.location.href = `review_handler.php?action=delete&order_id=<?= urlencode($orderID) ?>&product_id=${productId}`;
+        }
+    }
+
 
     // Close the modal
     function closeModal() {
         document.getElementById('orderModal').style.display = 'none';
     }
 
-    // Set rating stars
     function setRating(rating) {
         document.querySelectorAll('.rating-stars .star').forEach(function(star, index) {
-            star.classList.toggle('ti-star-filled', index < rating);
+            star.style.transform = 'scale(1)'; // Reset scale for all stars
+            if (index < rating) {
+                star.classList.add('ti-star-filled');
+                star.style.transform = 'scale(1.1)'; // Scale up the filled stars
+                setTimeout(function() {
+                    star.style.transform = 'scale(1)'; // Scale back after 0.3s
+                }, 300); // Animation duration 300 ms
+            } else {
+                star.classList.remove('ti-star-filled');
+            }
         });
         document.getElementById('ratingInput').value = rating;
     }
-
-    // Handle form submission via AJAX
-    $(document).ready(function () {
-        $('#reviewForm').on('submit', function (e) {
-            e.preventDefault();
-
-            $.ajax({
-                url: 'review_submit.php',
-                type: 'POST',
-                data: $(this).serialize(),
-                dataType: 'json',
-                success: function (data) {
-                    if (data.success) {
-                        popup(data.message, true); // Use existing popup function
-                        closeModal();
-                        location.reload(); // Reload to reflect updated review status
-                    } else {
-                        popup(data.message, false); // Use existing popup function
-                    }
-                },
-                error: function () {
-                    popup('An unexpected error occurred.', false); // Use existing popup function
-                }
-            });
-        });
-    });
 </script>
 
 <?php include '../_foot.php'; ?>
-
-</body>
-
-
-</html>

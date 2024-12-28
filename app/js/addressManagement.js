@@ -1,5 +1,9 @@
 $(document).ready(function () {
-    const $addressInput = $("#address-input");
+    const $line1Input = $("#line-1");
+    const $villageInput = $("#village");
+    const $postalCodeInput = $("#postal-code");
+    const $cityInput = $("#city");
+    const $stateInput = $("#state");
     const $addressIndexInput = $("#address-index");
     const $actionInput = $("#action");
     const $saveButton = $("#save-address-btn");
@@ -8,18 +12,28 @@ $(document).ready(function () {
     // Handle edit button clicks using event delegation
     $(document).on("click", ".edit-address-btn", function (e) {
         e.preventDefault();
-        const $row = $(this).closest("tr");
-        const index = $(this).data("index");
-        const address = $row.find(".address-text").text();
+
+        // Retrieve address data from data attributes
+        const $button = $(this);
+        const index = $button.data("index");
+        const line1 = $button.data("line1");
+        const village = $button.data("village");
+        const postalCode = $button.data("postalcode");
+        const city = $button.data("city");
+        const state = $button.data("state");
 
         // Populate the input fields for editing
-        $addressInput.val(address);
+        $line1Input.val(line1);
+        $villageInput.val(village);
+        $postalCodeInput.val(postalCode);
+        $cityInput.val(city);
+        $stateInput.val(state);
         $addressIndexInput.val(index);
         $actionInput.val("edit-address");
         $saveButton.text("Update Address");
 
-        // Focus the input box
-        $addressInput.focus();
+        // Focus the first input field
+        $line1Input.focus();
     });
 
     // Handle delete button clicks using event delegation
@@ -38,9 +52,15 @@ $(document).ready(function () {
         }
     });
 
-    // Reset form when input is cleared
-    $addressInput.on("input", function () {
-        if ($addressInput.val().trim() === "") {
+    // Reset form when all inputs are cleared
+    $("input").on("input", function () {
+        if (
+            !$line1Input.val().trim() &&
+            !$villageInput.val().trim() &&
+            !$postalCodeInput.val().trim() &&
+            !$cityInput.val().trim() &&
+            !$stateInput.val().trim()
+        ) {
             // Reset to "Add Address" state
             $actionInput.val("save-address");
             $addressIndexInput.val("");
@@ -54,7 +74,11 @@ $(document).ready(function () {
             $saveButton.text("Add Address");
             $actionInput.val("save-address");
             $addressIndexInput.val("");
-            $addressInput.val("");
+            $line1Input.val("");
+            $villageInput.val("");
+            $postalCodeInput.val("");
+            $cityInput.val("");
+            $stateInput.val("");
         }, 500); // Reset the form after submission
     });
 });

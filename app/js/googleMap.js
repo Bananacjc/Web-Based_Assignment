@@ -1,40 +1,42 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const addressInput = document.getElementById("address-input");
+  const line1Input = document.getElementById("line-1");
+  const villageInput = document.getElementById("village");
+  const postalCodeInput = document.getElementById("postal-code");
+  const cityInput = document.getElementById("city");
+  const stateInput = document.getElementById("state");
   const mapContainer = document.getElementById("map");
   const latSpan = document.getElementById("latitude");
   const lngSpan = document.getElementById("longitude");
-  const geolocationButton = document.createElement("button");
-  geolocationButton.textContent = "Use My Location";
-  geolocationButton.classList.add("btn", "use-location-btn");
-  mapContainer.parentElement.insertBefore(geolocationButton, mapContainer);
+  const useMyLocationBtn = document.getElementById("use-my-location-btn");
 
   let map, marker, geocoder;
 
-  $(addressInput).on("focus", function () {
-    const pacContainer = $(".pac-container");
-    $(this).parent().append(pacContainer);
+  // Initialize Google Places Autocomplete
+  const autocomplete = new google.maps.places.Autocomplete(line1Input, {
+    types: ["geocode"],
+    componentRestrictions: { country: "MY" },
   });
 
-  // Initialize Google Places Autocomplete
-  const autocomplete = new google.maps.places.Autocomplete(addressInput, {
-    types: ["geocode"], // Restrict to geocoded results
-    componentRestrictions: {
-      country: "MY",
-    }, // Optional: Restrict to Malaysia
+  // Dynamically position pac-container on stateInput focus
+  stateInput.addEventListener("focus", function () {
+    const pacContainer = document.querySelector(".pac-container");
+    if (pacContainer) {
+      const stateRect = stateInput.getBoundingClientRect();
+      pacContainer.style.top = `${stateRect.bottom + window.scrollY}px`;
+      pacContainer.style.left = `${stateRect.left + window.scrollX}px`;
+      pacContainer.style.width = `${stateInput.offsetWidth}px`;
+      pacContainer.style.zIndex = 10000; // Ensure it's on top
+    }
   });
 
   // Initialize the map
   function initMap() {
-    const initialPosition = {
-      lat: 3.139,
-      lng: 101.686,
-    }; // Default: Kuala Lumpur
+    const initialPosition = { lat: 3.139, lng: 101.686 }; // Default: Kuala Lumpur
     map = new google.maps.Map(mapContainer, {
       center: initialPosition,
       zoom: 12,
     });
 
-    // Initialize the geocoder
     geocoder = new google.maps.Geocoder();
 
     // Place a draggable marker on the map
@@ -44,102 +46,109 @@ document.addEventListener("DOMContentLoaded", function () {
       draggable: true,
     });
 
-    // Update latitude, longitude, and address on marker drag
+    // Update coordinates and address on marker drag
     marker.addListener("dragend", () => {
       const position = marker.getPosition();
-      const lat = position.lat();
-      const lng = position.lng();
-      updateCoordinates(lat, lng);
-      getAddressFromCoordinates(lat, lng);
+      updateAddressFromCoordinates(position.lat(), position.lng());
     });
 
-    // Update map position and marker when address is selected
+    // Update map and address when autocomplete is selected
     autocomplete.addListener("place_changed", () => {
       const place = autocomplete.getPlace();
       if (place.geometry) {
         const location = place.geometry.location;
         map.setCenter(location);
         marker.setPosition(location);
-        const lat = location.lat();
-        const lng = location.lng();
-        updateCoordinates(lat, lng);
-        // Autofill address if selected from the autocomplete
-        if (place.formatted_address) {
-          addressInput.value = place.formatted_address;
-        }
+        updateAddressFromComponents(place.address_components);
       }
     });
 
-    // Update coordinates and address on map click
+    // Update address on map click
     map.addListener("click", (e) => {
       const lat = e.latLng.lat();
       const lng = e.latLng.lng();
       marker.setPosition(e.latLng);
-      updateCoordinates(lat, lng);
-      getAddressFromCoordinates(lat, lng);
+      updateAddressFromCoordinates(lat, lng);
     });
   }
 
-  // Update the latitude and longitude display
-  function updateCoordinates(lat, lng) {
+  // Update address fields from Google Maps components
+  function updateAddressFromComponents(components) {
+    let address = {
+      line_1: "",
+      village: "",
+      postal_code: "",
+      city: "",
+      state: "",
+    };
+
+    components.forEach((component) => {
+      const types = component.types;
+      if (types.includes("street_number")) {
+        address.line_1 = component.long_name + " " + address.line_1;
+      }
+      if (types.includes("route")) {
+        address.line_1 += component.long_name;
+      }
+      if (types.includes("neighborhood") || types.includes("sublocality")) {
+        address.village = component.long_name;
+      }
+      if (types.includes("postal_code")) {
+        address.postal_code = component.long_name;
+      }
+      if (types.includes("locality")) {
+        address.city = component.long_name;
+      }
+      if (types.includes("administrative_area_level_1")) {
+        address.state = component.long_name;
+      }
+    });
+
+    // Fill the form fields
+    line1Input.value = address.line_1;
+    villageInput.value = address.village;
+    postalCodeInput.value = address.postal_code;
+    cityInput.value = address.city;
+    stateInput.value = address.state;
+  }
+
+  // Update address fields based on coordinates
+  function updateAddressFromCoordinates(lat, lng) {
     latSpan.textContent = lat.toFixed(6);
     lngSpan.textContent = lng.toFixed(6);
-  }
 
-  // Get the address from latitude and longitude using Geocoder
-  function getAddressFromCoordinates(lat, lng) {
-    const latLng = {
-      lat: lat,
-      lng: lng,
-    };
-    geocoder.geocode(
-      {
-        location: latLng,
-      },
-      (results, status) => {
-        if (status === "OK" && results[0]) {
-          addressInput.value = results[0].formatted_address; // Autofill the address input
-        } else {
-          console.error("Geocoder failed: " + status);
-        }
+    const latLng = { lat: lat, lng: lng };
+    geocoder.geocode({ location: latLng }, (results, status) => {
+      if (status === "OK" && results[0]) {
+        updateAddressFromComponents(results[0].address_components);
+      } else {
+        console.error("Geocoder failed: " + status);
       }
-    );
+    });
   }
 
-  // Get the user's current location
-  function getCurrentLocation() {
+  // Use current location to update map and address
+  useMyLocationBtn.addEventListener("click", (e) => {
+    e.preventDefault();
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
-          const latLng = {
-            lat,
-            lng,
-          };
+          const latLng = { lat, lng };
           map.setCenter(latLng);
           marker.setPosition(latLng);
-          updateCoordinates(lat, lng);
-          getAddressFromCoordinates(lat, lng); // Autofill address input
+          updateAddressFromCoordinates(lat, lng);
         },
         (error) => {
-          console.error("Error getting location:", error.message);
-          alert(
-            "Unable to retrieve your location. Please allow location access."
-          );
+          console.error("Error getting location: " + error.message);
+          alert("Unable to retrieve your location.");
         }
       );
     } else {
       alert("Geolocation is not supported by your browser.");
     }
-  }
-
-  // Add event listener to geolocation button
-  geolocationButton.addEventListener("click", (e) => {
-    e.preventDefault();
-    getCurrentLocation();
   });
 
-  // Load the map
   initMap();
 });
