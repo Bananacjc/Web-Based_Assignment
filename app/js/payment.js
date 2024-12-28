@@ -76,7 +76,7 @@ function updatePromotion(promotionID) {
         $.ajax({
             url: 'payment_update.php',
             type: 'POST',
-            data: {selectedPromotion: promotionID, action: 'changePromo'},
+            data: {selectPromo: promotionID, action: 'changePromo'},
             dataType: 'json',
             success: function (data) {
                 if (data.success) {
