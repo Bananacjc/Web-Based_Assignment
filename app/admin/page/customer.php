@@ -19,7 +19,6 @@ $fields = [
     'email' => 'Email',
     'contact_num' => 'Contact Number',
     'banks' => 'Banks',
-    'ewallets' => 'E-wallets',
     'addresses' => 'Addresses',
     'cart' => 'Cart',
     'promotion_records' => 'Promotion Records',
@@ -28,9 +27,9 @@ $fields = [
 ];
 
 $sort = req('sort');
-$valid_sort_fields = ['customer_id', 'username', 'email', 'contact_num', 'banks', 'ewallets', 'addresses', 'cart', 'promotion_records', 'profile_image'];
+$valid_sort_fields = ['customer_id', 'username', 'email', 'contact_num', 'banks', 'addresses', 'cart', 'promotion_records', 'profile_image'];
 if (!in_array($sort, $valid_sort_fields)) {
-    $sort = 'customer_id'; // Default sort
+    $sort = 'customer_id'; 
 }
 
 $dir = req('dir');
@@ -66,7 +65,7 @@ $countStmt->execute($params);
 $totalRecords = $countStmt->fetchColumn();
 $totalPages = ceil($totalRecords / $limit);
 
-$query = "SELECT customer_id, username, email, contact_num, banks, ewallets, addresses, cart, promotion_records, profile_image, banned 
+$query = "SELECT customer_id, username, email, contact_num, banks, addresses, cart, promotion_records, profile_image, banned 
           FROM customers 
           $whereClause 
           ORDER BY $sort $dir
@@ -120,7 +119,6 @@ $customers = $stm->fetchAll();
                     <td><?= $c->email ?></td>
                     <td><?= $c->contact_num ?></td>
                     <td><?= plainTextJson($c->banks) ?></td>
-                    <td><?= plainTextJson($c->ewallets) ?></td>
                     <td><?= plainTextJson($c->addresses) ?></td>
                     <td><?= plainTextJson($c->cart) ?></td>
                     <td><?= plainTextJson($c->promotion_records) ?></td>
@@ -136,7 +134,6 @@ $customers = $stm->fetchAll();
                             '<?= $c->email ?>', 
                             '<?= $c->contact_num ?>', 
                             '<?= plainTextJson($c->banks) ?>', 
-                            '<?= plainTextJson($c->ewallets) ?>', 
                             '<?= plainTextJson($c->addresses) ?>', 
                             '<?= plainTextJson($c->cart) ?>', 
                             '<?= plainTextJson($c->promotion_records) ?>'
@@ -166,7 +163,6 @@ $customers = $stm->fetchAll();
         </tbody>
     </table>
 
-    <!-- Pagination Links -->
     <div class="pagination">
         <?php if ($page > 1): ?>
             <a href="?page=1&search=<?= urlencode($searchTerm) ?>$&banned_filter=<?= $bannedFilter ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="first-page">First</a>
@@ -213,10 +209,6 @@ $customers = $stm->fetchAll();
                 <label for="banks">Banks :</label>
                 <?php html_text('banks'); ?>
                 <span class="error"><?php err('banks'); ?></span><br><br>
-
-                <label for="ewallets">E-wallets :</label>
-                <?php html_text('ewallets'); ?>
-                <span class="error"><?php err('ewallets'); ?></span><br><br>
 
                 <label for="addresses">Addresses :</label>
                 <?php html_text('addresses'); ?>
@@ -265,10 +257,6 @@ $customers = $stm->fetchAll();
                 <label for="banks">Banks :</label>
                 <?php html_text('banks'); ?>
                 <span class="error"><?php err('banks'); ?></span><br><br>
-
-                <label for="ewallets">E-wallets :</label>
-                <?php html_text('ewallets'); ?>
-                <span class="error"><?php err('ewallets'); ?></span><br><br>
 
                 <label for="addresses">Addresses :</label>
                 <?php html_text('addresses'); ?>

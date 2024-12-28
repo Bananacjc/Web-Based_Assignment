@@ -6,7 +6,7 @@ function hideAddForm() {
     document.getElementById("addCustomerModal").style.display = "none";
 }
 
-function showUpdateCustomerForm(customerId, username, email, contactNum, banks, ewallets, addresses, cart, promotionRecords) {
+function showUpdateCustomerForm(customerId, username, email, contactNum, banks, addresses, cart, promotionRecords) {
     var modal = document.getElementById('updateCustomerModal');
     var form = document.getElementById('updateForm');
     modal.style.display = "block";
@@ -16,7 +16,6 @@ function showUpdateCustomerForm(customerId, username, email, contactNum, banks, 
     form.elements['email'].value = email;
     form.elements['contact_num'].value = contactNum;
     form.elements['banks'].value = banks;
-    form.elements['ewallets'].value = ewallets;
     form.elements['addresses'].value = addresses;
     form.elements['cart'].value = cart;
     form.elements['promotion_records'].value = promotionRecords;
