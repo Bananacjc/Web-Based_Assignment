@@ -72,36 +72,25 @@ if (is_post()) {
     }
 
     if ($action === 'changePromo' && isset($selectedPromoID) && $selectedPromoID) {
-
-        $stmt = $_db->prepare('SELECT * FROM promotions');
-        $stmt->execute([]);
-
-        $uPromotions = json_decode($_user->promotion_records, true);
-        $found = false;
-        $promoAmount = 0;
-
-        while ($promotion = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            if (isset($promotion[$selectedPromoID])) {
-                $promoAmount = $promotion['promo_amount'];
-                $found = true;
-                break;
-            }
-        }
-
+        $stmt = $_db->prepare('SELECT promo_id, promo_code, promo_amount FROM promotions WHERE promo_id = ?');
+        $stmt->execute([$selectedPromoID]);
+        $promotion = $stmt->fetch(PDO::FETCH_ASSOC);
+    
         ob_end_clean();
-        if ($found) {
+        if ($promotion) {
             echo json_encode([
                 'success' => true,
-                'promoAmount' => $promoAmount
+                'promoAmount' => $promotion['promo_amount']
             ]);
         } else {
             echo json_encode([
                 'success' => false,
-                'message' => $selectedPromoID
+                'message' => 'Promotion not found.'
             ]);
         }
         exit();
     }
+    
 }
 
 ?>

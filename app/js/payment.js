@@ -76,16 +76,16 @@ function updatePromotion(promotionID) {
         $.ajax({
             url: 'payment_update.php',
             type: 'POST',
-            data: {selectedPromotion: promotionID, action: 'changePromo'},
+            data: {selectPromo: promotionID, action: 'changePromo'},
             dataType: 'json',
             success: function (data) {
                 if (data.success) {
-                    $('#uPromo').text(data.promoAmount);
+                    $('#uPromo').text('RM ' + parseFloat(data.promoAmount).toFixed(2));
                 } else {
                     showAlertPopup(data.message, false);
                 }
             }
-        })
+        });
     } else {
         $('#uPromo').text('RM 0.00');
     }
