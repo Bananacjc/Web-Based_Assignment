@@ -275,6 +275,13 @@ function html_time($key, $attr = '')
     echo "<input type='time' id='$key' name='$key' value='$value' $attr>";
 }
 
+// Generate <input type='datetime-local'>
+function html_datetime($key, $attr = '')
+{
+    $value = encode($GLOBALS[$key] ?? '');
+    echo "<input type='datetime-local' id='$key' name='$key' value='$value' $attr>";
+}
+
 // Generate <textarea>
 function html_textarea($key, $attr = '')
 {
