@@ -468,40 +468,42 @@ if (is_post()) {
                 ?>
             </tbody>
         </table>
-        <form id="address-form" action="" method="post">
+        <form id="address-form" action="" method="post" class="d-flex">
             <input type="hidden" name="form_type" value="address_management" />
             <input type="hidden" name="action" id="action" value="save-address" />
             <input type="hidden" name="index" id="address-index" value="" />
 
-            <div class="input-subcontainer">
-                <input id="line-1" type="text" name="line_1" class="input-box" placeholder=" " required />
-                <label for="line-1" class="label">Address Line 1</label>
-            </div>
-            <div class="input-subcontainer">
-                <input id="village" type="text" name="village" class="input-box" placeholder=" " />
-                <label for="village" class="label">Village</label>
-            </div>
-            <div class="input-subcontainer">
-                <input id="postal-code" type="text" name="postal_code" class="input-box" placeholder=" " required />
-                <label for="postal-code" class="label">Postal Code</label>
-            </div>
-            <div class="input-subcontainer">
-                <input id="city" type="text" name="city" class="input-box" placeholder=" " required />
-                <label for="city" class="label">City</label>
-            </div>
-            <div class="input-subcontainer">
-                <input id="state" type="text" name="state" class="input-box" placeholder=" " required/>
-                <label for="state" class="label">State</label>
+            <div>
+                <div class="input-subcontainer">
+                    <input id="line-1" type="text" name="line_1" class="input-box" placeholder=" " required />
+                    <label for="line-1" class="label">Address Line 1</label>
+                </div>
+                <div class="input-subcontainer">
+                    <input id="village" type="text" name="village" class="input-box" placeholder=" " />
+                    <label for="village" class="label">Village</label>
+                </div>
+                <div class="input-subcontainer">
+                    <input id="postal-code" type="text" name="postal_code" class="input-box" placeholder=" " required />
+                    <label for="postal-code" class="label">Postal Code</label>
+                </div>
+                <div class="input-subcontainer">
+                    <input id="city" type="text" name="city" class="input-box" placeholder=" " required />
+                    <label for="city" class="label">City</label>
+                </div>
+                <div class="input-subcontainer" style="position: relative;">
+                    <input id="state" type="text" name="state" class="input-box" placeholder=" " required />
+                    <label for="state" class="label">State</label>
+                </div>
+                <button class="btn" type="submit" id="save-address-btn">Add Address</button>
             </div>
             <div id="map-container">
-            <div id="map" style="width: 100%; height: 300px; margin-top: 20px;"></div>
-            <button class="btn" id="use-my-location-btn">Use My Location</button>
-            <div id="coordinates">
-                <p>Latitude: <span id="latitude">0</span></p>
-                <p>Longitude: <span id="longitude">0</span></p>
+                <div id="map" style="width: 100%; height: 300px; margin-top: 20px;"></div>
+                <button class="btn" id="use-my-location-btn">Use My Location</button>
+                <div id="coordinates">
+                    <p>Latitude: <span id="latitude">0</span></p>
+                    <p>Longitude: <span id="longitude">0</span></p>
+                </div>
             </div>
-        </div>
-            <button class="btn" type="submit" id="save-address-btn">Add Address</button>
         </form>
     </div>
     <?php

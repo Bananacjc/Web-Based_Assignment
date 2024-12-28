@@ -278,6 +278,15 @@
     background-color: var(--color-red-light);
 }
 
+#map-container {
+    margin-left: 1rem;
+    width: 100%
+}
+
+#map {
+    margin-bottom: 17px;
+}
+
 #coordinates {
     display: none;
 }

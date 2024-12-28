@@ -1,8 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
   const line1Input = document.getElementById("line-1");
-  const villageInput = document.getElementById("village");
-  const postalCodeInput = document.getElementById("postal-code");
-  const cityInput = document.getElementById("city");
   const stateInput = document.getElementById("state");
   const mapContainer = document.getElementById("map");
   const latSpan = document.getElementById("latitude");
@@ -11,23 +8,43 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let map, marker, geocoder;
 
-  // Initialize Google Places Autocomplete
+  // Initialize Google Places Autocomplete for line1Input
   const autocomplete = new google.maps.places.Autocomplete(line1Input, {
     types: ["geocode"],
     componentRestrictions: { country: "MY" },
   });
 
-  // Dynamically position pac-container on stateInput focus
-  stateInput.addEventListener("focus", function () {
+  // Function to reposition the pac-container
+  function positionPacContainer() {
     const pacContainer = document.querySelector(".pac-container");
-    if (pacContainer) {
+    if (pacContainer && stateInput) {
       const stateRect = stateInput.getBoundingClientRect();
-      pacContainer.style.top = `${stateRect.bottom + window.scrollY}px`;
-      pacContainer.style.left = `${stateRect.left + window.scrollX}px`;
+      const bodyRect = document.body.getBoundingClientRect();
+
+      pacContainer.style.position = "absolute";
+      pacContainer.style.top = `${stateRect.bottom - bodyRect.top}px`;
+      pacContainer.style.left = `${stateRect.left - bodyRect.left}px`;
       pacContainer.style.width = `${stateInput.offsetWidth}px`;
-      pacContainer.style.zIndex = 10000; // Ensure it's on top
     }
+  }
+
+  // Listen for focus on the stateInput and adjust the pac-container
+  stateInput.addEventListener("focus", function () {
+    setTimeout(positionPacContainer, 100); // Add slight delay to ensure the pac-container is rendered
   });
+
+  // Adjust position on window resize or scroll
+  window.addEventListener("resize", positionPacContainer);
+  window.addEventListener("scroll", positionPacContainer);
+
+  // Detect changes in the DOM to reposition pac-container dynamically
+  const observer = new MutationObserver(() => {
+    positionPacContainer();
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  // Clean up observer on unload
+  window.addEventListener("unload", () => observer.disconnect());
 
   // Initialize the map
   function initMap() {
@@ -106,9 +123,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Fill the form fields
     line1Input.value = address.line_1;
-    villageInput.value = address.village;
-    postalCodeInput.value = address.postal_code;
-    cityInput.value = address.city;
+    document.getElementById("village").value = address.village;
+    document.getElementById("postal-code").value = address.postal_code;
+    document.getElementById("city").value = address.city;
     stateInput.value = address.state;
   }
 
