@@ -75,3 +75,24 @@
     border-bottom: solid #ccc 1px;
     padding: 20px 0;    
 }
+
+.pay-button {
+    background-color: var(--color-mint);
+    color: var(--color-white-pure);
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+    display: block;
+    width: 80%;
+    margin: 10px auto 50px auto;
+}
+
+.pay-button:hover {
+    background-color: var(--color-black-pure);
+    color: var(--color-white-crystal);
+}

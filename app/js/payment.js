@@ -80,13 +80,17 @@ function updatePromotion(promotionID) {
             dataType: 'json',
             success: function (data) {
                 if (data.success) {
-                    $('#uPromo').text('RM ' + parseFloat(data.promoAmount).toFixed(2));
-                } else {
-                    showAlertPopup(data.message, false);
+                    promotionAmount = data.promoAmount ;
+                    $('#uPromo').text(promotionAmount.toFixed(2));
+
+                    total = parseFloat($('#pTotal').text());
+                    shippingFee = parseFloat($('#pShippingFee').text());
+
+                    $('#total-payment').text(parseFloat(total + shippingFee - promotionAmount).toFixed(2));
                 }
             }
         });
     } else {
-        $('#uPromo').text('RM 0.00');
+        $('#uPromo').text((0).toFixed(2));
     }
 }

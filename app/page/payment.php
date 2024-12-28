@@ -105,7 +105,7 @@ if (!$cart) {
                 </tr>
                 <?php
                 $pTotal = 0;
-                $shippingTotal = 0; //TODO
+                $shippingFee = 0; //TODO
                 $stmt = $_db->prepare('SELECT * FROM products WHERE product_id = ?');
                 ?>
                 <?php foreach ($cart as $id => $quantity): ?>
@@ -132,46 +132,42 @@ if (!$cart) {
                 </tr>
                 <tr>
                     <td colspan="3">Products Subtotal :</td>
-                    <td>RM&nbsp;<?= priceFormat($pTotal) ?></td>
+                    <td>RM&nbsp;<span id="pTotal"><?= priceFormat($pTotal) ?></span></td>
                 </tr>
                 <tr>
-                    <td colspan="3">Shipping Subtotal :</td>
-                    <td>RM&nbsp;<?= priceFormat($shippingTotal) ?></td>
+                    <td colspan="3">Shipping Fee :</td>
+                    <td>RM&nbsp;<span id="pShippingFee"><?= priceFormat($shippingFee) ?></span></td>
                 </tr>
                 <tr>
                     <?php
                     $promotionsOption = [];
                     $promotions = [];
+                    $uPromotions = [];
 
-                    $stmt = $_db->prepare('SELECT * FROM promotions');
-                    $stmt->execute([]);
-
-                    while ($promotion = $stmt->fetch(PDO::FETCH_ASSOC)){
-                        $promotions[$promotion['promo_id']] = [
-                            'end_date' => $promotion['end_date'],
-                            'promo_code' => $promotion['promo_code']
-                        ];
-                    }
+                    $stmt = $_db->prepare('SELECT end_date, promo_code FROM promotions WHERE promo_id = ?');
 
                     if ($_user->promotion_records) {
                         $uPromotions = json_decode($_user->promotion_records, true);
 
                         foreach($uPromotions as $promotionID => $promotionLimit) {
-                            if ($promotionLimit > 0 && $promotions[$promotionID]['end_date'] < new DateTime()){
-                                $promotionsOption[$promotionID] = $promotions[$promotionID]['promo_code'];
+                            $stmt->execute([$promotionID]);
+                            $promotion = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                            if ($promotionLimit > 0 && $promotion['end_date'] < new DateTime()) {
+                                $promotionsOption[$promotionID] = $promotion['promo_code'];
                             }
                         }
                     }
                     ?>
                     <td colspan="3">
                         <?php if ($promotionsOption): ?>
-                            <?= html_select('selectPromo', $promotionsOption, '- Choose a promo code -', 'data-select-onchange') ?> :
+                            <?= html_select('selectPromo', $promotionsOption, 'Don\'t use promo code', 'data-select-onchange') ?> :
                         <?php else: ?>
                             No promotion code available :
                         <?php endif ?>
                     </td>
-                    <td id="uPromo">
-                        
+                    <td class="text-green-darker">
+                        RM <span id="uPromo">0.00</span>
                     </td>
                 </tr>
                 <tr>
@@ -181,12 +177,12 @@ if (!$cart) {
                 </tr>
                 <tr>
                     <td colspan="3">TOTAL PAYMENT :</td>
-                    <td>RM&nbsp;<?= priceFormat($pTotal + $shippingTotal) ?></td>
+                    <td>RM&nbsp;<span id="total-payment"><?= priceFormat($pTotal + $shippingFee) ?></span></td>
                 </tr>
                 <tr>
                     <td colspan="4" class="text-center">
                         <form action="payment_checkout.php" target="_blank">
-                            <button>Pay</button>
+                            <button class="pay-button">Pay</button>
                         </form>
                     </td>
                 </tr>
