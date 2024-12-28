@@ -9,7 +9,6 @@ if (is_post()) {
     $email = req('email');
     $contact_num = req('contact_num');
     $banks = req('banks');
-    $ewallets = req('ewallets');
     $addresses = req('addresses');
     $cart = req('cart');
     $promotion_records = req('promotion_records');
@@ -58,7 +57,6 @@ if (is_post()) {
     if (!$_err) {
 
         $banks = json_encode($banks);
-        $ewallets = json_encode($ewallets);
         $addresses = json_encode($addresses);
         $cart = json_encode($cart);
         $promotion_records = json_encode($promotion_records);
@@ -68,7 +66,7 @@ if (is_post()) {
 
         try {
             $stmt = $_db->prepare("
-                INSERT INTO customers (customer_id, username, email, contact_num, banks, ewallets, addresses, cart, promotion_records, profile_image)
+                INSERT INTO customers (customer_id, username, email, contact_num, banks, addresses, cart, promotion_records, profile_image)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
             
@@ -78,7 +76,6 @@ if (is_post()) {
                 $email,
                 $contact_num,
                 $banks, 
-                $ewallets, 
                 $addresses,
                 $cart, 
                 $promotion_records, 

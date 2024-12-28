@@ -29,7 +29,6 @@ if (is_post()) {
     if (empty($_err)) {
         $category_image_path = $category_image ? save_photo($category_image, '../../uploads/category_images') : null;
 
-        // If no new image, keep the existing one
         if (!$category_image_path) {
             $stmt = $_db->prepare("SELECT category_image FROM categories WHERE category_name = ?");
             $stmt->execute([$old_category_name]);
@@ -43,11 +42,9 @@ if (is_post()) {
             $stmt = $_db->prepare("UPDATE products SET category_name = ? WHERE category_name = ?");
             $stmt->execute([$category_name, $old_category_name]);
 
-            // Then, update the categories table
             $stmt = $_db->prepare("UPDATE categories SET category_name = ?, category_image = ? WHERE category_name = ?");
             $stmt->execute([$category_name, $category_image_path, $old_category_name]);
 
-            // Re-enable foreign key checks
             $_db->exec("SET foreign_key_checks = 1");
 
             if ($_user && isset($_user->employee_id)) {

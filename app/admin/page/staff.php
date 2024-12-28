@@ -2,8 +2,9 @@
 <html lang="en">
 
 <head>
-    <link rel="stylesheet" href="../css/staff.css" />
+    <link rel="stylesheet" href="../css/customer.css" />
     <meta charset="UTF-8">
+    <script src="../js/staff.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Staff Management</title>
 </head>
@@ -11,9 +12,8 @@
 <body>
     <?php
     include 'adminHeader.php';
-    require_once '../lib/SimplePager.php'; // Include the SimplePager class
+    require_once '../lib/SimplePager.php'; 
 
-    // Fields for sorting and displaying
     $fields = [
         '',
         'employee_id' => 'Employee ID',
@@ -24,22 +24,19 @@
         'Action'
     ];
 
-    // Retrieve inputs with validation
-    $search = req('search'); // Search term for employee name, ID, or email
-    $role = req('role'); // Role filter
+    $search = req('search'); 
+    $role = req('role'); 
     $sort = req('sort');
     $dir = req('dir');
-    $page = req('page', 1); // Current page
-    $limit = 10; // Number of items per page
+    $page = req('page', 1); 
+    $limit = 10; 
     $offset = ($page - 1) * $limit;
-    $bannedFilter = req('banned_filter'); // Retrieve the banned filter value
+    $bannedFilter = req('banned_filter'); 
     $bannedFilter = in_array($bannedFilter, ['0', '1', 'all']) ? $bannedFilter : 'all'; // Default to 'all'
 
-    // Validate sorting field and direction
     $sort = array_key_exists($sort, $fields) ? $sort : 'employee_id';
     $dir = in_array($dir, ['asc', 'desc']) ? $dir : 'asc';
 
-    // Build the WHERE clause and parameters for filtering
     $whereClause = "WHERE (employee_name LIKE ? OR employee_id LIKE ? OR email LIKE ?)";
     $params = ["%$search%", "%$search%", "%$search%"];
 
@@ -93,11 +90,9 @@
             <button type="submit">Search</button>
         </form>
 
-        <?php if ($_user?->role === 'MANAGER'): ?>
             <form method="post" id="f">
                 <button class="delete-btn" formaction="deleteStaff.php" onclick="return confirm('Are you sure you want to delete selected employees?')">Batch Delete</button>
             </form>
-        <?php endif; ?>
 
         <p><?= count($employees) ?> employee(s) on this page | Total: <?= $total_employees ?> employee(s)</p>
 
@@ -120,6 +115,7 @@
                         <td>
                             <img src="../../uploads/profile_images/<?= $e->profile_image ?>" class="resized-image" alt="Profile Image">
                         </td>
+
                         <td>
                             <button class="button action-button" onclick="showUpdateEmployeeForm(
     '<?= $e->employee_id  ?>',
@@ -136,12 +132,12 @@
                             <?php if ($e->banned == 0): ?>
                                 <form action="banStaff.php" method="POST" style="display:inline;">
                                     <input type="hidden" name="employee_id" value="<?= $e->employee_id ?>">
-                                    <button type="submit" class="button ban-action-button" onclick="confirmBlock()">Ban</button>
+                                    <button type="submit" class="button ban-action-button" onclick="return confirmBlock()">Ban</button>
                                 </form>
                             <?php else: ?>
                                 <form action="unbanStaff.php" method="POST" style="display:inline;">
                                     <input type="hidden" name="employee_id" value="<?= $e->employee_id ?>">
-                                    <button type="submit" class="button unban-action-button" onclick="confirmUnblock()">Unban</button>
+                                    <button type="submit" class="button unban-action-button" onclick="return confirmUnblock()">Unban</button>
                                 </form>
                             <?php endif; ?>
 
@@ -202,6 +198,7 @@
                         <input type="file" name="profile_image" id="profile_image"><br><br>
 
                         <input type="submit" value="Add Staff">
+                        <button type="button" class="cancel-button" onclick="hideAddForm()">Close</button>
                     </form>
                 </div>
             </div>
@@ -236,6 +233,8 @@
                     <input type="file" name="profile_image" id="updateProfileImage"><br><br>
 
                     <input type="submit" value="Update Employee">
+                    <button type="button" class="cancel-button" onclick="hideUpdateEmployeeForm()">Close</button>
+
                 </form>
             </div>
         </div>
@@ -244,44 +243,5 @@
 
 
 </body>
-
-<script>
-    function showAddForm() {
-        document.getElementById('addStaffModal').style.display = 'block';
-    }
-
-    function hideAddForm() {
-        document.getElementById('addStaffModal').style.display = 'none';
-    }
-
-    function showUpdateEmployeeForm(id, name, email,role) {
-        var modal = document.getElementById('updateEmployeeModal');
-        var form = document.getElementById('updateEmployeeForm');
-        modal.style.display = "block";
-
-        form.elements['employee_id'].value = id;
-        form.elements['employee_name'].value = name;
-        form.elements['email'].value = email;
-        form.elements['role'].value = role;
-
-    }
-
-    function hideUpdateEmployeeForm() {
-        document.getElementById('updateEmployeeModal').style.display = 'none';
-    }
-
-
-    function confirmDelete() {
-        return confirm('Are you sure you want to delete this customer?');
-    }
-
-    function confirmBlock() {
-        return confirm('Are you sure you want to block this customer?');
-    }
-
-    function confirmUnblock() {
-        return confirm('Are you sure you want to unblock this customer?');
-    }
-</script>
 
 </html>

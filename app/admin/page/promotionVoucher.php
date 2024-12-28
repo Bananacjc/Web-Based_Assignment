@@ -88,9 +88,14 @@ $promotions = $stm->fetchAll();
 
         <button>Search</button>
     </form>
+
+    <?php if ($_user?->role == 'MANAGER'): ?>
+
     <form method="post" id="f">
         <button class="delete-btn" formaction="deleteVoucher.php" onclick="return confirmDelete()">Batch Delete</button>
     </form>
+
+    <?php endif; ?>
 
     <p><?= count($promotions) ?> promotion(s) on this page | Total: <?= $total_promotions ?> promotion(s)</p>
 
@@ -118,7 +123,31 @@ $promotions = $stm->fetchAll();
                     <td><?= $p->start_date ?></td>
                     <td><?= $p->end_date ?></td>
                     <td><?= $p->status ?></td>
+
+
+                    <?php if ($_user?->role == 'STAFF'): ?>
+
                     <td>
+                    <button class="button view-action-button" onclick="showViewPromotionForm(
+                          '<?= $p->promo_image ?>', 
+                            '<?= $p->promo_id ?>', 
+    '<?= $p->promo_name ?>', 
+    '<?= $p->promo_code ?>', 
+    '<?= $p->description ?>', 
+    '<?= $p->requirement ?>', 
+    '<?= $p->promo_amount ?>', 
+    '<?= $p->limit_usage ?>', 
+    '<?= $p->start_date ?>', 
+    '<?= $p->end_date ?>', 
+    '<?= $p->status ?>'
+)">
+                            View
+                        </button>
+                        <?php endif; ?>
+
+                    <?php if ($_user?->role == 'MANAGER'): ?>
+
+                    
                         <button class="button action-button" onclick="showUpdatePromotionForm(
                             '<?= $p->promo_image ?>', 
                             '<?= $p->promo_id ?>', 
@@ -139,21 +168,9 @@ $promotions = $stm->fetchAll();
                             <button type="submit" class="button delete-action-button" onclick="return confirmDelete();">Delete</button>
                         </form>
 
-                        <button class="button view-action-button" onclick="showViewPromotionForm(
-                          '<?= $p->promo_image ?>', 
-                            '<?= $p->promo_id ?>', 
-    '<?= $p->promo_name ?>', 
-    '<?= $p->promo_code ?>', 
-    '<?= $p->description ?>', 
-    '<?= $p->requirement ?>', 
-    '<?= $p->promo_amount ?>', 
-    '<?= $p->limit_usage ?>', 
-    '<?= $p->start_date ?>', 
-    '<?= $p->end_date ?>', 
-    '<?= $p->status ?>'
-)">
-                            View
-                        </button>
+                        <?php endif; ?>
+
+        
                     </td>
                 </tr>
             <?php endforeach ?>
