@@ -19,8 +19,7 @@
     color: #1D1D1D;
 }
 
-.sm-input-box, 
-.bg-input-box{
+.sm-input-box {
     padding: 16px 40px 16px 16px;
     border: 1px solid var(--color-grey);
     border-radius: 8px;
@@ -76,7 +75,8 @@
     padding: 20px 0;    
 }
 
-.pay-button {
+#pay-button,
+.use-location-btn {
     background-color: var(--color-mint);
     color: var(--color-white-pure);
     border: none;
@@ -88,11 +88,19 @@
     border-radius: 8px;
     transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
     display: block;
-    width: 80%;
-    margin: 10px auto 50px auto;
+    width: 50%;
 }
 
-.pay-button:hover {
+#pay-button {
+    margin: 15px auto;
+}
+
+.use-location-btn {
+    margin: 15px 0;
+}
+
+#pay-button:hover,
+.use-location-btn:hover {
     background-color: var(--color-black-pure);
     color: var(--color-white-crystal);
 }
