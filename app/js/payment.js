@@ -80,12 +80,12 @@ function updatePromotion(promotionID) {
             dataType: 'json',
             success: function (data) {
                 if (data.success) {
-                    $('#uPromo').text(data.promoAmount);
+                    $('#uPromo').text('RM ' + parseFloat(data.promoAmount).toFixed(2));
                 } else {
                     showAlertPopup(data.message, false);
                 }
             }
-        })
+        });
     } else {
         $('#uPromo').text('RM 0.00');
     }
