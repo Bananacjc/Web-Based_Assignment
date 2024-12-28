@@ -466,47 +466,83 @@ if (is_post()) {
                     <th class="date-header">DATE</th>
                     <th class="time-header">TIME</th>
                     <th class="total-price-header">TOTAL (RM)</th>
+                    <th class="payment-method-header">PAYMENT METHOD</th>
                     <th class="delivery-status-header">STATUS</th>
                     <th class="action-header">ACTION</th>
                 </tr>
             </thead>
             <tbody>
-                <?php if (!empty($orderHistory)): ?>
-                    <?php foreach ($orderHistory as $order): ?>
-                        <tr>
-                            <td>
-                                <p class="order-id"><?= $order['order_id'] ?></p>
-                            </td>
-                            <td>
-                                <p class="date"><?= date('d M Y', strtotime($order['order_time'])) ?></p>
-                            </td>
-                            <td>
-                                <p class="time"><?= date('h:i A', strtotime($order['order_time'])) ?></p>
-                            </td>
-                            <td class="total-price"><?= number_format($order['total'], 2) ?></td>
-                            <td class="delivery-status"><?= $order['status'] ?></td>
-                            <td class="action">
-                                <?php if ($order['status'] === 'DELIVERED'): ?>
-                                    <a class="reviewbtn" href="review.php?order_id=<?= urlencode($order['order_id']) ?>">
-                                        <span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i>
-                                    </a>
-                                <?php else: ?>
-                                    <a class="no-action-btn">
-                                        <span>No Action</i>
-                                    </a>
-                                <?php endif; ?>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
+                <?php foreach ($orderHistory as $order):
+                    $paymentMethodRaw = $order['payment_method'];
+                    $paymentDisplay = '';
+                    $paymentIcon = '';
+
+                    // Check if payment method is a JSON object or plain text
+                    $decodedMethod = json_decode($paymentMethodRaw, true);
+                    if (json_last_error() === JSON_ERROR_NONE && is_array($decodedMethod)) {
+                        // Handle bank payment method
+                        if (isset($decodedMethod['accNum'])) {
+                            $cardLastFour = substr($decodedMethod['accNum'], -4);
+                            $paymentDisplay = "***$cardLastFour";
+                            $paymentIcon = "../images/card.svg";
+                        }
+                    } else {
+                        // Handle other payment methods (plain text)
+                        $paymentMethodText = trim($paymentMethodRaw, '"'); // Remove surrounding quotes if any
+                        switch (strtolower($paymentMethodText)) {
+                            case 'fpx':
+                                $paymentIcon = "../images/fpx.svg";
+                                break;
+                            case 'grabpay':
+                                $paymentIcon = "../images/grabpay.svg";
+                                break;
+                            case 'alipay':
+                                $paymentIcon = "../images/alipay.svg";
+                                break;
+                            case 'link':
+                                $paymentIcon = "../images/link.svg";
+                                break;
+                            default:
+                                $paymentIcon = ""; // Default to no icon
+                                break;
+                        }
+                        $paymentDisplay = ucfirst($paymentMethodText); // Capitalize first letter
+                    }
+                ?>
                     <tr>
-                        <td colspan="6" class="text-center">No orders found.</td>
+                        <td>
+                            <p class="order-id"><?= $order['order_id'] ?></p>
+                        </td>
+                        <td>
+                            <p class="date"><?= date('d M Y', strtotime($order['order_time'])) ?></p>
+                        </td>
+                        <td>
+                            <p class="time"><?= date('h:i A', strtotime($order['order_time'])) ?></p>
+                        </td>
+                        <td class="total-price"><?= number_format($order['total'], 2) ?></td>
+                        <td class="payment-method text-center">
+                            <?php if ($paymentIcon): ?>
+                                <img src="<?= $paymentIcon ?>" alt="<?= $paymentDisplay ?>" style="width: 24px; vertical-align: middle;" />
+                            <?php endif; ?>
+                            <span><?= $paymentDisplay ?></span>
+                        </td>
+                        <td class="delivery-status"><?= $order['status'] ?></td>
+                        <td class="action">
+                            <?php if ($order['status'] === 'DELIVERED'): ?>
+                                <a class="reviewbtn" href="review.php?order_id=<?= urlencode($order['order_id']) ?>">
+                                    <span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i>
+                                </a>
+                            <?php else: ?>
+                                <a class="no-action-btn">
+                                    <span>No Action</span>
+                                </a>
+                            <?php endif; ?>
+                        </td>
                     </tr>
-                <?php endif; ?>
+                <?php endforeach; ?>
             </tbody>
         </table>
     </div>
-
     <div class="content" id="change-password-content" style="display: none;">
         <h2>Change Password</h2>
         <form id="change-password-container" action="" method="post">
