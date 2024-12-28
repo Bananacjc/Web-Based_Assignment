@@ -84,7 +84,15 @@ if (!$cart) {
             } ?>
             <br>
             <label for="uAddress" class="normal-label">or Enter Manually:</label>
-            <?= html_textarea('uAddress', "class='bg-input-box w-100' rows='4' cols='50'") ?>
+            <div style="position: relative;">
+                <input
+                    id="address-input"
+                    type="text"
+                    placeholder="Enter your address"
+                    autocomplete="off"
+                    name="address"
+                    class="input-box" />
+            </div>
         </div>
     </div>
 
@@ -144,7 +152,7 @@ if (!$cart) {
                     $promotions = [];
                     $uPromotions = [];
 
-                    $stmt = $_db->prepare('SELECT end_date, promo_code FROM promotions WHERE promo_id = ?');
+                    $stmt = $_db->prepare('SELECT end_date, promo_code, requirement FROM promotions WHERE promo_id = ?');
 
                     if ($_user->promotion_records) {
                         $uPromotions = json_decode($_user->promotion_records, true);
@@ -153,7 +161,7 @@ if (!$cart) {
                             $stmt->execute([$promotionID]);
                             $promotion = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                            if ($promotionLimit > 0 && $promotion['end_date'] < new DateTime()) {
+                            if ($promotionLimit > 0 && $promotion['end_date'] < new DateTime() && $pTotal > $promotion['requirement']) {
                                 $promotionsOption[$promotionID] = $promotion['promo_code'];
                             }
                         }
@@ -191,5 +199,6 @@ if (!$cart) {
     </div>
 </div>
 <script src="../js/payment.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBFPpOlKxMJuu6PxnVrwxNd1G6vERpptro&libraries=places"></script>
 
 <?php include '../_foot.php'; ?>

@@ -540,7 +540,7 @@ if (is_post()) {
 <script src="../js/addressManagement.js"></script>
 <script src="../js/requestOTP.js"></script>
 <script src="../js/googleMap.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBFPpOlKxMJuu6PxnVrwxNd1G6vERpptro&libraries=places"></script>;
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBFPpOlKxMJuu6PxnVrwxNd1G6vERpptro&libraries=places"></script>
 
 
 <?php include '../_foot.php'; ?>
