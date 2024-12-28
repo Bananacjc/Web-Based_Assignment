@@ -139,17 +139,40 @@ if (!$cart) {
                     <td>RM&nbsp;<?= priceFormat($shippingTotal) ?></td>
                 </tr>
                 <tr>
+                    <?php
+                    $promotionsOption = [];
+                    $promotions = [];
+
+                    $stmt = $_db->prepare('SELECT * FROM promotions');
+                    $stmt->execute([]);
+
+                    while ($promotion = $stmt->fetch(PDO::FETCH_ASSOC)){
+                        $promotions[$promotion['promo_id']] = [
+                            'end_date' => $promotion['end_date'],
+                            'promo_code' => $promotion['promo_code']
+                        ];
+                    }
+
+                    if ($_user->promotion_records) {
+                        $uPromotions = json_decode($_user->promotion_records, true);
+
+                        foreach($uPromotions as $promotionID => $promotionLimit) {
+                            if ($promotionLimit > 0 && $promotions[$promotionID]['end_date'] < new DateTime()){
+                                $promotionsOption[$promotionID] = $promotions[$promotionID]['promo_code'];
+                            }
+                        }
+                    }
+                    ?>
                     <td colspan="3">
-                        <?php
-                        $promo_code = [
-                            'promoID_1' => 'promoNamae_1',
-                            'promoID_2' => 'promoNamae_2',
-                            'promoID_3' => 'promoNamae_3'
-                        ]
-                        ?>
-                        <?= html_select('promo', $promo_code, '- Choose a promo code -', 'data-select-onchange') ?>
+                        <?php if ($promotionsOption): ?>
+                            <?= html_select('selectPromo', $promotionsOption, '- Choose a promo code -', 'data-select-onchange') ?> :
+                        <?php else: ?>
+                            No promotion code available :
+                        <?php endif ?>
                     </td>
-                    <td>AJAX</td>
+                    <td id="uPromo">
+                        
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="4">

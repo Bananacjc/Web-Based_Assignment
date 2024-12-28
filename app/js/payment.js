@@ -18,13 +18,17 @@ $(() => {
         }
     });
 
+    /**@type {HTMLSelectElement} */
+    $('#selectPromo').on({
+        change: function () {
+            const promotion = $(this).val();
+            updatePromotion(promotion);
+        }
+    })
+
 });
 
-
 function updateBankDetails(paymentMethod) {
-
-    
-
     if (paymentMethod) {
         $.ajax({
             url: 'payment_update.php',
@@ -38,7 +42,7 @@ function updateBankDetails(paymentMethod) {
                     $('#cvvNum').val(data.paymentMethod.cvvNum);
                     $('#exDate').val(data.paymentMethod.exDate);
                 } else {
-                    console.log('failed');
+                    showAlertPopup(data.message, false);
                 }
             }
         })
@@ -48,7 +52,6 @@ function updateBankDetails(paymentMethod) {
 }
 
 function updateAddress(address){
-    
     if (address) {
         $.ajax({
             url: 'payment_update.php',
@@ -59,11 +62,31 @@ function updateAddress(address){
                 if (data.success) {
                     $('#uAddress').val(data.address);
                 } else {
-                    console.log(data.message);
+                    showAlertPopup(data.message, false);
                 }
             }
         })
     } else {
         $('#uAddress').val('');
+    }
+}
+
+function updatePromotion(promotionID) {
+    if (promotionID) {
+        $.ajax({
+            url: 'payment_update.php',
+            type: 'POST',
+            data: {selectedPromotion: promotionID, action: 'changePromo'},
+            dataType: 'json',
+            success: function (data) {
+                if (data.success) {
+                    $('#uPromo').text(data.promoAmount);
+                } else {
+                    showAlertPopup(data.message, false);
+                }
+            }
+        })
+    } else {
+        $('#uPromo').text('RM 0.00');
     }
 }
