@@ -195,25 +195,56 @@ if (is_post()) {
         $addresses = json_decode($_user->addresses ?? '[]', true);
 
         if ($action === 'save-address') {
-            // Add a new address
-            $newAddress = trim(post('address'));
-            if ($newAddress) {
-                $addresses[] = $newAddress;
-                $addressesJson = json_encode($addresses);
+            // Fetch structured address inputs
+            $line_1 = trim(post('line_1'));
+            $village = trim(post('village'));
+            $postal_code = trim(post('postal_code'));
+            $city = trim(post('city'));
+            $state = trim(post('state'));
 
-                $stmt = $_db->prepare("UPDATE customers SET addresses = ? WHERE customer_id = ?");
-                $stmt->execute([$addressesJson, $_user->customer_id]);
-
-                $_user->addresses = $addressesJson;
-                temp('popup-msg', ['msg' => 'Address added successfully.', 'isSuccess' => true]);
-            } else {
-                temp('popup-msg', ['msg' => 'Address cannot be empty.', 'isSuccess' => false]);
+            // Validate required fields
+            if (!$line_1 || !$postal_code || !$city || !$state) {
+                temp('popup-msg', ['msg' => 'Please fill in all required fields.', 'isSuccess' => false]);
+                redirect();
             }
+
+            // Create structured address
+            $newAddress = [
+                'line_1' => $line_1,
+                'village' => $village,
+                'postal_code' => $postal_code,
+                'city' => $city,
+                'state' => $state,
+            ];
+
+            // Fetch current addresses and add the new one
+            $addresses = json_decode($_user->addresses ?? '[]', true);
+            $addresses[] = $newAddress;
+
+            // Save updated address list to the database
+            $addressesJson = json_encode($addresses);
+            $stmt = $_db->prepare("UPDATE customers SET addresses = ? WHERE customer_id = ?");
+            $stmt->execute([$addressesJson, $_user->customer_id]);
+
+            // Update the user session
+            $_user->addresses = $addressesJson;
+            temp('popup-msg', ['msg' => 'Address added successfully.', 'isSuccess' => true]);
+            redirect();
         } elseif ($action === 'edit-address' && is_numeric($index)) {
-            // Edit an existing address
-            $newAddress = trim(post('address'));
-            if ($newAddress && isset($addresses[$index])) {
-                $addresses[$index] = $newAddress;
+            $line_1 = trim(post('line_1'));
+            $village = trim(post('village'));
+            $postal_code = trim(post('postal_code'));
+            $city = trim(post('city'));
+            $state = trim(post('state'));
+
+            if ($line_1 && $postal_code && $city && $state && isset($addresses[$index])) {
+                $addresses[$index] = [
+                    'line_1' => $line_1,
+                    'village' => $village,
+                    'postal_code' => $postal_code,
+                    'city' => $city,
+                    'state' => $state,
+                ];
                 $addressesJson = json_encode($addresses);
 
                 $stmt = $_db->prepare("UPDATE customers SET addresses = ? WHERE customer_id = ?");
@@ -224,6 +255,7 @@ if (is_post()) {
             } else {
                 temp('popup-msg', ['msg' => 'Invalid address update.', 'isSuccess' => false]);
             }
+            redirect();
         } elseif ($action === 'delete-address' && is_numeric($index)) {
             // Delete an address
             if (isset($addresses[$index])) {
@@ -394,7 +426,6 @@ if (is_post()) {
             </form>
         </div>
     </div>
-
     <div class="content" id="address-content" style="display: none;">
         <h2>Addresses</h2>
         <table class="table">
@@ -409,11 +440,23 @@ if (is_post()) {
                 <?php
                 $addresses = json_decode($_user->addresses ?? '[]', true);
                 foreach ($addresses as $index => $address) {
-                    echo "<tr data-index='$index'>
+                    // Concatenate the address fields for display
+                    $formattedAddress = "{$address['line_1']}";
+                    if (!empty($address['village'])) {
+                        $formattedAddress .= ", {$address['village']}";
+                    }
+                    $formattedAddress .= ", {$address['postal_code']} {$address['city']}, {$address['state']}";
+
+                    echo "<tr>
                             <td>" . ($index + 1) . "</td>
-                            <td class='address-text'>$address</td>
+                            <td class='address-text'>$formattedAddress</td>
                             <td class='text-center'>
-                                <button class='btn edit-address-btn' data-index='$index'>
+                                <button class='btn edit-address-btn' data-index='$index' 
+                                    data-line1='{$address['line_1']}'
+                                    data-village='{$address['village']}'
+                                    data-postalcode='{$address['postal_code']}'
+                                    data-city='{$address['city']}'
+                                    data-state='{$address['state']}'>
                                     <i class='ti ti-edit'></i>
                                 </button>
                                 <button class='btn delete-address-btn' data-index='$index'>
@@ -425,28 +468,42 @@ if (is_post()) {
                 ?>
             </tbody>
         </table>
-        <form id="address-form" action="" method="post">
+        <form id="address-form" action="" method="post" class="d-flex">
             <input type="hidden" name="form_type" value="address_management" />
             <input type="hidden" name="action" id="action" value="save-address" />
             <input type="hidden" name="index" id="address-index" value="" />
-            <div style="position: relative;">
-                <input
-                    id="address-input"
-                    type="text"
-                    placeholder="Enter your address"
-                    autocomplete="off"
-                    name="address"
-                    class="input-box" />
-            </div>
 
-            <div id="location-container">
-                <div id="map" style="width: 100%; height: 400px; margin-top: 20px;"></div>
+            <div>
+                <div class="input-subcontainer">
+                    <input id="line-1" type="text" name="line_1" class="input-box" placeholder=" " required />
+                    <label for="line-1" class="label">Address Line 1</label>
+                </div>
+                <div class="input-subcontainer">
+                    <input id="village" type="text" name="village" class="input-box" placeholder=" " />
+                    <label for="village" class="label">Village</label>
+                </div>
+                <div class="input-subcontainer">
+                    <input id="postal-code" type="text" name="postal_code" class="input-box" placeholder=" " required />
+                    <label for="postal-code" class="label">Postal Code</label>
+                </div>
+                <div class="input-subcontainer">
+                    <input id="city" type="text" name="city" class="input-box" placeholder=" " required />
+                    <label for="city" class="label">City</label>
+                </div>
+                <div class="input-subcontainer" style="position: relative;">
+                    <input id="state" type="text" name="state" class="input-box" placeholder=" " required />
+                    <label for="state" class="label">State</label>
+                </div>
+                <button class="btn" type="submit" id="save-address-btn">Add Address</button>
+            </div>
+            <div id="map-container">
+                <div id="map" style="width: 100%; height: 300px; margin-top: 20px;"></div>
+                <button class="btn" id="use-my-location-btn">Use My Location</button>
                 <div id="coordinates">
                     <p>Latitude: <span id="latitude">0</span></p>
                     <p>Longitude: <span id="longitude">0</span></p>
                 </div>
             </div>
-            <button class="btn" type="submit" id="save-address-btn">Add Address</button>
         </form>
     </div>
     <?php
@@ -476,6 +533,21 @@ if (is_post()) {
                     $paymentMethodRaw = $order['payment_method'];
                     $paymentDisplay = '';
                     $paymentIcon = '';
+
+                    // Decode order items and check review status
+                    $orderItems = json_decode($order['order_items'], true);
+                    $allReviewed = true;
+
+                    foreach ($orderItems as $productID => $quantity) {
+                        $stmt = $_db->prepare("SELECT COUNT(*) FROM reviews WHERE customer_id = ? AND product_id = ?");
+                        $stmt->execute([$_user->customer_id, $productID]);
+                        $isReviewed = $stmt->fetchColumn() > 0;
+
+                        if (!$isReviewed) {
+                            $allReviewed = false;
+                            break;
+                        }
+                    }
 
                     // Check if payment method is a JSON object or plain text
                     $decodedMethod = json_decode($paymentMethodRaw, true);
@@ -529,9 +601,15 @@ if (is_post()) {
                         <td class="delivery-status"><?= $order['status'] ?></td>
                         <td class="action">
                             <?php if ($order['status'] === 'DELIVERED'): ?>
-                                <a class="reviewbtn" href="review.php?order_id=<?= urlencode($order['order_id']) ?>">
-                                    <span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i>
-                                </a>
+                                <?php if ($allReviewed): ?>
+                                    <a class="reviewbtn" href="review.php?order_id=<?= urlencode($order['order_id']) ?>">
+                                        <span>Reviewed&nbsp;&nbsp;</span><i class="ti ti-check"></i>
+                                    </a>
+                                <?php else: ?>
+                                    <a class="reviewbtn" href="review.php?order_id=<?= urlencode($order['order_id']) ?>">
+                                        <span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i>
+                                    </a>
+                                <?php endif; ?>
                             <?php else: ?>
                                 <a class="no-action-btn">
                                     <span>No Action</span>

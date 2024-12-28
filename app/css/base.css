@@ -592,9 +592,14 @@ input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0px 1000px var(--color-white-pure) inset !important;
 }
 
-/* Google Map API */
 .pac-container {
-    z-index: 10000 !important; /* Ensure it appears above other elements */
-    top: 50px !important;
-    left: 0 !important;
-}
+    z-index: 10000 !important; /* Ensures it's above all elements */
+    position: absolute !important;
+  }
+  
+  
+  .pac-container .pac-item {
+    font-family: "Inter", sans-serif; /* Match the form style */
+    font-size: 14px; /* Adjust font size */
+  }
+  

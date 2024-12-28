@@ -6,7 +6,7 @@ $_css = '../css/shop.css';
 require '../_base.php';
 include '../_head.php';
 
-if (is_post()){
+if (is_post()) {
     $id         = req('pID');
     $imagePath  = req('pImage');
     $cart       = get_cart();
@@ -65,45 +65,33 @@ try {
             <div class="category-section">
                 <h2 id="<?= strtolower($category) ?>" class="category-title"><?= $category ?></h2>
                 <?php foreach ($products as $product): ?>
-                    <?php 
-                        $pID= $product['product_id'];
-                        $pCategory = $product['category_name'];
-                        $pImage = $product['product_image'];
-                        $pName = $product['product_name'];
-                        $pRating = $product['avg_rating'];
-                        $pReviewCount = $product['review_count'];
-                        $pPrice = $product['price'];
-                        $pStatus = $product['status'];
+                    <?php
+                    $pID = $product['product_id'];
+                    $pCategory = $product['category_name'];
+                    $pImage = $product['product_image'];
+                    $pName = $product['product_name'];
+                    $pRating = $product['avg_rating'];
+                    $pReviewCount = $product['review_count'];
+                    $pPrice = $product['price'];
+                    $pStatus = $product['status'];
 
                     ?>
-                    <?php if ($pCategory=== $category): ?>
+                    <?php if ($pCategory === $category): ?>
                         <div class="product-card">
-                            <a href="product_detail.php?product_id=<?= $pID ?>" class="text-decoration-none">
+                            <a href="javascript:void(0);" class="product-detail-link text-decoration-none" onclick="showProductDetails('<?= $pID ?>')">
                                 <img src="../uploads/product_images/<?= $pImage ?>" alt="<?= $pName ?>">
                                 <div class="product-info">
-                                    <h4 class="product-name"><?= $pName?></h4>
+                                    <h4 class="product-name"><?= $pName ?></h4>
                                     <p class="rating">
                                         <?php
-                                        $fullStars = floor($pRating); // Full stars
-                                        $halfStar = ($pRating - $fullStars >= 0.5) ? 1 : 0; // Half star
-                                        $emptyStars = 5 - $fullStars - $halfStar; // Remaining stars
-
-                                        // Output full stars
-                                        for ($i = 0; $i < $fullStars; $i++) {
-                                            echo '<i class="ti ti-star-filled"></i>';
-                                        }
-
-                                        // Output half star if applicable
-                                        if ($halfStar) {
-                                            echo '<i class="ti ti-star-half-filled"></i>';
-                                        }
-
-                                        // Output empty stars
-                                        for ($i = 0; $i < $emptyStars; $i++) {
-                                            echo '<i class="ti ti-star"></i>';
-                                        }
+                                        $fullStars = floor($pRating);
+                                        $halfStar = ($pRating - $fullStars >= 0.5) ? 1 : 0;
+                                        $emptyStars = 5 - $fullStars - $halfStar;
+                                        for ($i = 0; $i < $fullStars; $i++) echo '<i class="ti ti-star-filled"></i>';
+                                        if ($halfStar) echo '<i class="ti ti-star-half-filled"></i>';
+                                        for ($i = 0; $i < $emptyStars; $i++) echo '<i class="ti ti-star"></i>';
                                         ?>
-                                        (<?=  $pReviewCount ?> reviews)
+                                        (<?= $pReviewCount ?> reviews)
                                     </p>
                                     <p class="price-tag">Price: RM <?= number_format($pPrice, 2) ?></p>
                                 </div>
@@ -130,6 +118,29 @@ try {
     </div>
 </div>
 
+<!-- Product Details Modal -->
+<div id="productModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal();"><i class="ti ti-x"></i></span>
+        <div class="product-detail-container">
+            <img id="modal-product-image" src="" alt="Product Image" />
+            <div class="product-detail-subcontainer">
+                <h4 id="modal-product-name"></h4>
+                <div class="rating-and-sold">
+                    <p id="modal-average-rating-stars"></p>
+                    <p id="modal-rating-amount"></p>
+                    <p id="modal-amount-sold"></p>
+                </div>
+                <p id="modal-price"></p>
+                <p id="modal-description"></p>
+            </div>
+        </div>
+        <div id="modal-comments" class="comment-container">
+            <h4 class="comments-title">Comments</h4>
+            <div id="modal-comment-list"></div>
+        </div>
+    </div>
+</div>
 
 <script src="../js/slider.js"></script>
 <script src="../js/searchproducts.js"></script>
@@ -138,10 +149,71 @@ try {
     $('#cart-button').on('click', e => {
         e.target.form.submit();
     })
+
+    function showProductDetails(productId) {
+        fetch(`get_product_details.php?product_id=${productId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+
+                // Populate modal with product details
+                document.getElementById('modal-product-image').src = `../uploads/product_images/${data.product.product_image}`;
+                document.getElementById('modal-product-name').textContent = data.product.product_name;
+                document.getElementById('modal-average-rating-stars').innerHTML = renderStars(data.product.avg_rating);
+                document.getElementById('modal-rating-amount').textContent = `${data.product.review_count} Ratings`;
+                document.getElementById('modal-amount-sold').textContent = `${data.product.amount_sold} Sold`;
+                document.getElementById('modal-price').textContent = `Price: RM ${parseFloat(data.product.price).toFixed(2)}`;
+                document.getElementById('modal-description').textContent = data.product.description;
+
+                // Populate comments
+                const commentsContainer = document.getElementById('modal-comment-list');
+                commentsContainer.innerHTML = ''; // Clear previous comments
+                if (data.comments && data.comments.length > 0) {
+                    data.comments.forEach(comment => {
+                        const commentHTML = `
+                        <div class="comments">
+                            <img class="profile-pic" src="../uploads/customer_images/${comment.customer_image}" alt="${comment.customer_name}" width="50px" height="50px" />
+                            <div class="comments-detail-container">
+                                <p class="user-name">${comment.customer_name}</p>
+                                <p class="rating-stars">${renderStars(comment.rating)}</p>
+                                <p class="date-time">${comment.comment_date_time}</p>
+                                <p class="comment">${comment.comment}</p>
+                            </div>
+                        </div>`;
+                        commentsContainer.innerHTML += commentHTML;
+                    });
+                } else {
+                    commentsContainer.innerHTML = '<p>No comments available.</p>';
+                }
+
+                // Show the modal
+                document.getElementById('productModal').style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error fetching product details:', error);
+            });
+    }
+
+    function renderStars(rating) {
+    const fullStars = Math.floor(rating);
+    const halfStar = rating - fullStars >= 0.5 ? 1 : 0;
+    const emptyStars = 5 - fullStars - halfStar;
+
+    let starsHTML = '';
+    for (let i = 0; i < fullStars; i++) starsHTML += '<i class="ti ti-star-filled"></i>';
+    if (halfStar) starsHTML += '<i class="ti ti-star-half-filled"></i>';
+    for (let i = 0; i < emptyStars; i++) starsHTML += '<i class="ti ti-star"></i>';
+
+    return starsHTML;
+}
+
+
+    function closeModal() {
+        document.getElementById('productModal').style.display = 'none';
+    }
 </script>
 
 <?php include '../_foot.php'; ?>
-
-</body>
-
-</html>
