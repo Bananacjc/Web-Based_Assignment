@@ -63,7 +63,7 @@ $countQuery = "SELECT COUNT(*) AS total FROM customers $whereClause";
 $countStmt = $_db->prepare($countQuery);
 $countStmt->execute($params);
 $totalRecords = $countStmt->fetchColumn();
-$totalPages = ceil($totalRecords / $limit);
+$total_pages = ceil($totalRecords / $limit);
 
 $query = "SELECT customer_id, username, email, contact_num, banks, addresses, cart, promotion_records, profile_image, banned 
           FROM customers 
@@ -165,20 +165,17 @@ $customers = $stm->fetchAll();
 
     <div class="pagination">
         <?php if ($page > 1): ?>
-            <a href="?page=1&search=<?= urlencode($searchTerm) ?>$&banned_filter=<?= $bannedFilter ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="first-page">First</a>
-            <a href="?page=<?= $page - 1 ?>&username=<?= urlencode($username) ?>&banned_filter=<?= $bannedFilter ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="prev-page">Prev</a>
+            <a href="?page=1" class="first-page">First</a>
+            <a href="?page=<?= $page - 1 ?>" class="prev-page">Prev</a>
         <?php endif; ?>
 
-        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-            <a href="?page=<?= $i ?>&search=<?= urlencode($searchTerm)  ?>&banned_filter=<?= $bannedFilter ?>&sort=<?= $sort ?>&dir=<?= $dir ?>"
-                class="page-number <?= $i == $page ? 'active' : '' ?>">
-                <?= $i ?>
-            </a>
+        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+            <a href="?page=<?= $i ?>" class="page-number <?= $i == $page ? 'active' : '' ?>"><?= $i ?></a>
         <?php endfor; ?>
 
-        <?php if ($page < $totalPages): ?>
-            <a href="?page=<?= $page + 1 ?>&search=<?= urlencode($searchTerm)  ?>&banned_filter=<?= $bannedFilter ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="next-page">Next</a>
-            <a href="?page=<?= $totalPages ?>&search=<?= urlencode($searchTerm)  ?>&banned_filter=<?= $bannedFilter ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="last-page">Last</a>
+        <?php if ($page < $total_pages): ?>
+            <a href="?page=<?= $page + 1 ?>" class="next-page">Next</a>
+            <a href="?page=<?= $total_pages ?>" class="last-page">Last</a>
         <?php endif; ?>
     </div>
 

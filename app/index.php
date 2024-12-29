@@ -66,7 +66,7 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php foreach ($categories as $category): ?>
             <a href="/page/shop.php#<?= strtolower(str_replace(' ', '-', $category['category_name'])) ?>" class="category-link hover-translate-y">
                 <div id="<?= strtolower(str_replace(' ', '-', $category['category_name'])) ?>" class="category-img-container">
-                    <img src="uploads/category_images/<?= $category['category_image'] ?>" alt="<?= $category['category_name'] ?>" />
+                    <img src="uploads/category_images/<?= $category['category_image'] ?>" alt="<?= $category['category_name'] ?> " width="70" height="70" />
                 </div>
                 <p class="category-name"><?= $category['category_name'] ?></p>
             </a>

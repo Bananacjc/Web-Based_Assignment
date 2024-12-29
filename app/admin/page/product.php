@@ -79,9 +79,9 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
 
     <?php if ($_user?->role == 'MANAGER'): ?>
 
-    <form method="post" id="f">
-        <button class="delete-btn" formaction="delete.php" onclick="return confirmDelete()">Batch Delete</button>
-    </form>
+        <form method="post" id="f">
+            <button class="delete-btn" formaction="delete.php" onclick="return confirmDelete()">Batch Delete</button>
+        </form>
     <?php endif; ?>
 
     <p><?= count($arr) ?> product(s) on this page | Total: <?= $total_products ?> product(s)</p>
@@ -122,29 +122,6 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
                     <td>
 
 
-                        <?php if ($_user?->role == 'MANAGER'): ?>
-
-                            <button class="button action-button" onclick="showUpdateProductForm(
-    '<?= $s->product_image ?>', 
-    '<?= $s->product_id ?>', 
-    '<?= $s->product_name ?>', 
-    '<?= $s->category_name ?>', 
-    '<?= $s->price ?>', 
-    '<?= $s->description ?>', 
-    '<?= $s->current_stock ?>', 
-    '<?= $s->amount_sold ?>', 
-    '<?= $s->status ?>'
-)">
-                                Update
-                            </button>
-
-
-                            <form action="delete.php" method="post">
-                                <input type="hidden" name="id" value="<?= $s->product_id ?>">
-                                <button type="submit" class="button delete-action-button" onclick="return confirmDelete();">Delete</button>
-                            </form>
-                        <?php endif; ?>
-
                         <button class="button view-action-button" onclick="showViewForm(
     '<?= $s->product_id ?>', 
     '<?= $s->product_name ?>',
@@ -157,6 +134,31 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
     '<?= $s->amount_sold ?>', 
     '<?= $s->status ?>'
     )">View
+
+
+                            <?php if ($_user?->role == 'MANAGER'): ?>
+
+                                <button class="button action-button" onclick="showUpdateProductForm(
+    '<?= $s->product_image ?>', 
+    '<?= $s->product_id ?>', 
+    '<?= $s->product_name ?>', 
+    '<?= $s->category_name ?>', 
+    '<?= $s->price ?>', 
+    '<?= $s->description ?>', 
+    '<?= $s->current_stock ?>', 
+    '<?= $s->amount_sold ?>', 
+    '<?= $s->status ?>'
+)">
+                                    Update
+                                </button>
+
+
+                                <form action="delete.php" method="post">
+                                    <input type="hidden" name="id" value="<?= $s->product_id ?>">
+                                    <button type="submit" class="button delete-action-button" onclick="return confirmDelete();">Delete</button>
+                                </form>
+                            <?php endif; ?>
+
                         </button>
                     </td>
 
@@ -169,20 +171,17 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
 
     <div class="pagination">
         <?php if ($page > 1): ?>
-            <a href="?page=1&product_name=<?= urlencode($product_name) ?>&category_name=<?= urlencode($category_name) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="first-page">First</a>
-            <a href="?page=<?= $page - 1 ?>&product_name=<?= urlencode($product_name) ?>&category_name=<?= urlencode($category_name) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="prev-page">Prev</a>
+            <a href="?page=1" class="first-page">First</a>
+            <a href="?page=<?= $page - 1 ?>" class="prev-page">Prev</a>
         <?php endif; ?>
 
         <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-            <a href="?page=<?= $i ?>&product_name=<?= urlencode($product_name) ?>&category_name=<?= urlencode($category_name) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>"
-                class="page-number <?= $i == $page ? 'active' : '' ?>">
-                <?= $i ?>
-            </a>
+            <a href="?page=<?= $i ?>" class="page-number <?= $i == $page ? 'active' : '' ?>"><?= $i ?></a>
         <?php endfor; ?>
 
         <?php if ($page < $total_pages): ?>
-            <a href="?page=<?= $page + 1 ?>&product_name=<?= urlencode($product_name) ?>&category_name=<?= urlencode($category_name) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="next-page">Next</a>
-            <a href="?page=<?= $$total_pages ?>&product_name=<?= urlencode($product_name) ?>&category_name=<?= urlencode($category_name) ?>&sort=<?= $sort ?>&dir=<?= $dir ?>" class="last-page">Last</a>
+            <a href="?page=<?= $page + 1 ?>" class="next-page">Next</a>
+            <a href="?page=<?= $total_pages ?>" class="last-page">Last</a>
         <?php endif; ?>
     </div>
 
@@ -231,7 +230,7 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
             <form id="addForm" action="addProduct.php" method="POST" enctype="multipart/form-data" class="add-form">
                 <input type="hidden" name="action" value="add">
                 <label for="product_name">Product Name:</label>
-                <?php html_text('product_name', 'required'); ?>
+                <?php html_text('product_name'); ?>
                 <span class="error"><?php err('product_name'); ?></span><br><br>
 
                 <label for="categories">Existing Categories:</label>
@@ -246,19 +245,19 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
                 <span class="error"><?php err('new_category_image'); ?></span><br><br>
 
                 <label for="price">Price:</label>
-                <?php html_number('price', '0', '', '0.01', 'required'); ?>
+                <?php html_text('price'); ?>
                 <span class="error"><?php err('price'); ?></span><br><br>
 
                 <label for="description">Description:</label>
-                <?php html_textarea('description', 'required'); ?>
+                <?php html_textarea('description'); ?>
                 <span class="error"><?php err('description'); ?></span><br><br>
 
                 <label for="current_stock">Current Stock:</label>
-                <?php html_number('current_stock', '0', '', '1', 'required'); ?>
+                <?php html_text('current_stock'); ?>
                 <span class="error"><?php err('current_stock'); ?></span><br><br>
 
                 <label for="product_image">Product Image:</label>
-                <?php html_file('product_image', 'image/*', 'required'); ?>
+                <?php html_file('product_image', 'image/*'); ?>
                 <span class="error"><?php err('product_image'); ?></span><br><br>
 
                 <label for="status">Status:</label>
@@ -285,7 +284,7 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
                 <br>
 
                 <label for="product_name">Product Name:</label>
-                <?php html_text('product_name', 'required'); ?>
+                <?php html_text('product_name'); ?>
                 <span class="error"><?php err('product_name'); ?></span><br><br>
 
                 <label for="categories">Existing Categories:</label>
@@ -300,19 +299,19 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
                 <span class="error"><?php err('new_category_image'); ?></span><br><br>
 
                 <label for="price">Price:</label>
-                <?php html_number('price', '', '', '0.01', 'required'); ?>
+                <?php html_text('price'); ?>
                 <span class="error"><?php err('price'); ?></span><br><br>
 
                 <label for="description">Description:</label>
-                <?php html_textarea('description', 'required'); ?>
+                <?php html_textarea('description'); ?>
                 <span class="error"><?php err('description'); ?></span><br><br>
 
                 <label for="current_stock">Current Stock:</label>
-                <?php html_number('current_stock', '', '', '1', 'required'); ?>
+                <?php html_text('current_stock'); ?>
                 <span class="error"><?php err('current_stock'); ?></span><br><br>
 
                 <label for="amount_sold">Amount Sold:</label>
-                <?php html_number('amount_sold', '', '', '1', 'required'); ?>
+                <?php html_text('amount_sold'); ?>
                 <span class="error"><?php err('amount_sold'); ?></span><br><br>
 
                 <label for="product_image">Product Image:</label>
@@ -342,11 +341,9 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
 
 
 <script>
-
-    
-function hideViewForm() {
-    document.getElementById('viewModal').style.display = 'none';
-}
+    function hideViewForm() {
+        document.getElementById('viewModal').style.display = 'none';
+    }
 
     function showUpdateProductForm(productImage, productId, productName, category, price, productDescription, currentStock, amountSold, status) {
         var modal = document.getElementById('updateModal');
@@ -397,7 +394,7 @@ function hideViewForm() {
         return confirmation;
     }
 
-    function showViewForm(productId, productName, productImage,category, price, productDescription, currentStock, amountSold, status) {
+    function showViewForm(productId, productName, productImage, category, price, productDescription, currentStock, amountSold, status) {
         var modal = document.getElementById('viewModal');
         modal.style.display = 'block';
         document.getElementById('viewProductID').innerText = productId;

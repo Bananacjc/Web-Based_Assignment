@@ -121,7 +121,6 @@ $total_pages = ceil($total_review / $limit);
                     <td><?= $r->comment_date_time ?></td>
 
 
-                    <?php if ($_user?->role == 'STAFF'): ?>
                        <td>
 
                             <button class="button view-action-button" onclick="showViewReviewForm(
@@ -133,7 +132,6 @@ $total_pages = ceil($total_review / $limit);
                             '<?= $r->review_image ?>',
                             '<?= $r->comment_date_time ?>'
                         )">View</button>
-                        <?php endif; ?>
 
                         <?php if ($_user?->role == 'MANAGER'): ?>
 
@@ -215,7 +213,7 @@ $total_pages = ceil($total_review / $limit);
                 <br>
 
                 <label for="rating">Rating:</label>
-                <input type="double" id="rating" name="rating">
+                <input type="text" id="rating" name="rating">
                 <br>
 
                 <label for="comment">Comment:</label>
