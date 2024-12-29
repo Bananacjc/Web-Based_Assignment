@@ -8,15 +8,15 @@ Have fun coding!
 1. Jee Cheng
   - [x] Login / Logout
   - [x] Shop
-  - [ ] Profile
+  - [x] Profile
 
 2. Jau Chun
-  - [ ] Promotion
+  - [x] Promotion
   - [x] Cart
-  - [ ] Payment
+  - [x] Payment
 
 3. Chun Tian
-  - [ ] Admin
+  - [x] Admin
 
 # Additional Function
 
@@ -24,24 +24,24 @@ Have fun coding!
   - [x] Category Maintenance + CRUD
   - [x] Admin Maintenance + CRUD
   - [ ] Order Cancellation (Member cancel order)
-  - [ ] Order Cancellation (Admin overwrite member's order)
-  - [ ] Shipping Address Handling
-  - [ ] Discount Voucher Handling
-  - [ ] Product Rating + Review
-  - [ ] Record Listing (Table View + Photo View)
+  - [x] Order Cancellation (Admin overwrite member's order)
+  - [x] Shipping Address Handling
+  - [x] Discount Voucher Handling
+  - [x] Product Rating + Review
+  - [x] Record Listing (Table View + Photo View)
   - [x] Product Filtering by Category
   - [x] Product Filtering by Price Range
   - [ ] Temporary Login Blocking
   - [x] Block + Unblock User Account (Admin ban/unban member)
   - [x] Remember Me
   - [x] Permanent Shopping Cart
-  - [ ] Filtering, Sorting and Paging
-  - [ ] Top Selling Products
+  - [x] Filtering, Sorting and Paging
+  - [x] Top Selling Products
   - [x] AJAX Integration (Currently on cart.php)
 
 ## Feasible function
-  - [ ] Real Payment using [Stripe API](stripe.com)
-  - [ ] E-receipt sent to e-mail or in PDF
+  - [x] Real Payment using [Stripe API](stripe.com)
+  - [x] E-receipt sent to e-mail or in PDF
   - [x] Drag-and-Drop Photo Upload
   - [ ] Webcam Integration
   - [ ] Image Processing (Flip, Rotate, etc.)
@@ -52,13 +52,13 @@ Have fun coding!
   - [ ] Captcha Integration (3rd Party Library)
   - [ ] Add to Favorites / Wishlist
   - [ ] Reward Point Handling
-  - [ ] Product Stock Handling
+  - [x] Product Stock Handling
   - [ ] Low-in-Stock Alert
   - [ ] Generaste + Scan QR Code
 
 ## Out of scope stuff, feasible
-  - [ ] Google Maps Integration
-  - [ ] Remember User Preference (Theme, settings, etc.)
+  - [x] Google Maps Integration
+  - [x] Remember User Preference (Theme, settings, etc.)
   - [ ] Data Charts
   - [ ] Real-Time Chat
 
