@@ -57,7 +57,7 @@ if (is_post()) {
         // Handle profile image
         if ($profile_image) {
             // If a new image is uploaded, save it
-            $profile_image_path = save_photo($profile_image, '../../uploads/profile_images');
+            $profile_image_path = save_photo($profile_image, '../../uploads/customer_images');
         } else {
             // If no image is uploaded, keep the existing profile image
             $stmt = $_db->prepare("SELECT profile_image FROM customers WHERE customer_id = ?");

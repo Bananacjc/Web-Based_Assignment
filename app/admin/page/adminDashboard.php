@@ -107,9 +107,7 @@ $userRole=['MANAGER','STAFF'];
                     <div class="top-selling-products">
 
                         <h2>Recent Action Logs</h2>
-                        <form method="post" id="f">
-                            <button class="delete-btn" formaction="deleteAction.php" onclick="return confirmDelete()">Batch Delete</button>
-                        </form>
+                
 
                         <form>
                             <input type="search" name="search" placeholder="Search by Employee ID" />
@@ -144,10 +142,7 @@ $userRole=['MANAGER','STAFF'];
                                         <td><?= $l['action_details'] ?></td>
                                         <td><?= $l['action_date'] ?></td>
                                         <td>
-                                            <form action="deleteAction.php" method="post" style="display:inline;">
-                                                <input type="hidden" name="id" value="<?= $l['log_id'] ?>">
-                                                <button type="submit" class="delete-btn" onclick="return confirmDelete();">Delete</button>
-                                            </form>
+        
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
