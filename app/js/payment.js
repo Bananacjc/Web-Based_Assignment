@@ -6,6 +6,7 @@ $(() => {
     /**@type {HTMLSelectElement} */
     $('#selectPayment').on({
         change: function () {
+            
             const paymentMethod = $(this).val();
             updateBankDetails(paymentMethod);
         }
@@ -15,6 +16,7 @@ $(() => {
     $('#selectAddress').on({
         change: function () {
             const address = $(this).val();
+            console.log(address);
             updateAddress(address);
         }
     });
@@ -49,7 +51,6 @@ $(() => {
 
 
         $('#hiddenAddress').val(address);
-
         $('#checkout-form').trigger('submit');
     })
 
@@ -90,12 +91,18 @@ function updateAddress(address) {
             dataType: 'json',
             success: function (data) {
                 if (data.success) {
-                    $('#address-input').val(data.address);
+                    console.log('success');
+                    $('#line-1').val(data.line_1);
+                    $('#village').val(data.village);
+                    $('#postal-code').val(data.postal_code);
+                    $('#city').val(data.city);
+                    $('#state').val(data.state);
+
                     distance = 0;
-                    
+
                     (async () => {
                         try {
-                            distance = await calculateDistance(data.address);
+                            distance = await calculateDistance(data.full_address);
                             updateShippingFee(distance);
                             updateTotal();
                         } catch (error) {
@@ -103,14 +110,18 @@ function updateAddress(address) {
                         }
                     })();
 
-                   
+
                 } else {
                     showAlertPopup(data.message, false);
                 }
             }
         })
     } else {
-        $('#address-input').val('');
+        $('#line-1').val('');
+        $('#village').val('');
+        $('#postal_code').val('');
+        $('#city').val('');
+        $('#state').val('');
         updateShippingFee(0);
         updateTotal(0);
     }

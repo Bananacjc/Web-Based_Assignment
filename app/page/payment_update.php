@@ -50,7 +50,12 @@ if (is_post()) {
         $addressDetails = null;
 
         foreach ($addresses as $address) {
-            if ($selectedAddress === $address) {
+            $addressStr = $address['line_1'] . ', ' .
+                $address['village'] . ', ' .
+                $address['postal_code'] . ' ' .
+                $address['city'] . ', ' .
+                $address['state'];
+            if ($selectedAddress === $addressStr) {
                 $addressDetails = $address;
                 break;
             }
@@ -60,7 +65,16 @@ if (is_post()) {
         if ($addressDetails) {
             echo json_encode([
                 'success' => true,
-                'address' => $address
+                'full_address' => $address['line_1'] . ', ' .
+                    $address['village'] . ', ' .
+                    $address['postal_code'] . ' ' .
+                    $address['city'] . ', ' .
+                    $address['state'],
+                'line_1' => $addressDetails['line_1'],
+                'village' => $addressDetails['village'],
+                'postal_code' => $addressDetails['postal_code'],
+                'city' => $addressDetails['city'],
+                'state' => $addressDetails['state']
             ]);
         } else {
             echo json_encode([
@@ -75,7 +89,7 @@ if (is_post()) {
         $stmt = $_db->prepare('SELECT promo_amount FROM promotions WHERE promo_id = ?');
         $stmt->execute([$selectedPromoID]);
         $promotion = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
         ob_end_clean();
         if ($promotion) {
             echo json_encode([
@@ -90,7 +104,6 @@ if (is_post()) {
         }
         exit();
     }
-    
 }
 
 ?>

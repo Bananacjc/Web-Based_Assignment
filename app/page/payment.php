@@ -42,12 +42,14 @@ if (!$cart) {
             $addresses = json_decode($_user->addresses, true);
 
             foreach ($addresses as $index => $address) {
-                $addressOption[$index] =
-                    $address['line_1'] . ', ' .
-                    $address['village'] . ', ' .
-                    $address['postal_code'] . ' ' .
-                    $address['city'] . ', ' .
-                    $address['state'];
+                $addressStr = $address['line_1'] . ', ' .
+                $address['village'] . ', ' .
+                $address['postal_code'] . ' ' .
+                $address['city'] . ', ' .
+                $address['state'];
+
+                $addressOption[$addressStr] = $addressStr;
+                    
             }
         }
         ?>
@@ -90,31 +92,31 @@ if (!$cart) {
                 html_select('selectAddress', $addressOption, '- Please choose an address -');
             } ?>
             <br>
-            <label for="uAddress" class="normal-label">Enter Manually:</label>
+            <label for="uAddress" class="normal-label">or<br><br>Enter Manually:</label>
             <div>
                 <div class="address-subcontainer">
-                    <label for="line-1" class="label">Address Line 1</label><br>
+                    <label for="line-1" class='address-label'>Address Line 1</label><br>
                     <input id="line-1" type="text" name="line_1" class="sm-input-box w-100" placeholder=" " required />
                 </div>
                 <div class="address-subcontainer">
-                    <label for="village" class="label">Village</label><br>
+                    <label for="village" class='address-label'>Village</label><br>
                     <input id="village" type="text" name="village" class="sm-input-box w-100" placeholder=" " />
 
                 </div>
                 <div class="d-flex flex-direction-row">
                     <div class="address-subcontainer">
-                        <label for="postal-code" class="label">Postal Code</label><br>
+                        <label for="postal-code" class='address-label'>Postal Code</label><br>
                         <input id="postal-code" type="text" name="postal_code" class="sm-input-box w-100" placeholder=" " required />
 
                     </div>
                     <div class="address-subcontainer">
-                        <label for="city" class="label">City</label><br>
+                        <label for="city" class='address-label'>City</label><br>
                         <input id="city" type="text" name="city" class="sm-input-box w-100" placeholder=" " required />
 
                     </div>
                 </div>
                 <div class="address-subcontainer" style="position: relative;">
-                    <label for="state" class="label">State</label><br>
+                    <label for="state" class='address-label'>State</label><br>
                     <input id="state" type="text" name="state" class="sm-input-box w-50" placeholder=" " required />
 
                 </div>
