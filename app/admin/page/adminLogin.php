@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
+    <title>BananaSIS</title>
 <?php
 $_css = '../css/base.css';
 $_css1 = '../css/adminLogin.css';
@@ -12,7 +12,6 @@ if (is_post()) {
     $password = req('password');
     $_err = []; 
 
-    // Validate input
     if ($email == '') {
         $_err['email'] = 'Email is required';
     } elseif (!is_email($email)) {
