@@ -190,7 +190,6 @@ $promotions = $stm->fetchAll();
             <a href="?page=<?= $total_pages ?>" class="last-page">Last</a>
         <?php endif; ?>
     </div>
-
     <div style="margin: 20px;">
         <button id="addPromotionBtn" class="add-button" onclick="showAddForm()">Add new promotions</button>
     </div>
@@ -243,23 +242,23 @@ $promotions = $stm->fetchAll();
                 <br><br>
 
                 <label for="requirement">Requirement:</label>
-                <?php html_number('requirement', '0', '100000', '0.01'); ?>
+                <?php html_number('requirement'); ?>
                 <br><br>
 
                 <label for="promo_amount">Discount Amount:</label>
-                <?php html_number('promo_amount', '0', '100000', '0.01'); ?>
+                <?php html_number('promo_amount'); ?>
                 <br><br>
 
                 <label for="limit_usage">Usage Limit:</label>
-                <?php html_number('limit_usage', '1', '100000', '1'); ?>
+                <?php html_number('limit_usage'); ?>
                 <br><br>
 
                 <label for="start_date">Start Date:</label>
-                <?php html_date('start_date'); ?>
+                <?php html_date('start_date' ,'require'); ?>
                 <br><br>
 
                 <label for="end_date">End Date:</label>
-                <?php html_date('end_date'); ?>
+                <?php html_date('end_date', 'require'); ?>
                 <br><br>
 
                 <label for="status">Status:</label>
@@ -306,15 +305,15 @@ $promotions = $stm->fetchAll();
                 <br><br>
 
                 <label for="requirement">Requirement:</label>
-                <?php html_number('requirement', '0', '100000', '0.01', 'required'); ?>
+                <?php html_number('requirement'); ?>
                 <br><br>
 
                 <label for="promo_amount">Discount Amount:</label>
-                <?php html_number('promo_amount', '0', '100000', '0.01', 'required'); ?>
+                <?php html_number('promo_amount'); ?>
                 <br><br>
 
                 <label for="limit_usage">Usage Limit:</label>
-                <?php html_number('limit_usage', '1', '100000', '1', 'required'); ?>
+                <?php html_number('limit_usage'); ?>
                 <br><br>
 
                 <label for="start_date">Start Date:</label>
