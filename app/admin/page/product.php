@@ -105,7 +105,7 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
                             form="f">
                     </td>
                     <td>
-                        <img src="../../admin/uploads/product_images/<?= $s->product_image ?>" class="resized-image">
+                        <img src="../../uploads/product_images/<?= $s->product_image ?>" class="resized-image">
                     </td>
                     <td><?= $s->product_id ?></td>
                     <td><?= $s->product_name ?></td>

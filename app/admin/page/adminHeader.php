@@ -153,7 +153,7 @@ $user3Role = ['MANAGER', 'STAFF', 'DELIVERY_GUY'];
                 <?php if ($_user): ?>
                     <a href="accountProfile.php">
 
-                        <img src="../../uploads/employee_images/<?= $_user->profile_image ?>" alt="Profile Picture" />
+                        <img src="../uploads/profile_images/<?= $_user->profile_image ?>" alt="Profile Picture" />
                     </a>
                     <div>
                         <?= $_user->employee_name ?><br>
