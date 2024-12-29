@@ -110,16 +110,19 @@ foreach ($cartDetails as $productID => $quantity) {
 $stripe = new \Stripe\StripeClient($stripe_key);
 
 $customer = \Stripe\Customer::create([
-    'name' => $uName,
-    'email' => $uEmail,
-    'phone' => $uPhone,
+    'name'    => $uName,
+    'email'   => $uEmail,
+    'phone'   => $uPhone,
     'address' => [
-        'line1' => $line_1,
-        'line2' => $village,
+        'line1'       => $line_1,
+        'line2'       => $village,
+        'city'        => $city,
+        'state'       => $state,
         'postal_code' => $postal_code,
-        'city' => $city,
-        'state' => $state,
-        'country' => 'MY'
+        'country'     => 'MY',
+    ],
+    'metadata' => [
+        'contact_num' => $uPhone
     ]
 ]);
 
@@ -136,10 +139,19 @@ $session = $stripe->checkout->sessions->create([
         'enabled' => true
     ],
     'billing_address_collection' => 'required',
-    'shipping_address_collection' => ['allowed_countries' => ['MY']],
-    'billing_address_collection' => 'required',
-    'shipping_address_collection' => ['allowed_countries' => ['US', 'CA']],
-
+    'payment_intent_data' => [
+        'shipping' => [
+            'name'    => $uName,
+            'address' => [
+                'line1'       => $line_1,
+                'line2'       => $village,
+                'city'        => $city,
+                'state'       => $state,
+                'country'     => 'MY',
+                'postal_code' => $postal_code,
+            ],
+        ],
+    ]
 
 ]);
 
