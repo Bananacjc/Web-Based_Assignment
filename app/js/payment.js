@@ -69,13 +69,11 @@ $(() => {
         if (parseFloat(subtotal) >= 0) {
             $('#hiddenSubtotal').val(parseFloat(subtotal));
         }
-        console.log(subtotal);
 
         const total = $('#total-payment').text();
         if (parseFloat(total) >= 0) {
             $('#hiddenTotal').val(parseFloat(total));
         }
-        console.log(total);
 
         $('#checkout-form').trigger('submit');
     })

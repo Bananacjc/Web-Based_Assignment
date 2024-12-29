@@ -111,11 +111,10 @@ foreach ($orderItems as $productID => $quantity) {
                 <!-- Drag and Drop Image Zone -->
                 <div class="input-file-container" id="drop-zone">
                     <div class="image-preview-container">
-                        <img id="image-preview" src="" alt="Review Image Preview" />
+                        <img id="image-preview" src="" alt="Drag your image here or click to upload" />
                     </div>
                     <input type="file" name="review_image" id="image-input" class="input-file" accept="image/*" onchange="previewFile()" />
                     <div class="drag-overlay" id="drag-overlay">
-                        <p>Drag your image here or click to upload</p>
                     </div>
                 </div>
 
