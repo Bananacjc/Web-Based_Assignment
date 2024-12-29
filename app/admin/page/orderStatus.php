@@ -66,6 +66,7 @@ $stm->execute($params);
 $orders = $stm->fetchAll();
 
 $userRole = ['MANAGER', 'DELIVERY_GUY'];
+$userRole2 = ['MANAGER', 'STAFF'];
 
 ?>
 
@@ -171,6 +172,7 @@ $userRole = ['MANAGER', 'DELIVERY_GUY'];
                     </td>
 
                 </tr>
+
             <?php endforeach; ?>
 
         </tbody>
@@ -192,11 +194,12 @@ $userRole = ['MANAGER', 'DELIVERY_GUY'];
         <?php endif; ?>
     </div>
 
+    <?php if (in_array($_user?->role, $userRole2)): ?>
 
     <div style="margin: 20px;">
         <button id="addOrderBtn" class="add-button" onclick="showAddForm()">Add New Order</button>
     </div>
-
+    <?php endif; ?>
 
     <div id="viewOrderModal" class="modal">
         <div class="modal-content">
