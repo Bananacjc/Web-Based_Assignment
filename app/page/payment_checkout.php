@@ -1,24 +1,91 @@
 <?php
+
+ob_start();
 $_title = 'Checkout';
 require_once '../_base.php';
 require '../../vendor/autoload.php';
+ob_end_clean();
 
 $stripe_key = 'sk_test_51QZoxyFSpaYwncq5xNMB1r3lsJ9zBDMwDI5yEYGf37HpW7eIBBlaORB01sAHolsWQfuxcua1TVkxspqhYi5t8alQ00gRNQG0AS';
+$googleMapsApiKey = "AIzaSyBFPpOlKxMJuu6PxnVrwxNd1G6vERpptro";
 header('Content-Type: application/json');
 $domain = 'http://localhost:8000';
 $_currency = 'myr';
 
+// None editable field || no validation
 $uName = post('uName');
 $uEmail = post('uEmail');
 $uPhone = post('uPhone');
-$cartDetails = json_decode(post('cart'));
+//// Payment method
+$accNum = post('hiddenAccNum');
+$cvvNum = post('hiddenCvvNum');
+$exDate = post('hiddenExDate');
+//// Additional Fee || Discount
+$shippingFee = post('hiddenShippingFee');
+$promoAmount = post('hiddenPromoAmount');
 
-if (!$uName || !$uEmail || !$uPhone || !$cartDetails) {
-    temp('popup-msg', ['msg' => 'All fields are required.', 'isSuccess' => false]);
+// Editable field, validation required
+$cartDetails = json_decode(post('cart'));
+//// Address
+$line_1 = post('hiddenLine_1');
+$village = post('hiddenVillage');
+$postal_code = post('hiddenPostal_code');
+$city = post('hiddenCity');
+$state = post('hiddenState');
+
+$full_address = [
+    'line_1' => $line_1,
+    'village' => $village,
+    'postal_code' => $postal_code,
+    'city' => $city,
+    'state' => $state
+];
+
+if (!$cartDetails) {
+    temp('popup-msg', ['msg' => 'Cart is Empty', 'isSuccess' => false]);
+    redirect('cart.php');
+}
+
+if (!$line_1) {
+    temp('popup-msg', ['msg' => 'Please enter an address', 'isSuccess' => false]);
+    redirect('payment.php');
+} else if (!validate_address_with_google($full_address, $googleMapsApiKey)) {
+    temp('popup-msg', ['msg' => 'Please enter a valid address', 'isSuccess' => false]);
+    redirect('payment.php');
+}
+
+if (!$shippingFee) {
     redirect('payment.php');
 }
 
 $line_items = [];
+
+if ($shippingFee) {
+    $line_items[] = [
+        'quantity' => 1,
+        'price_data' => [
+            'currency' => $_currency,
+            'unit_amount' => $shippingFee * 100,
+            'product_data' => [
+                'name' => 'Shipping Fee'
+            ]
+        ]
+    ];
+}
+
+if ($promoAmount) {
+    $line_items[] = [
+        'quantity' => 1,
+        'price_data' => [
+            'currency' => $_currency,
+            'unit_amount' => $promoAmount * -100,
+            'product_data' => [
+                'name' => 'Promotion Discount'
+            ]
+        ]
+    ];
+}
+
 $stmt = $_db->prepare('SELECT product_name, price FROM products WHERE product_id = ?');
 foreach ($cartDetails as $productID => $quantity) {
 
@@ -43,8 +110,17 @@ foreach ($cartDetails as $productID => $quantity) {
 $stripe = new \Stripe\StripeClient($stripe_key);
 
 $customer = \Stripe\Customer::create([
+    'name' => $uName,
     'email' => $uEmail,
-    'phone' => $uPhone
+    'phone' => $uPhone,
+    'address' => [
+        'line1' => $line_1,
+        'line2' => $village,
+        'postal_code' => $postal_code,
+        'city' => $city,
+        'state' => $state,
+        'country' => 'MY'
+    ]
 ]);
 
 

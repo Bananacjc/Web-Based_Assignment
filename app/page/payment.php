@@ -79,12 +79,12 @@ if (!$cart) {
         <div class="billing-detail-container">
             <label for="uName" class="normal-label">Name</label>
             <?php $GLOBALS['uName'] = $uName ?>
-            <?= html_text('uName', "class='sm-input-box w-50' spellcheck='false'") ?>
+            <?= html_text('uName', "class='sm-input-box w-50' spellcheck='false' readonly") ?>
         </div>
         <div class="billing-detail-container">
             <label for="uPhone" class="normal-label">Phone</label>
             <?php $GLOBALS['uPhone'] = $uPhone ?>
-            <?= html_text('uPhone', "class='sm-input-box w-50' spellcheck='false'") ?>
+            <?= html_text('uPhone', "class='sm-input-box w-50' spellcheck='false' readonly") ?>
         </div>
         <form class="billing-detail-container">
             <label for="uAddress" class="normal-label">Address</label>
@@ -92,7 +92,7 @@ if (!$cart) {
                 html_select('selectAddress', $addressOption, '- Please choose an address -');
             } ?>
             <br>
-            <label for="uAddress" class="normal-label">or<br><br>Enter Manually:</label>
+            <label for="uAddress" class="normal-label">or<br><br>Enter Manually:&nbsp;<span class="text-red">*</span></label>
             <div>
                 <div class="address-subcontainer">
                     <label for="line-1" class='address-label'>Address Line 1</label><br>
@@ -215,7 +215,7 @@ if (!$cart) {
                         <?php endif ?>
                     </td>
                     <td class="text-green-darker">
-                        RM <span id="uPromo" class="number-figure">0.00</span>
+                        -RM <span id="uPromo" class="number-figure">0.00</span>
                     </td>
                 </tr>
                 <tr>
@@ -229,15 +229,25 @@ if (!$cart) {
                 </tr>
                 <tr>
                     <td colspan="4" class="text-center">
-                        <form action="payment_checkout.php" target="_blank" method="post">
+                        <form id="checkout-form" action="payment_checkout.php" target="_blank" method="post">
                             <?= html_hidden('uName'); ?>
                             <?= html_hidden('uEmail'); ?>
                             <?= html_hidden('uPhone'); ?>
                             <?php $cart = json_encode($cart); ?>
                             <?= html_hidden('cart') ?>
-                            <?= html_hidden('accNum', "id='hiddenAccNum"); ?>
-                            <?= html_hidden('cvvNum', "id='hiddenCvvNum"); ?>
-                            <?= html_hidden('exDate', "id=hiddenExDate"); ?>
+                            <!-- Hidden bank field -->
+                            <?= html_hidden('hiddenAccNum'); ?>
+                            <?= html_hidden('hideenCvvNum'); ?>
+                            <?= html_hidden('hidenExDate'); ?>
+                            <!-- Hidden address field -->
+                            <?= html_hidden('hiddenLine_1'); ?>
+                            <?= html_hidden('hiddenVillage'); ?>
+                            <?= html_hidden('hiddenPostal_code'); ?>
+                            <?= html_hidden('hiddenCity'); ?>
+                            <?= html_hidden('hiddenState'); ?>
+                            <!-- Additional fee -->
+                            <?= html_hidden('hiddenShippingFee'); ?>
+                            <?= html_hidden('hiddenPromoAmount'); ?>
                             <button id="pay-button">Pay</button>
                         </form>
                     </td>

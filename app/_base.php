@@ -11,6 +11,21 @@ session_start();
 // General Page Functions
 // ============================================================================
 
+function validate_address_with_google($address, $apiKey)
+        {
+            $formattedAddress = urlencode("{$address['line_1']}, {$address['village']}, {$address['city']}, {$address['state']}, {$address['postal_code']}");
+            $apiUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=$formattedAddress&key=$apiKey";
+    
+            $response = file_get_contents($apiUrl);
+            if (!$response) {
+                return false; // API call failed
+            }
+    
+            $data = json_decode($response, true);
+            return isset($data['status']) && $data['status'] === 'OK'; // Address is valid if status is 'OK'
+        }
+    
+
 function popup($msg, $isSuccess)
 {
     echo "<script>showAlertPopup('$msg', $isSuccess);</script>";

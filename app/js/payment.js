@@ -6,7 +6,6 @@ $(() => {
     /**@type {HTMLSelectElement} */
     $('#selectPayment').on({
         change: function () {
-            
             const paymentMethod = $(this).val();
             updateBankDetails(paymentMethod);
         }
@@ -16,7 +15,6 @@ $(() => {
     $('#selectAddress').on({
         change: function () {
             const address = $(this).val();
-            console.log(address);
             updateAddress(address);
         }
     });
@@ -30,7 +28,7 @@ $(() => {
     })
 
     /**@type {HTMLButtonElement}*/
-    $('#pay-button').on('submit', e => {
+    $('#pay-button').on('click', e => {
         e.preventDefault;
 
         accNum = null;
@@ -39,18 +37,31 @@ $(() => {
 
         const paymentMethod = $('#selectPayment').val();
         if (paymentMethod) {
-            $('#hiddenAccNum').val($('#accNum').val());
-            $('#hiddenCvvNum').val($('#cvvNum').val());
-            $('#hiddenExDate').val($('#exDate').val());
+            $('#hiddenAccNum').val($('#accNum').text());
+            $('#hideenCvvNum').val($('#cvvNum').text());
+            $('#hiddenExDate').val($('#exDate').text());
         }
 
-        const address = $('#uAddress').val();
+        const address = $('#selectAddress').val();
         if (address) {
-
+            $('#hiddenLine_1').val($('#line-1').val());
+            $('#hiddenVillage').val($('#village').val());
+            $('#hiddenPostal_code').val( $('#postal-code').val());
+            $('#hiddenCity').val($('#city').val());
+            $('#hiddenState').val($('#state').val());
         }
 
+        const shippingFee = $('#pShippingFee').text();
+        if (parseFloat(shippingFee) >= 0) {
+            $('#hiddenShippingFee').val(parseFloat(shippingFee));
+        }
 
-        $('#hiddenAddress').val(address);
+        const promoAmount = $('#uPromo').text();
+        if (parseFloat(promoAmount) >= 0) {
+            $('#hiddenPromoAmount').val(parseFloat(promoAmount));
+        }
+        console.log($('#hiddenPromoAmount').val());
+
         $('#checkout-form').trigger('submit');
     })
 
@@ -91,7 +102,6 @@ function updateAddress(address) {
             dataType: 'json',
             success: function (data) {
                 if (data.success) {
-                    console.log('success');
                     $('#line-1').val(data.line_1);
                     $('#village').val(data.village);
                     $('#postal-code').val(data.postal_code);
@@ -119,7 +129,7 @@ function updateAddress(address) {
     } else {
         $('#line-1').val('');
         $('#village').val('');
-        $('#postal_code').val('');
+        $('#postal-code').val('');
         $('#city').val('');
         $('#state').val('');
         updateShippingFee(0);

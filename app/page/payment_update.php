@@ -23,7 +23,6 @@ if (is_post()) {
             }
         }
 
-
         ob_end_clean();
         if ($bankDetails) {
             echo json_encode([
