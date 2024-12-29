@@ -242,23 +242,23 @@ $promotions = $stm->fetchAll();
                 <br><br>
 
                 <label for="requirement">Requirement:</label>
-                <?php html_number('requirement'); ?>
+                <?php html_text('requirement'); ?>
                 <br><br>
 
                 <label for="promo_amount">Discount Amount:</label>
-                <?php html_number('promo_amount'); ?>
+                <?php html_text('promo_amount'); ?>
                 <br><br>
 
                 <label for="limit_usage">Usage Limit:</label>
-                <?php html_number('limit_usage'); ?>
+                <?php html_text('limit_usage'); ?>
                 <br><br>
 
                 <label for="start_date">Start Date:</label>
-                <?php html_date('start_date' ,'require'); ?>
+                <?php html_datetime('start_date' ,'require'); ?>
                 <br><br>
 
                 <label for="end_date">End Date:</label>
-                <?php html_date('end_date', 'require'); ?>
+                <?php html_datetime('end_date', 'require'); ?>
                 <br><br>
 
                 <label for="status">Status:</label>
@@ -305,23 +305,23 @@ $promotions = $stm->fetchAll();
                 <br><br>
 
                 <label for="requirement">Requirement:</label>
-                <?php html_number('requirement'); ?>
+                <?php html_text('requirement'); ?>
                 <br><br>
 
                 <label for="promo_amount">Discount Amount:</label>
-                <?php html_number('promo_amount'); ?>
+                <?php html_text('promo_amount'); ?>
                 <br><br>
 
                 <label for="limit_usage">Usage Limit:</label>
-                <?php html_number('limit_usage'); ?>
+                <?php html_text('limit_usage'); ?>
                 <br><br>
 
                 <label for="start_date">Start Date:</label>
-                <?php html_date('start_date', 'required'); ?>
+                <?php html_datetime('start_date', 'required'); ?>
                 <br><br>
 
                 <label for="end_date">End Date:</label>
-                <?php html_date('end_date', 'required'); ?>
+                <?php html_datetime('end_date', 'required'); ?>
                 <br><br>
 
                 <label for="status">Status:</label>

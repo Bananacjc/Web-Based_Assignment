@@ -7,41 +7,49 @@ $_css1 = '../css/adminLogin.css';
 require '../_base.php';
 $msg = '';
 $isSuccess = false;
-
 if (is_post()) {
-    $email    = req('email');
+    $email = req('email');
     $password = req('password');
+    $_err = []; 
 
+    // Validate input
     if ($email == '') {
-        $_err['email'] = 'Required';
-    } else if (!is_email($email)) {
-        $_err['email'] = 'Invalid email';
+        $_err['email'] = 'Email is required';
+    } elseif (!is_email($email)) {
+        $_err['email'] = 'Invalid email format';
     }
 
     if ($password == '') {
-        $_err['password'] = 'Required';
+        $_err['password'] = 'Password is required';
     }
 
-    if (!$_err) {
-        $hashedPassword = sha1($password);
+    if (empty($_err)) {
+        $hashedPassword = sha1($password); 
 
         $stm = $_db->prepare('
             SELECT * FROM employees
-            WHERE email = ? AND password= ?
+            WHERE email = ? AND password = ?
         ');
         $stm->execute([$email, $hashedPassword]);
         $u = $stm->fetch();
 
         if ($u) {
-            temp('info', 'Login successfully');
-            login($u);
+            if ($u->banned == 1) {
+                $msg = 'Your account is banned. Please contact support.';
+                popup($msg, false);
+            } else {
+                temp('info', 'Login successful');
+                login($u); 
+            }
         } else {
             $msg = 'Invalid email or password';
             popup($msg, false);
         }
+    } else {
+        foreach ($_err as $field => $error) {
+            popup("$field: $error", false);
+        }
     }
-    $msg = 'Invalid email or password';
-    popup($msg, false);
 }
 ?>
 
