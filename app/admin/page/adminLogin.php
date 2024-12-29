@@ -12,14 +12,12 @@ if (is_post()) {
     $email    = req('email');
     $password = req('password');
 
-    // Validate: email
     if ($email == '') {
         $_err['email'] = 'Required';
     } else if (!is_email($email)) {
         $_err['email'] = 'Invalid email';
     }
 
-    // Validate: password
     if ($password == '') {
         $_err['password'] = 'Required';
     }

@@ -47,7 +47,7 @@
                     <div class="footer-contact-icon"><i class="ti ti-mail"></i></div>
                     <div>
                         <p class="footer-contact-title">Email:</p>
-                        <p class="footer-contact-content">bananasis@gmail.com</p>
+                        <p class="footer-contact-content">bananasis.com@gmail.com</p>
                     </div>
                 </div>
             </div>
@@ -63,7 +63,9 @@
             <div id="payment-service">
                 <img src="../images/visa.png" alt="Visa" width="50" height="50" />
                 <img src="../images/mastercard.svg" alt="MasterCard" width="50" height="50" />
-                <img src="../images/tng.webp" alt="TouchNGo" width="50" height="50" />
+                <img src="../images/link.svg" alt="Link" width="50" height="50" />
+                <img src="../images/alipay.svg" alt="Alipay" width="50" height="50" />
+                <img src="../images/grabpay.svg" alt="Grabpay" width="50" height="50" />
             </div>
         </div>
     </div>

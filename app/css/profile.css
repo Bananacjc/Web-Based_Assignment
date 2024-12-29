@@ -20,6 +20,10 @@
     height: 100%;
 }
 
+.content.active {
+    display: block;
+}
+
 .sidebar ul {
     list-style: none;
     padding: 0;
@@ -190,7 +194,8 @@
 .btn:hover,
 .reviewbtn:hover,
 .viewbtn:hover,
-#request-otp-btn:hover {
+#request-otp-btn:hover,
+.receiptbtn:hover {
     background-color: #000000;
     color: #EFEFEF;
 }
@@ -359,6 +364,7 @@
 
 .action {
     display: flex;
+    flex-direction: column;
 }
 
 .reviewbtn {
@@ -379,7 +385,7 @@
     transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
-.no-action-btn {
+.receiptbtn {
     margin: 10px auto;
     padding: 15px 15px;
     width: 6.5rem;
@@ -389,11 +395,11 @@
     font-weight: 600;
     font-style: normal;
     font-size: 16px;
-    background-color: var(--color-black-pure);
+    background-color: var(--color-green-darker);
     text-align: center;
     text-decoration: none;
-    cursor: not-allowed;
-    color: var(--color-white-pure);
+    color: #4d4d4d;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 .ti.ti-circle-filled {

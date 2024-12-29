@@ -20,12 +20,15 @@ h1 {
 }
 
 .data-table th {
-    background-color: #b100cd;
-    /* Changed blue to green */
+    background-color: 333333;
     color: white;
 }
+.data-table th a{
+    background-color: 333333;
+    color:white;
+}
 
-.data-table tr:hover {
+.data-table:hover {
     background-color: #f5f5f5;
 }
 
@@ -38,7 +41,6 @@ h1 {
 }
 
 .button {
-    width: 100px; 
     height: 40px;
     color: white;
     border: none;
@@ -151,6 +153,15 @@ h1 {
     background-color: #45a049;
 }
 
+.cancel-button{
+    background-color: #ff4d4d;
+
+}
+
+.cancel-button:hover{
+    background-color: #ff4d4d;
+    background-color: #e04343;
+}
 .modal {
     margin-top: 80px;
     display: none;
@@ -220,48 +231,109 @@ body {
     overflow-y: auto;
 }
 
-
-/*pagination*/
-.pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.pagination a {
-    padding: 8px 12px;
+form button.delete-action-button, button.cancel-button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
     text-decoration: none;
-    color: #007bff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    transition: background-color 0.3s, color 0.3s;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    border-radius: 5px;
 }
 
-.pagination a:hover {
-    background-color: #007bff;
+.action-button {
+    background-color: #007BFF;
     color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    border-radius: 5px;
 }
 
-.pagination .active {
-    background-color: #007bff;
-    color: white;
-}
-
-.pagination .first-page, .pagination .prev-page, .pagination .next-page, .pagination .last-page {
-    font-weight: bold;
-}
-
-.pagination .first-page:hover, .pagination .prev-page:hover, .pagination .next-page:hover, .pagination .last-page:hover {
+.action-button:hover {
     background-color: #0056b3;
 }
 
-.pagination a.disabled {
-    color: #ccc;
-    pointer-events: none;
+.button {
+    width: 100px;
+    color: white;
+    border: none;
+    text-decoration: none;
+    font-size: 16px;
+    display: flex;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    
+    border-radius: 5px;
 }
 
-.pagination a.disabled:hover {
-    background-color: transparent;
+.ban-action-button,
+.unban-action-button {
+    background-color: #ff5c33;
 }
+
+.ban-action-button:hover,
+.unban-action-button:hover {
+    background-color: #ff471a;
+}
+
+
+
+.form-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+input[type="search"], select {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    background-color: #f9f9f9;
+}
+button {
+    padding: 8px 16px;
+    font-size: 14px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+button:hover {
+    background-color: #45a049;
+}
+.delete-btn {
+    background-color: #ff4d4d;
+    margin-top: 15px;
+    padding: 8px 16px;
+    font-size: 14px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.delete-btn:hover {
+    background-color: #e04343;
+}
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+
+

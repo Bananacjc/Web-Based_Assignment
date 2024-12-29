@@ -22,12 +22,18 @@ if (is_post()) {
 $categories = [];
 $products = [];
 try {
-    // Fetch categories
-    $stmt = $_db->query("SELECT category_name FROM categories");
+    // Fetch categories with products
+    $stmt = $_db->query("
+        SELECT DISTINCT c.category_name 
+        FROM categories c
+        INNER JOIN products p ON c.category_name = p.category_name
+        WHERE p.status IN ('AVAILABLE', 'OUT_OF_STOCK')
+    ");
     $categories = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
     // Fetch products
-    $stmt = $_db->query("SELECT p.product_id, p.product_name, p.category_name, p.price, p.description, 
+    $stmt = $_db->query("
+        SELECT p.product_id, p.product_name, p.category_name, p.price, p.description, 
                p.product_image, p.status, COALESCE(AVG(r.rating), 0) as avg_rating, COUNT(r.rating) as review_count
         FROM products p
         LEFT JOIN reviews r ON p.product_id = r.product_id
@@ -58,61 +64,77 @@ try {
             <h3 class="sidebar-title">Filter by Price</h3>
             <input type="range" min="0" max="200" value="100" class="slider" id="price-slider">
             <span id="price-value">RM 0 - RM 200</span>
+            <h3 class="sidebar-title">Filter by Rating</h3>
+            <div class="rating-stars" id="rating-filter">
+                <i class="star ti ti-star" onclick="setFilterRating(1)"></i>
+                <i class="star ti ti-star" onclick="setFilterRating(2)"></i>
+                <i class="star ti ti-star" onclick="setFilterRating(3)"></i>
+                <i class="star ti ti-star" onclick="setFilterRating(4)"></i>
+                <i class="star ti ti-star" onclick="setFilterRating(5)"></i>
+            </div>
+            <input type="hidden" id="ratingFilterInput" value="0">
+            <div id="filter-controls">
+                <button id="reset-filters" class="cart-button">Reset Filters</button>
+            </div>
         </div>
     </div>
     <div id="main-content">
         <?php foreach ($categories as $category): ?>
             <div class="category-section">
                 <h2 id="<?= strtolower($category) ?>" class="category-title"><?= $category ?></h2>
-                <?php foreach ($products as $product): ?>
-                    <?php
-                    $pID = $product['product_id'];
-                    $pCategory = $product['category_name'];
-                    $pImage = $product['product_image'];
-                    $pName = $product['product_name'];
-                    $pRating = $product['avg_rating'];
-                    $pReviewCount = $product['review_count'];
-                    $pPrice = $product['price'];
-                    $pStatus = $product['status'];
+                <div class="product-container">
+                    <?php foreach ($products as $product): ?>
+                        <?php
+                        $pID = $product['product_id'];
+                        $pCategory = $product['category_name'];
+                        $pImage = $product['product_image'];
+                        $pName = $product['product_name'];
+                        $pRating = $product['avg_rating'];
+                        $pReviewCount = $product['review_count'];
+                        $pPrice = $product['price'];
+                        $pStatus = $product['status'];
 
-                    ?>
-                    <?php if ($pCategory === $category): ?>
-                        <div class="product-card">
-                            <a href="javascript:void(0);" class="product-detail-link text-decoration-none" onclick="showProductDetails('<?= $pID ?>')">
-                                <img src="../uploads/product_images/<?= $pImage ?>" alt="<?= $pName ?>">
-                                <div class="product-info">
-                                    <h4 class="product-name"><?= $pName ?></h4>
-                                    <p class="rating">
-                                        <?php
-                                        $fullStars = floor($pRating);
-                                        $halfStar = ($pRating - $fullStars >= 0.5) ? 1 : 0;
-                                        $emptyStars = 5 - $fullStars - $halfStar;
-                                        for ($i = 0; $i < $fullStars; $i++) echo '<i class="ti ti-star-filled"></i>';
-                                        if ($halfStar) echo '<i class="ti ti-star-half-filled"></i>';
-                                        for ($i = 0; $i < $emptyStars; $i++) echo '<i class="ti ti-star"></i>';
-                                        ?>
-                                        (<?= $pReviewCount ?> reviews)
-                                    </p>
-                                    <p class="price-tag">Price: RM <?= number_format($pPrice, 2) ?></p>
-                                </div>
-                            </a>
-                            <?php if ($pStatus === 'AVAILABLE'): ?>
-                                <form action="" method="post">
-                                    <?= html_hidden('pID'); ?>
-                                    <?= html_hidden('pImage'); ?>
-                                    <input name="url" value="cart" type="hidden">
-                                    <input type="hidden" name="productId" value="<?= $pID ?>">
-                                    <input type="hidden" name="action" value="add">
-                                    <button class="cart-button">Add to Cart</button>
-                                </form>
-                            <?php elseif ($pStatus === 'OUT_OF_STOCK'): ?>
-                                <div class="out-of-stock">
-                                    <button class="out-of-stock-button" disabled>OUT OF STOCK</button>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    <?php endif; ?>
-                <?php endforeach; ?>
+                        ?>
+                        <?php if ($pCategory === $category): ?>
+                            <div class="product-card">
+                                <a href="javascript:void(0);" class="product-detail-link text-decoration-none" onclick="showProductDetails('<?= $pID ?>')">
+                                    <img src="../uploads/product_images/<?= $pImage ?>" alt="<?= $pName ?>">
+                                    <div class="product-info">
+                                        <h4 class="product-name"><?= $pName ?></h4>
+                                        <p class="rating">
+                                            <?php
+                                            $fullStars = floor($pRating);
+                                            $halfStar = ($pRating - $fullStars >= 0.5) ? 1 : 0;
+                                            $emptyStars = 5 - $fullStars - $halfStar;
+                                            for ($i = 0; $i < $fullStars; $i++) echo '<i class="ti ti-star-filled"></i>';
+                                            if ($halfStar) echo '<i class="ti ti-star-half-filled"></i>';
+                                            for ($i = 0; $i < $emptyStars; $i++) echo '<i class="ti ti-star"></i>';
+                                            ?>
+                                            (<?= $pReviewCount ?> reviews)
+                                        </p>
+                                        <p class="price-tag">Price: RM <?= number_format($pPrice, 2) ?></p>
+                                    </div>
+                                </a>
+                                <?php if ($pStatus === 'AVAILABLE'): ?>
+                                    <form action="" method="post">
+                                        <?= html_hidden('pID'); ?>
+                                        <?= html_hidden('pImage'); ?>
+                                        <input name="url" value="cart" type="hidden">
+                                        <input type="hidden" name="productId" value="<?= $pID ?>">
+                                        <input type="hidden" name="action" value="add">
+                                        <button class="cart-button">Add to Cart</button>
+                                    </form>
+                                <?php elseif ($pStatus === 'OUT_OF_STOCK'): ?>
+                                    <div class="out-of-stock">
+                                        <button class="out-of-stock-button" disabled>OUT OF STOCK</button>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </div>
+                <div id="pagination-container"></div>
+                <div id="loader" style="display: none;">Loading...</div>
             </div>
         <?php endforeach; ?>
     </div>
@@ -143,13 +165,13 @@ try {
 </div>
 
 <script src="../js/slider.js"></script>
-<script src="../js/searchproducts.js"></script>
-<script src="../js/categoryFilter.js"></script>
+<script src="../js/filter.js"></script>
 <script type="text/javascript">
     $('#cart-button').on('click', e => {
         e.target.form.submit();
     })
 
+//AJAX Get Product Details and Show Popup
     function showProductDetails(productId) {
         fetch(`get_product_details.php?product_id=${productId}`)
             .then(response => response.json())
@@ -175,12 +197,17 @@ try {
                     data.comments.forEach(comment => {
                         const commentHTML = `
                         <div class="comments">
-                            <img class="profile-pic" src="../uploads/customer_images/${comment.customer_image}" alt="${comment.customer_name}" width="50px" height="50px" />
+                            <img class="profile-pic" src="../uploads/customer_images/${comment.profile_image}" alt="${comment.username}" width="50px" height="50px" />
                             <div class="comments-detail-container">
-                                <p class="user-name">${comment.customer_name}</p>
+                                <p class="user-name">${comment.username}</p>
                                 <p class="rating-stars">${renderStars(comment.rating)}</p>
                                 <p class="date-time">${comment.comment_date_time}</p>
                                 <p class="comment">${comment.comment}</p>
+                                ${
+                                    comment.review_image
+                                        ? `<img class="review-image" src="../uploads/review_images/${comment.review_image}" alt="Review Image" />`
+                                        : ''
+                                }
                             </div>
                         </div>`;
                         commentsContainer.innerHTML += commentHTML;
@@ -197,23 +224,107 @@ try {
             });
     }
 
+
     function renderStars(rating) {
-    const fullStars = Math.floor(rating);
-    const halfStar = rating - fullStars >= 0.5 ? 1 : 0;
-    const emptyStars = 5 - fullStars - halfStar;
+        const fullStars = Math.floor(rating);
+        const halfStar = rating - fullStars >= 0.5 ? 1 : 0;
+        const emptyStars = 5 - fullStars - halfStar;
 
-    let starsHTML = '';
-    for (let i = 0; i < fullStars; i++) starsHTML += '<i class="ti ti-star-filled"></i>';
-    if (halfStar) starsHTML += '<i class="ti ti-star-half-filled"></i>';
-    for (let i = 0; i < emptyStars; i++) starsHTML += '<i class="ti ti-star"></i>';
+        let starsHTML = '';
+        for (let i = 0; i < fullStars; i++) starsHTML += '<i class="ti ti-star-filled"></i>';
+        if (halfStar) starsHTML += '<i class="ti ti-star-half-filled"></i>';
+        for (let i = 0; i < emptyStars; i++) starsHTML += '<i class="ti ti-star"></i>';
 
-    return starsHTML;
-}
+        return starsHTML;
+    }
 
 
     function closeModal() {
         document.getElementById('productModal').style.display = 'none';
     }
+
+
+//AJAX For Paginations
+    function fetchProducts(category, page) {
+    $("#loader").show(); // Show loader
+    $.ajax({
+        url: "fetchProducts.php",
+        type: "GET",
+        data: { category_name: category, page: page },
+        dataType: "json",
+        success: function (response) {
+            const products = response.products;
+            const total_pages = response.total_pages;
+
+            // Render Products
+            renderProducts(products);
+
+            // Update Pagination
+            renderPagination(category, page, total_pages);
+
+            $("#loader").hide(); // Hide loader
+        },
+        error: function (xhr, status, error) {
+            console.error("Error fetching products:", error);
+            $("#loader").hide(); // Hide loader
+        },
+    });
+}
+
+function renderProducts(products) {
+    const container = $("#main-content");
+    container.html(""); // Clear existing content
+    products.forEach((product) => {
+        const productCard = `
+            <div class="product-card">
+                <a href="javascript:void(0);" onclick="showProductDetails('${product.product_id}')">
+                    <img src="../uploads/product_images/${product.product_image}" alt="${product.product_name}">
+                    <div class="product-info">
+                        <h4>${product.product_name}</h4>
+                        <p>Price: RM ${product.price.toFixed(2)}</p>
+                    </div>
+                </a>
+            </div>
+        `;
+        container.append(productCard);
+    });
+}
+
+function renderPagination(category, currentPage, totalPages) {
+    const paginationContainer = $("#pagination-container");
+    paginationContainer.html(""); // Clear existing pagination
+
+    if (totalPages > 1) {
+        let paginationHTML = "";
+
+        if (currentPage > 1) {
+            paginationHTML += `<button onclick="fetchProducts('${category}', ${currentPage - 1})">Prev</button>`;
+        }
+
+        for (let i = 1; i <= totalPages; i++) {
+            paginationHTML += `<button onclick="fetchProducts('${category}', ${i})" class="${i === currentPage ? "active" : ""}">${i}</button>`;
+        }
+
+        if (currentPage < totalPages) {
+            paginationHTML += `<button onclick="fetchProducts('${category}', ${currentPage + 1})">Next</button>`;
+        }
+
+        paginationContainer.html(paginationHTML);
+    }
+}
+
+$(document).ready(function () {
+    const firstCategory = $("#sidebar-list li:first-child a").text();
+    if (firstCategory) {
+        fetchProducts(firstCategory, 1);
+    }
+
+    $("#sidebar-list li a").on("click", function () {
+        const category = $(this).text();
+        fetchProducts(category, 1); // Load the first page of the selected category
+    });
+});
+
 </script>
 
 <?php include '../_foot.php'; ?>

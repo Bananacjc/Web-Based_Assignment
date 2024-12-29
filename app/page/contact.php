@@ -30,7 +30,7 @@ include '../_head.php';
                     <span style="    font-size: 15px;
                                   color: #797979;
                                   font-weight: 500;
-                                  font-family: 'Inter', sans-serif;">tanjc@gmail.com</span>
+                                  font-family: 'Inter', sans-serif;">bananasis.com@gmail.com</span>
                 </div>
             </div>
         </div>
@@ -57,7 +57,7 @@ include '../_head.php';
             </div>
         </div>
         <div class="c1">
-            <form action="SubmitContactServlet" method="POST">
+            <form action="" method="POST">
                 <div class=" account-inner-form">
 
                     <div class="review-form-name">

@@ -27,14 +27,11 @@ $user3Role = ['MANAGER', 'STAFF', 'DELIVERY_GUY'];
     if (!empty($info)) {
         echo "<div id='info'>" . (is_array($info) ? implode(", ", $info) : $info) . "</div>";
     }
-
     $error = temp('error');
     if (!empty($error)) {
         echo "<div id='error'>" . (is_array($error) ? implode("<br>", $error) : $error) . "</div>";
     }
     ?>
-
-
 
 
     <input type="checkbox" id="nav-toggle" hidden>
@@ -91,7 +88,7 @@ $user3Role = ['MANAGER', 'STAFF', 'DELIVERY_GUY'];
                     <?php if ($_user?->role == 'MANAGER'): ?>
                         <li class="sidebar-item">
                             <a href="staff.php?title=Staff" class="sidebar-link">
-                                <span class="icon">👤</span>
+                                <span class="icon">🧑‍💼</span>
                                 <span class="label">Staff</span>
                             </a>
                         </li>
@@ -100,7 +97,7 @@ $user3Role = ['MANAGER', 'STAFF', 'DELIVERY_GUY'];
                     <?php if (in_array($_user?->role, $userRole)): ?>
                         <li class="sidebar-item">
                             <a href="promotionVoucher.php?title=Promotion" class="sidebar-link">
-                                <span class="icon">🎫</span>
+                                <span class="icon">🎟️</span>
                                 <span class="label">Promotion Voucher</span>
                             </a>
                         <?php endif ?>
@@ -110,6 +107,14 @@ $user3Role = ['MANAGER', 'STAFF', 'DELIVERY_GUY'];
                             <a href="category.php?title=Product Category" class="sidebar-link">
                                 <span class="icon">🏷️</span>
                                 <span class="label">Product Category</span>
+                            </a>
+                        <?php endif ?>
+
+                        <?php if (in_array($_user?->role, $userRole)): ?>
+                        <li class="sidebar-item">
+                            <a href="review.php?title=Review Product" class="sidebar-link">
+                                <span class="icon">⭐</span>
+                                <span class="label">Review Product</span>
                             </a>
                         <?php endif ?>
 
@@ -124,11 +129,11 @@ $user3Role = ['MANAGER', 'STAFF', 'DELIVERY_GUY'];
                                     <a href="accountProfile.php?title=Account" class="nested-link">Account</a>
                                 </li>
                                 <li class="nested-item">
-                                    <a href="logout.php" class="nested-link">Log Out</a>
+                                    <a href="logout.php" class="nested-link" onclick="confirmLogout()">Log Out</a>
                                 </li>
                             </ul>
                         </li>
-            </ul>
+              </ul>
         </div>
     </div>
 
@@ -141,9 +146,8 @@ $user3Role = ['MANAGER', 'STAFF', 'DELIVERY_GUY'];
                 </label> <?php echo $pageTitle; ?>
             </h1>
 
-            <div class="search-wrapper">
-                <span class="las la-search"></span>
-                <input type="search" placeholder="Search Here" />
+            <div >
+              
             </div>
             <div class="user-wrapper">
                 <?php if ($_user): ?>
@@ -161,5 +165,9 @@ $user3Role = ['MANAGER', 'STAFF', 'DELIVERY_GUY'];
         </header>
     </div>
 </body>
-
+<script>
+function confirmLogout() {
+        return confirm('Are you sure you want to logout account?');
+    }
+</script>
 </html>

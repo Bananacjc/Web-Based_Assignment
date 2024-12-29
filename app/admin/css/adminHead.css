@@ -16,6 +16,41 @@ body {
     transition: width 0.3s ease;
 }
 
+.delete-btn {
+    background-color: #ff4d4d;
+    margin-top: 15px;
+    margin-bottom: 10px;;
+    padding: 8px 16px;
+    font-size: 14px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.delete-btn:hover {
+    background-color: #e04343;
+}
+
+
+input[type="search"], select {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    background-color: #f9f9f9;
+}
+button {
+    padding: 8px 16px;
+    font-size: 14px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
 .sidebar-logo {
     font-size: 24px;
     text-align: center;
@@ -235,39 +270,61 @@ header label span {
     font-size: 20px;
     color: #333;
 }
-
+/* Table Styling */
 table {
-    width: 100%;
-    border-collapse: collapse;
+    width: 100%; /* Set the table width */
+    margin: 20px auto; /* Center the table horizontally with a margin */
+    border-collapse: collapse; /* Ensure borders collapse into one */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow to the table */
+    border-radius: 8px; /* Rounded corners for the table */
+    overflow: hidden; /* Prevent content from overflowing the rounded corners */
 }
 
+/* Table Header Styling */
 thead tr {
-    background-color: #343a40;
-    color: #ffffff;
-}
-
-th, td {
-    text-align: left;
-    padding: 10px;
-    border: 1px solid #ddd;
-}
-
-tbody tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
-
-tbody tr:hover {
-    background-color: #e9ecef;
-}
-
-td {
-    font-size: 14px;
+    background-color: #343a40; /* Dark background for header */
+    color: #ffffff; /* White text color */
 }
 
 th {
-    font-size: 16px;
-    font-weight: bold;
+    font-size: 16px; /* Larger font size for header */
+    font-weight: bold; /* Bold header text */
+    text-align: left; /* Left-align text in header */
+    padding: 12px 20px; /* Padding for header cells */
+    letter-spacing: 1px; /* Slightly increase spacing between letters for a more professional look */
 }
+
+/* Table Data Styling */
+th, td {
+    text-align: left; /* Left-align text in both th and td */
+    padding: 10px 15px; /* Add padding inside cells */
+    border: 1px solid #ddd; /* Light grey border between cells */
+    font-size: 14px; /* Font size for table data */
+    transition: background-color 0.3s ease; /* Smooth background transition on hover */
+}
+
+/* Table Body Styling */
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* Light grey background for even rows */
+}
+
+tbody tr:hover {
+    background-color: #e2e6ea; /* Light blue background on row hover */
+    cursor: pointer; /* Change cursor to pointer on hover */
+}
+
+/* Responsive Styling */
+@media screen and (max-width: 768px) {
+    table {
+        width: 100%; /* Full width on smaller screens */
+    }
+
+    th, td {
+        padding: 8px 12px; /* Smaller padding for smaller screens */
+        font-size: 12px; /* Smaller font size for mobile */
+    }
+}
+
 .main {
     margin-left: 250px;
     padding-left: 20px;
@@ -285,39 +342,4 @@ th {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-.data-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 0 auto;
-        max-height: 200px; /* Adjust this value as needed */
-        overflow-y: auto;
-    
-}
-
-.data-table thead tr {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.data-table th, .data-table td {
-    text-align: center;
-    padding: 12px;
-    border: 1px solid #ddd;
-}
-
-.data-table tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
-
-.data-table tr:hover {
-    background-color: #e8f8e8;
-}
-
-.resized-image {
-    width: 80px;
-    height: 80px;
-    border-radius: 4px;
-    object-fit: cover;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
