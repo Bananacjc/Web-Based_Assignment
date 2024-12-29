@@ -80,7 +80,7 @@ try {
     </div>
     <div id="main-content">
         <?php foreach ($categories as $category): ?>
-            <div class="category-section">
+            <div class="category-section" data-category="<?= strtolower($category) ?>">
                 <h2 id="<?= strtolower($category) ?>" class="category-title"><?= $category ?></h2>
                 <div class="product-container">
                     <?php foreach ($products as $product): ?>
@@ -101,17 +101,7 @@ try {
                                     <img src="../uploads/product_images/<?= $pImage ?>" alt="<?= $pName ?>">
                                     <div class="product-info">
                                         <h4 class="product-name"><?= $pName ?></h4>
-                                        <p class="rating">
-                                            <?php
-                                            $fullStars = floor($pRating);
-                                            $halfStar = ($pRating - $fullStars >= 0.5) ? 1 : 0;
-                                            $emptyStars = 5 - $fullStars - $halfStar;
-                                            for ($i = 0; $i < $fullStars; $i++) echo '<i class="ti ti-star-filled"></i>';
-                                            if ($halfStar) echo '<i class="ti ti-star-half-filled"></i>';
-                                            for ($i = 0; $i < $emptyStars; $i++) echo '<i class="ti ti-star"></i>';
-                                            ?>
-                                            (<?= $pReviewCount ?> reviews)
-                                        </p>
+                                        <p class="rating"><?= renderStars($product['avg_rating']) ?> (<?= $product['review_count'] ?> reviews)</p>
                                         <p class="price-tag">Price: RM <?= number_format($pPrice, 2) ?></p>
                                     </div>
                                 </a>
@@ -171,7 +161,7 @@ try {
         e.target.form.submit();
     })
 
-//AJAX Get Product Details and Show Popup
+    //AJAX Get Product Details and Show Popup
     function showProductDetails(productId) {
         fetch(`get_product_details.php?product_id=${productId}`)
             .then(response => response.json())
@@ -193,29 +183,49 @@ try {
                 // Populate comments
                 const commentsContainer = document.getElementById('modal-comment-list');
                 commentsContainer.innerHTML = ''; // Clear previous comments
+
                 if (data.comments && data.comments.length > 0) {
                     data.comments.forEach(comment => {
-                        const commentHTML = `
-                        <div class="comments">
-                            <img class="profile-pic" src="../uploads/customer_images/${comment.profile_image}" alt="${comment.username}" width="50px" height="50px" />
-                            <div class="comments-detail-container">
-                                <p class="user-name">${comment.username}</p>
-                                <p class="rating-stars">${renderStars(comment.rating)}</p>
-                                <p class="date-time">${comment.comment_date_time}</p>
-                                <p class="comment">${comment.comment}</p>
-                                ${
-                                    comment.review_image
-                                        ? `<img class="review-image" src="../uploads/review_images/${comment.review_image}" alt="Review Image" />`
-                                        : ''
-                                }
-                            </div>
-                        </div>`;
+                        // Check and sanitize comment text
+                        const sanitizedComment = comment.comment && comment.comment !== "null" ? comment.comment.trim() : null;
+
+                        // Check if review_image exists and is valid
+                        const reviewImage = comment.review_image && comment.review_image !== "null" ? comment.review_image.trim() : null;
+
+                        let commentHTML = `
+        <div class="comments">
+            <img class="profile-pic" src="../uploads/customer_images/${comment.profile_image}" alt="${comment.username}" width="50px" height="50px" />
+            <div class="comments-detail-container">
+                <p class="user-name">${comment.username}</p>
+                <p class="comment-rating-stars">${renderStars(comment.rating)}</p>
+                <p class="date-time">${comment.comment_date_time}</p>
+        `;
+
+                        // Append comment only if it exists
+                        if (sanitizedComment) {
+                            commentHTML += `
+                <p class="comment">${sanitizedComment}</p>
+            `;
+                        }
+
+                        // Append review image only if it exists
+                        if (reviewImage) {
+                            commentHTML += `
+                <img class="review-image" src="../uploads/review_images/${reviewImage}" alt="Review Image" />
+            `;
+                        }
+
+                        // Close the comment HTML structure
+                        commentHTML += `
+            </div>
+        </div>`;
+
+                        // Add the comment HTML to the container
                         commentsContainer.innerHTML += commentHTML;
                     });
                 } else {
                     commentsContainer.innerHTML = '<p>No comments available.</p>';
                 }
-
                 // Show the modal
                 document.getElementById('productModal').style.display = 'block';
             })
@@ -244,87 +254,118 @@ try {
     }
 
 
-//AJAX For Paginations
+    //AJAX For Paginations
     function fetchProducts(category, page) {
-    $("#loader").show(); // Show loader
-    $.ajax({
-        url: "fetchProducts.php",
-        type: "GET",
-        data: { category_name: category, page: page },
-        dataType: "json",
-        success: function (response) {
-            const products = response.products;
-            const total_pages = response.total_pages;
+        $("#loader").show(); // Show loader
+        $.ajax({
+            url: "fetch_products.php",
+            type: "GET",
+            data: {
+                category_name: category,
+                page: page
+            },
+            dataType: "json",
+            success: function(response) {
+                const products = response.products;
+                const totalPages = response.total_pages;
 
-            // Render Products
-            renderProducts(products);
+                // Render products and pagination
+                renderProducts(category, products);
+                renderPagination(category, page, totalPages);
 
-            // Update Pagination
-            renderPagination(category, page, total_pages);
+                $("#loader").hide(); // Hide loader
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching products:", error);
+                $("#loader").hide(); // Hide loader
+            },
+        });
+    }
 
-            $("#loader").hide(); // Hide loader
-        },
-        error: function (xhr, status, error) {
-            console.error("Error fetching products:", error);
-            $("#loader").hide(); // Hide loader
-        },
-    });
-}
 
-function renderProducts(products) {
-    const container = $("#main-content");
-    container.html(""); // Clear existing content
-    products.forEach((product) => {
-        const productCard = `
+    function renderProducts(category, products) {
+        const container = $(`#main-content .category-section[data-category="${category.toLowerCase()}"] .product-container`);
+        container.html(""); // Clear existing products
+
+        products.forEach((product) => {
+            const fullStars = Math.floor(product.avg_rating);
+            const halfStar = product.avg_rating - fullStars >= 0.5 ? 1 : 0;
+            const emptyStars = 5 - fullStars - halfStar;
+
+            let starsHTML = "";
+            for (let i = 0; i < fullStars; i++) starsHTML += '<i class="ti ti-star-filled"></i>';
+            if (halfStar) starsHTML += '<i class="ti ti-star-half-filled"></i>';
+            for (let i = 0; i < emptyStars; i++) starsHTML += '<i class="ti ti-star"></i>';
+
+            const productCard = `
             <div class="product-card">
-                <a href="javascript:void(0);" onclick="showProductDetails('${product.product_id}')">
+                <a href="javascript:void(0);" class="product-detail-link text-decoration-none" onclick="showProductDetails('${product.product_id}')">
                     <img src="../uploads/product_images/${product.product_image}" alt="${product.product_name}">
                     <div class="product-info">
-                        <h4>${product.product_name}</h4>
-                        <p>Price: RM ${product.price.toFixed(2)}</p>
+                        <h4 class="product-name">${product.product_name}</h4>
+                        <p class="rating">
+                            ${starsHTML} (${product.review_count} reviews)
+                        </p>
+                        <p class="price-tag">Price: RM ${parseFloat(product.price).toFixed(2)}</p>
                     </div>
                 </a>
+                ${
+                    product.status === "AVAILABLE"
+                        ? `
+                        <form action="" method="post">
+                            <input type="hidden" name="pID" value="${product.product_id}">
+                            <input type="hidden" name="pImage" value="${product.product_image}">
+                            <button class="cart-button">Add to Cart</button>
+                        </form>`
+                        : `
+                        <div class="out-of-stock">
+                            <button class="out-of-stock-button" disabled>OUT OF STOCK</button>
+                        </div>`
+                }
             </div>
         `;
-        container.append(productCard);
-    });
-}
-
-function renderPagination(category, currentPage, totalPages) {
-    const paginationContainer = $("#pagination-container");
-    paginationContainer.html(""); // Clear existing pagination
-
-    if (totalPages > 1) {
-        let paginationHTML = "";
-
-        if (currentPage > 1) {
-            paginationHTML += `<button onclick="fetchProducts('${category}', ${currentPage - 1})">Prev</button>`;
-        }
-
-        for (let i = 1; i <= totalPages; i++) {
-            paginationHTML += `<button onclick="fetchProducts('${category}', ${i})" class="${i === currentPage ? "active" : ""}">${i}</button>`;
-        }
-
-        if (currentPage < totalPages) {
-            paginationHTML += `<button onclick="fetchProducts('${category}', ${currentPage + 1})">Next</button>`;
-        }
-
-        paginationContainer.html(paginationHTML);
-    }
-}
-
-$(document).ready(function () {
-    const firstCategory = $("#sidebar-list li:first-child a").text();
-    if (firstCategory) {
-        fetchProducts(firstCategory, 1);
+            container.append(productCard);
+        });
     }
 
-    $("#sidebar-list li a").on("click", function () {
-        const category = $(this).text();
-        fetchProducts(category, 1); // Load the first page of the selected category
-    });
-});
 
+
+    function renderPagination(category, currentPage, totalPages) {
+        const paginationContainer = $(`#main-content .category-section[data-category="${category.toLowerCase()}"] #pagination-container`);
+        paginationContainer.html(""); // Clear existing pagination
+
+        if (totalPages > 1) {
+            let paginationHTML = "";
+
+            if (currentPage > 1) {
+                paginationHTML += `<button class="pagination-btn" onclick="fetchProducts('${category}', ${currentPage - 1})">Prev</button>`;
+            }
+
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHTML += `<button class="pagination-btn" onclick="fetchProducts('${category}', ${i})" class="${i === currentPage ? "active" : ""}">${i}</button>`;
+            }
+
+            if (currentPage < totalPages) {
+                paginationHTML += `<button class="pagination-btn" onclick="fetchProducts('${category}', ${currentPage + 1})">Next</button>`;
+            }
+
+            paginationContainer.html(paginationHTML);
+        }
+    }
+
+
+    $(document).ready(function() {
+        $("#sidebar-list li a").on("click", function() {
+            const category = $(this).text();
+            fetchProducts(category, 1); // Load the first page of the selected category
+        });
+
+        // Fetch initial products for the first category
+        const firstCategory = $("#sidebar-list li:first-child a").text();
+        if (firstCategory) {
+            fetchProducts(firstCategory, 1);
+        }
+    });
 </script>
 
 <?php include '../_foot.php'; ?>
