@@ -83,7 +83,6 @@ if (is_post()) {
     ?>
 
     <?php if ($promotions): ?>
-
         <?php foreach ($promotions as $promo): ?>
             <?php
 

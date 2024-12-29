@@ -201,22 +201,22 @@ if (is_post()) {
         $index = post('index');
         $addresses = json_decode($_user->addresses ?? '[]', true);
         $googleMapsApiKey = "AIzaSyBFPpOlKxMJuu6PxnVrwxNd1G6vERpptro";
-    
+
         // Function to validate address using Google Maps Geocoding API
         function validate_address_with_google($address, $apiKey)
         {
             $formattedAddress = urlencode("{$address['line_1']}, {$address['village']}, {$address['city']}, {$address['state']}, {$address['postal_code']}");
             $apiUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=$formattedAddress&key=$apiKey";
-    
+
             $response = file_get_contents($apiUrl);
             if (!$response) {
                 return false; // API call failed
             }
-    
+
             $data = json_decode($response, true);
             return isset($data['status']) && $data['status'] === 'OK'; // Address is valid if status is 'OK'
         }
-    
+
         if ($action === 'save-address') {
             // Fetch structured address inputs
             $line_1 = trim(post('line_1'));
@@ -224,13 +224,13 @@ if (is_post()) {
             $postal_code = trim(post('postal_code'));
             $city = trim(post('city'));
             $state = trim(post('state'));
-    
+
             // Validate required fields
             if (!$line_1 || !$postal_code || !$city || !$state) {
                 temp('popup-msg', ['msg' => 'Please fill in all required fields.', 'isSuccess' => false]);
                 redirect();
             }
-    
+
             // Create structured address
             $newAddress = [
                 'line_1' => $line_1,
@@ -239,13 +239,13 @@ if (is_post()) {
                 'city' => $city,
                 'state' => $state,
             ];
-    
+
             // Validate the address with Google Maps
             if (!validate_address_with_google($newAddress, $googleMapsApiKey)) {
                 temp('popup-msg', ['msg' => 'Invalid address. Please check the details.', 'isSuccess' => false]);
                 redirect();
             }
-    
+
             // Check for duplicate address
             foreach ($addresses as $address) {
                 if (
@@ -259,14 +259,14 @@ if (is_post()) {
                     redirect();
                 }
             }
-    
+
             // Add the new address
             $addresses[] = $newAddress;
             $addressesJson = json_encode($addresses);
-    
+
             $stmt = $_db->prepare("UPDATE customers SET addresses = ? WHERE customer_id = ?");
             $stmt->execute([$addressesJson, $_user->customer_id]);
-    
+
             $_user->addresses = $addressesJson;
             temp('popup-msg', ['msg' => 'Address added successfully.', 'isSuccess' => true]);
             redirect();
@@ -276,7 +276,7 @@ if (is_post()) {
             $postal_code = trim(post('postal_code'));
             $city = trim(post('city'));
             $state = trim(post('state'));
-    
+
             if ($line_1 && $postal_code && $city && $state && isset($addresses[$index])) {
                 $updatedAddress = [
                     'line_1' => $line_1,
@@ -285,13 +285,13 @@ if (is_post()) {
                     'city' => $city,
                     'state' => $state,
                 ];
-    
+
                 // Validate the address with Google Maps
                 if (!validate_address_with_google($updatedAddress, $googleMapsApiKey)) {
                     temp('popup-msg', ['msg' => 'Invalid address. Please check the details.', 'isSuccess' => false]);
                     redirect();
                 }
-    
+
                 // Check for duplicate address (excluding the current one being updated)
                 foreach ($addresses as $i => $address) {
                     if (
@@ -306,14 +306,14 @@ if (is_post()) {
                         redirect();
                     }
                 }
-    
+
                 // Update the address
                 $addresses[$index] = $updatedAddress;
                 $addressesJson = json_encode($addresses);
-    
+
                 $stmt = $_db->prepare("UPDATE customers SET addresses = ? WHERE customer_id = ?");
                 $stmt->execute([$addressesJson, $_user->customer_id]);
-    
+
                 $_user->addresses = $addressesJson;
                 temp('popup-msg', ['msg' => 'Address updated successfully.', 'isSuccess' => true]);
             } else {
@@ -326,10 +326,10 @@ if (is_post()) {
                 unset($addresses[$index]);
                 $addresses = array_values($addresses); // Re-index the array
                 $addressesJson = json_encode($addresses);
-    
+
                 $stmt = $_db->prepare("UPDATE customers SET addresses = ? WHERE customer_id = ?");
                 $stmt->execute([$addressesJson, $_user->customer_id]);
-    
+
                 $_user->addresses = $addressesJson;
                 temp('popup-msg', ['msg' => 'Address deleted successfully.', 'isSuccess' => true]);
             } else {
@@ -337,7 +337,7 @@ if (is_post()) {
             }
             redirect();
         }
-    }elseif ($formType === 'change_password') {
+    } elseif ($formType === 'change_password') {
         // Handle change password
         $oldPassword = trim(post('old-password'));
         $newPassword = trim(post('new-password'));
@@ -393,6 +393,7 @@ if (is_post()) {
             <li id="personal-info-btn" class="<?= $activeTab === 'personal-info-btn' ? 'active' : '' ?>"><i class="ti ti-user"></i> Personal Info</li>
             <li id="payment-method-btn" class="<?= $activeTab === 'payment-method-btn' ? 'active' : '' ?>"><i class="ti ti-credit-card"></i> Payment Method</li>
             <li id="address-btn" class="<?= $activeTab === 'address-btn' ? 'active' : '' ?>"><i class="ti ti-map-pins"></i>Address</li>
+            <li id="promotion-btn" class="<?= $activeTab === 'promotion-btn' ? 'active' : '' ?>"><i class="ti ti-map-pins"></i>My Promotions</li>
             <li id="order-history-btn" class="<?= $activeTab === 'order-history-btn' ? 'active' : '' ?>"><i class="ti ti-shopping-cart"></i> Order and Reviews</li>
             <li id="change-password-btn" class="<?= $activeTab === 'change-password-btn' ? 'active' : '' ?>"><i class="ti ti-lock"></i> Change Password</li>
             <li id="logout-btn"><a href="?logout=true" id="logout-link"><i class="ti ti-logout"></i>Logout</a></li>
@@ -573,6 +574,139 @@ if (is_post()) {
                 </div>
             </div>
         </form>
+    </div>
+    <?php
+    $stmt = $_db->prepare('SELECT   FROM customers');
+    $stmt->execute([$_user->customer_id]);
+    $promotions = $stmt->fetchAll();
+
+    if ($promotions) {
+        usort($promotions, function ($a, $b) {
+            $today = new DateTime();
+
+            $aDate = new DateTime($a->start_date);
+            $bDate = new DateTime($b->start_date);
+
+            $aPriority = $today->diff($aDate)->days;
+            $bPriotity = $today->diff($bDate)->days;
+
+            return $aPriority <=> $bPriotity;
+        });
+    }
+
+    ?>
+    <div class="content" id="promotion-content" style="display: <?= $activeTab === 'order-history-btn' ? 'block' : 'none' ?>;">
+        <h2>Collected Promotion</h2>
+        <link rel="stylesheet" href="../css/promotion.css" />
+        <?php if ($promotions): ?>
+            <?php foreach ($promotions as $promo): ?>
+                <?php
+
+                $uPromos = json_decode($_user->promotion_records, true);
+
+                $promoID = $promo->promo_id;
+                $promoName = $promo->promo_name;
+                $promoCode = $promo->promo_code;
+                $promoDesc = $promo->description;
+                $promoReq = $promo->requirement;
+                $promoAmount = $promo->promo_amount;
+                $promoLimit = $promo->limit_usage;
+                $promoImage = $promo->promo_image;
+                $promoStatus = $promo->status;
+
+                $promoStart  = date('d-M-Y h:i:s A', strtotime($promo->start_date));
+                $promoEnd = date('d-M-Y h:i:s A', strtotime($promo->end_date));
+                $today = new DateTime();
+
+                $upcoming = $today < new DateTime($promoStart);
+                $expired = $today > new DateTime($promoEnd);
+
+                $claimed = false;
+
+                if (isset($uPromos[$promoID])) {
+                    $claimed = true;
+                }
+
+                ?>
+                <div class="promo-card">
+                    <div class="promo-image">
+                        <img src="../uploads/promo_images/<?= $promoImage ?>" alt="<?= $promoName ?>">
+                    </div>
+                    <div class="promo-details">
+                        <table class="promo-details-table">
+                            <thead>
+                                <tr>
+                                    <th colspan="3">
+                                        <h2><?= $promoName ?></h2>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>Code</th>
+                                    <td>:</td>
+                                    <td><?= $promoCode ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Description</th>
+                                    <td>:</td>
+                                    <td><?= $promoDesc ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Requirement</th>
+                                    <td>:</td>
+                                    <td><?= $promoReq == 0 ? 'None' : 'Minimum Purchase of RM ' . $promoReq ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Discount</th>
+                                    <td>:</td>
+                                    <td>RM <?= $promoAmount ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Limit</th>
+                                    <td>:</td>
+                                    <td><?= $promoLimit == 0 ? 'None' : $promoLimit . ' purchases' ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Start Date</th>
+                                    <td>:</td>
+                                    <td><?= $promoStart ?></td>
+                                </tr>
+                                <tr>
+                                    <th>End Date</th>
+                                    <td>:</td>
+                                    <td><?= $promoEnd ?></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3">
+                                        <?php if ($claimed): ?>
+                                            <button class="promo-btn claimed">Claimed</button>
+                                        <?php elseif ($upcoming): ?>
+                                            <button class="promo-btn upcoming">Coming Soon</button>
+                                        <?php elseif ($expired): ?>
+                                            <button class="promo-btn expired">Expired</button>
+                                        <?php elseif ($promoStatus === 'AVAILABLE'): ?>
+                                            <form action="" method="post">
+                                                <?= html_hidden('promoID') ?>
+                                                <?= html_hidden('promoLimit') ?>
+                                                <button class="promo-btn available">Get Promo Code</button>
+                                            </form>
+                                        <?php endif ?>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            <?php endforeach ?>
+        <?php else: ?>
+            <div class="promo-card">
+                No promotions available... <br>
+                Stay tuned!
+            </div>
+        <?php endif ?>
     </div>
     <?php
     $orderHistory = []; // Initialize an empty array for order history
