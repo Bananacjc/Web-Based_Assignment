@@ -576,11 +576,12 @@ if (is_post()) {
         </form>
     </div>
     <?php
-    $stmt = $_db->prepare('SELECT   FROM customers');
-    $stmt->execute([$_user->customer_id]);
+    $stmt = $_db->prepare('SELECT * FROM promotions');
+    $stmt->execute();
     $promotions = $stmt->fetchAll();
 
     if ($promotions) {
+
         usort($promotions, function ($a, $b) {
             $today = new DateTime();
 
