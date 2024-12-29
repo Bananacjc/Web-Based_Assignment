@@ -119,7 +119,7 @@ $passing_data =
 $session = $stripe->checkout->sessions->create([
     'customer' => $customer->id,
     'mode' => "payment",
-    'success_url' => $domain . "/page/payment_success.php?order_id=$orderId",
+    'success_url' => $domain . "/page/payment_success.php?$passing_data",
     'cancel_url' => $domain . "/page/cart.php",
     'payment_method_types' => ["card", "fpx", "grabpay", "alipay", "link"],
     "line_items" => $line_items,
