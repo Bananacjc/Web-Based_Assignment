@@ -638,6 +638,19 @@ function generate_unique_id($prefix, $table, $column, $pdo)
     return $generated_id;
 }
 
+function renderStars($rating) {
+    $fullStars = floor($rating);
+    $halfStar = ($rating - $fullStars >= 0.5) ? 1 : 0;
+    $emptyStars = 5 - $fullStars - $halfStar;
+
+    $stars = str_repeat('<i class="ti ti-star-filled"></i>', $fullStars);
+    if ($halfStar) $stars .= '<i class="ti ti-star-half-filled"></i>';
+    $stars .= str_repeat('<i class="ti ti-star"></i>', $emptyStars);
+
+    return $stars;
+}
+
+
 // ============================================================================
 // Global Constants and Variables
 // ============================================================================
