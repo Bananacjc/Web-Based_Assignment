@@ -213,7 +213,7 @@ $total_pages = ceil($total_review / $limit);
                 <br>
 
                 <label for="rating">Rating:</label>
-                <input type="double" id="rating" name="rating">
+                <input type="text" id="rating" name="rating">
                 <br>
 
                 <label for="comment">Comment:</label>

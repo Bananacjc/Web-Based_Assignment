@@ -245,7 +245,7 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
                 <span class="error"><?php err('new_category_image'); ?></span><br><br>
 
                 <label for="price">Price:</label>
-                <?php html_number('price'); ?>
+                <?php html_text('price'); ?>
                 <span class="error"><?php err('price'); ?></span><br><br>
 
                 <label for="description">Description:</label>
@@ -253,7 +253,7 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
                 <span class="error"><?php err('description'); ?></span><br><br>
 
                 <label for="current_stock">Current Stock:</label>
-                <?php html_number('current_stock'); ?>
+                <?php html_text('current_stock'); ?>
                 <span class="error"><?php err('current_stock'); ?></span><br><br>
 
                 <label for="product_image">Product Image:</label>
@@ -299,7 +299,7 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
                 <span class="error"><?php err('new_category_image'); ?></span><br><br>
 
                 <label for="price">Price:</label>
-                <?php html_number('price'); ?>
+                <?php html_text('price'); ?>
                 <span class="error"><?php err('price'); ?></span><br><br>
 
                 <label for="description">Description:</label>
@@ -307,11 +307,11 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
                 <span class="error"><?php err('description'); ?></span><br><br>
 
                 <label for="current_stock">Current Stock:</label>
-                <?php html_number('current_stock'); ?>
+                <?php html_text('current_stock'); ?>
                 <span class="error"><?php err('current_stock'); ?></span><br><br>
 
                 <label for="amount_sold">Amount Sold:</label>
-                <?php html_number('amount_sold'); ?>
+                <?php html_text('amount_sold'); ?>
                 <span class="error"><?php err('amount_sold'); ?></span><br><br>
 
                 <label for="product_image">Product Image:</label>
