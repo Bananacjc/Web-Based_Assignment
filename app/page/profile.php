@@ -576,69 +576,47 @@ if (is_post()) {
         </form>
     </div>
     <?php
-    $stmt = $_db->prepare('SELECT * FROM promotions');
-    $stmt->execute();
-    $promotions = $stmt->fetchAll();
-
-    if ($promotions) {
-
-        usort($promotions, function ($a, $b) {
-            $today = new DateTime();
-
-            $aDate = new DateTime($a->start_date);
-            $bDate = new DateTime($b->start_date);
-
-            $aPriority = $today->diff($aDate)->days;
-            $bPriotity = $today->diff($bDate)->days;
-
-            return $aPriority <=> $bPriotity;
-        });
-    }
+    $customer_promo_stmt = $_db->prepare('SELECT promotion_records FROM customers WHERE customer_id = ?');
+    $customer_promo_stmt->execute([$_user->customer_id]);
+    $promotionRecords = json_decode($customer_promo_stmt->fetchColumn(), true);
+    $promo_stmt = $_db->prepare('SELECT * FROM promotions WHERE promo_id = ?');
 
     ?>
+
     <div class="content" id="promotion-content" style="display: <?= $activeTab === 'order-history-btn' ? 'block' : 'none' ?>;">
-        <h2>Collected Promotion</h2>
-        <link rel="stylesheet" href="../css/promotion.css" />
-        <?php if ($promotions): ?>
-            <?php foreach ($promotions as $promo): ?>
+        <h2>Collected Promotions</h2>
+        <link rel="stylesheet" href="../css/promotion.css">
+        <?php if (!empty($promotionRecords)): ?>
+            <?php foreach ($promotionRecords as $promoID => $promoDetails): ?>
                 <?php
+                $promo_stmt->execute([$promoID]);
+                $promo = $promo_stmt->fetch(PDO::FETCH_OBJ);
 
-                $uPromos = json_decode($_user->promotion_records, true);
-
-                $promoID = $promo->promo_id;
-                $promoName = $promo->promo_name;
-                $promoCode = $promo->promo_code;
-                $promoDesc = $promo->description;
-                $promoReq = $promo->requirement;
-                $promoAmount = $promo->promo_amount;
-                $promoLimit = $promo->limit_usage;
-                $promoImage = $promo->promo_image;
-                $promoStatus = $promo->status;
-
-                $promoStart  = date('d-M-Y h:i:s A', strtotime($promo->start_date));
-                $promoEnd = date('d-M-Y h:i:s A', strtotime($promo->end_date));
-                $today = new DateTime();
-
-                $upcoming = $today < new DateTime($promoStart);
-                $expired = $today > new DateTime($promoEnd);
-
-                $claimed = false;
-
-                if (isset($uPromos[$promoID])) {
-                    $claimed = true;
+                if (!$promo) {
+                    continue;
                 }
 
+                $today = new DateTime();
+                $promoStart = new DateTime($promo->start_date);
+                $promoEnd = new DateTime($promo->end_date);
+
+                $upcoming = $today < $promoStart;
+                $expired = $today > $promoEnd;
+
+                if ($upcoming || $expired) {
+                    continue;
+                }
                 ?>
                 <div class="promo-card">
                     <div class="promo-image">
-                        <img src="../uploads/promo_images/<?= $promoImage ?>" alt="<?= $promoName ?>">
+                        <img src="../uploads/promo_images/<?= htmlspecialchars($promo->promo_image) ?>" alt="<?= htmlspecialchars($promo->promo_name) ?>">
                     </div>
                     <div class="promo-details">
                         <table class="promo-details-table">
                             <thead>
                                 <tr>
                                     <th colspan="3">
-                                        <h2><?= $promoName ?></h2>
+                                        <h2><?= htmlspecialchars($promo->promo_name) ?></h2>
                                     </th>
                                 </tr>
                             </thead>
@@ -646,55 +624,43 @@ if (is_post()) {
                                 <tr>
                                     <th>Code</th>
                                     <td>:</td>
-                                    <td><?= $promoCode ?></td>
+                                    <td><?= htmlspecialchars($promo->promo_code) ?></td>
                                 </tr>
                                 <tr>
                                     <th>Description</th>
                                     <td>:</td>
-                                    <td><?= $promoDesc ?></td>
+                                    <td><?= htmlspecialchars($promo->description) ?></td>
                                 </tr>
                                 <tr>
                                     <th>Requirement</th>
                                     <td>:</td>
-                                    <td><?= $promoReq == 0 ? 'None' : 'Minimum Purchase of RM ' . $promoReq ?></td>
+                                    <td><?= $promo->requirement == 0 ? 'None' : 'Minimum Purchase of RM ' . $promo->requirement ?></td>
                                 </tr>
                                 <tr>
                                     <th>Discount</th>
                                     <td>:</td>
-                                    <td>RM <?= $promoAmount ?></td>
-                                </tr>
-                                <tr>
-                                    <th>Limit</th>
-                                    <td>:</td>
-                                    <td><?= $promoLimit == 0 ? 'None' : $promoLimit . ' purchases' ?></td>
+                                    <td>RM <?= $promo->promo_amount ?></td>
                                 </tr>
                                 <tr>
                                     <th>Start Date</th>
                                     <td>:</td>
-                                    <td><?= $promoStart ?></td>
+                                    <td><?= $promoStart->format('d-M-Y h:i:s A') ?></td>
                                 </tr>
                                 <tr>
                                     <th>End Date</th>
                                     <td>:</td>
-                                    <td><?= $promoEnd ?></td>
+                                    <td><?= $promoEnd->format('d-M-Y h:i:s A') ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Usage Left</th>
+                                    <td>:</td>
+                                    <td><?= $promoDetails['promoLimit'] ?></td>
                                 </tr>
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <td colspan="3">
-                                        <?php if ($claimed): ?>
-                                            <button class="promo-btn claimed">Claimed</button>
-                                        <?php elseif ($upcoming): ?>
-                                            <button class="promo-btn upcoming">Coming Soon</button>
-                                        <?php elseif ($expired): ?>
-                                            <button class="promo-btn expired">Expired</button>
-                                        <?php elseif ($promoStatus === 'AVAILABLE'): ?>
-                                            <form action="" method="post">
-                                                <?= html_hidden('promoID') ?>
-                                                <?= html_hidden('promoLimit') ?>
-                                                <button class="promo-btn available">Get Promo Code</button>
-                                            </form>
-                                        <?php endif ?>
+                                        <button class="promo-btn claimed">Claimed</button>
                                     </td>
                                 </tr>
                             </tfoot>
@@ -702,13 +668,9 @@ if (is_post()) {
                     </div>
                 </div>
             <?php endforeach ?>
-        <?php else: ?>
-            <div class="promo-card">
-                No promotions available... <br>
-                Stay tuned!
-            </div>
         <?php endif ?>
     </div>
+
     <?php
     $orderHistory = []; // Initialize an empty array for order history
 
