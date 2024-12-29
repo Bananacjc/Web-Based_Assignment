@@ -49,7 +49,7 @@ if (!$cartDetails) {
     redirect('cart.php');
 }
 
-if (!$line_1) {
+if (!$line_1 || !$village && !$postal_code && !$city && !$state) {
     temp('popup-msg', ['msg' => 'Please enter an address', 'isSuccess' => false]);
     redirect('payment.php');
 } else if (!validate_address_with_google($full_address, $googleMapsApiKey)) {
@@ -106,8 +106,7 @@ $customer = \Stripe\Customer::create([
 $orderId = generate_unique_id('ORD', 'orders', 'order_id', $_db);
 $cart = json_encode($cartDetails);
 
-$passing_data =
-    "order_id=$orderId
+$passing_data ="order_id=$orderId
 &order_items=$cart
 &promo_id=$promoID
 &promo_amount=$promoAmount

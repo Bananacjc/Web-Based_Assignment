@@ -19,6 +19,27 @@ $(() => {
         }
     });
 
+    /**@type {HTMLInputElement} */
+    $('#state').on({
+        change: function () {
+            const line_1 = $('#line-1').val();
+            const village = $('#village').val();
+            const postal_code = $('#postal-code').val();
+            const city = $('#city').val();
+            const state = $('#state').val();
+
+            full_address = '';
+            if (line_1 != '') {
+                full_address += line_1 + ', ';
+            }
+            full_address += village + ', ' + postal_code + ' ' + city + ', ' + state;
+            console.log(full_address);
+
+            updateAddress(full_address);
+
+        }
+    })
+
     /**@type {HTMLSelectElement} */
     $('#selectPromo').on({
         change: function () {
@@ -42,14 +63,13 @@ $(() => {
             $('#hiddenExDate').val($('#exDate').text());
         }
 
-        const address = $('#selectAddress').val();
-        if (address) {
-            $('#hiddenLine_1').val($('#line-1').val());
-            $('#hiddenVillage').val($('#village').val());
-            $('#hiddenPostal_code').val($('#postal-code').val());
-            $('#hiddenCity').val($('#city').val());
-            $('#hiddenState').val($('#state').val());
-        }
+
+        $('#hiddenLine_1').val($('#line-1').val());
+        $('#hiddenVillage').val($('#village').val());
+        $('#hiddenPostal_code').val($('#postal-code').val());
+        $('#hiddenCity').val($('#city').val());
+        $('#hiddenState').val($('#state').val());
+
 
         const shippingFee = $('#pShippingFee').text();
         if (parseFloat(shippingFee) >= 0) {
@@ -115,11 +135,13 @@ function updateAddress(address) {
             dataType: 'json',
             success: function (data) {
                 if (data.success) {
-                    $('#line-1').val(data.line_1);
-                    $('#village').val(data.village);
-                    $('#postal-code').val(data.postal_code);
-                    $('#city').val(data.city);
-                    $('#state').val(data.state);
+                    if (data.line_1 || data.village || data.postal_code || data.city || data.state) {
+                        $('#line-1').val(data.line_1);
+                        $('#village').val(data.village);
+                        $('#postal-code').val(data.postal_code);
+                        $('#city').val(data.city);
+                        $('#state').val(data.state);
+                    }
 
                     distance = 0;
 
