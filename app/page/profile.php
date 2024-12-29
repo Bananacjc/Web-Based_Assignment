@@ -64,11 +64,6 @@ if (is_post()) {
             redirect();
         }
 
-        if (!preg_match('/^01[0-9]-?\d{7,8}$/', $contact_num)) {
-            temp('popup-msg', ['msg' => 'Invalid Malaysian contact number format. It should start with "01" followed by 7-8 digits.', 'isSuccess' => false]);
-            redirect();
-        }
-
         if ($email !== $_user->email) { // Email update requires OTP verification
             if (empty($otpEntered)) {
                 temp('popup-msg', ['msg' => 'Please enter the OTP sent to your email.', 'isSuccess' => false]);
@@ -201,21 +196,6 @@ if (is_post()) {
         $index = post('index');
         $addresses = json_decode($_user->addresses ?? '[]', true);
         $googleMapsApiKey = "AIzaSyBFPpOlKxMJuu6PxnVrwxNd1G6vERpptro";
-
-        // Function to validate address using Google Maps Geocoding API
-        function validate_address_with_google($address, $apiKey)
-        {
-            $formattedAddress = urlencode("{$address['line_1']}, {$address['village']}, {$address['city']}, {$address['state']}, {$address['postal_code']}");
-            $apiUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=$formattedAddress&key=$apiKey";
-
-            $response = file_get_contents($apiUrl);
-            if (!$response) {
-                return false; // API call failed
-            }
-
-            $data = json_decode($response, true);
-            return isset($data['status']) && $data['status'] === 'OK'; // Address is valid if status is 'OK'
-        }
 
         if ($action === 'save-address') {
             // Fetch structured address inputs
@@ -583,7 +563,7 @@ if (is_post()) {
 
     ?>
 
-    <div class="content" id="promotion-content" style="display: <?= $activeTab === 'order-history-btn' ? 'block' : 'none' ?>;">
+    <div class="content" id="promotion-content" style="display: <?= $activeTab === 'promotion-btn' ? 'block' : 'none' ?>;">
         <h2>Collected Promotions</h2>
         <link rel="stylesheet" href="../css/promotion.css">
         <?php if (!empty($promotionRecords)): ?>
