@@ -64,11 +64,6 @@ if (is_post()) {
             redirect();
         }
 
-        if (!preg_match('/^01[0-9]-?\d{7,8}$/', $contact_num)) {
-            temp('popup-msg', ['msg' => 'Invalid Malaysian contact number format. It should start with "01" followed by 7-8 digits.', 'isSuccess' => false]);
-            redirect();
-        }
-
         if ($email !== $_user->email) { // Email update requires OTP verification
             if (empty($otpEntered)) {
                 temp('popup-msg', ['msg' => 'Please enter the OTP sent to your email.', 'isSuccess' => false]);
