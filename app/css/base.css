@@ -113,6 +113,10 @@ select {
     color: var(--color-gold);
 }
 
+.text-red {
+    color: var(--color-red);
+}
+
 /* width */
 .w-auto {
     width: auto !important;

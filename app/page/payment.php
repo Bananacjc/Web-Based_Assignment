@@ -42,12 +42,14 @@ if (!$cart) {
             $addresses = json_decode($_user->addresses, true);
 
             foreach ($addresses as $index => $address) {
-                $addressOption[$index] =
-                    $address['line_1'] . ', ' .
-                    $address['village'] . ', ' .
-                    $address['postal_code'] . ' ' .
-                    $address['city'] . ', ' .
-                    $address['state'];
+                $addressStr = $address['line_1'] . ', ' .
+                $address['village'] . ', ' .
+                $address['postal_code'] . ' ' .
+                $address['city'] . ', ' .
+                $address['state'];
+
+                $addressOption[$addressStr] = $addressStr;
+                    
             }
         }
         ?>
@@ -77,12 +79,12 @@ if (!$cart) {
         <div class="billing-detail-container">
             <label for="uName" class="normal-label">Name</label>
             <?php $GLOBALS['uName'] = $uName ?>
-            <?= html_text('uName', "class='sm-input-box w-50' spellcheck='false'") ?>
+            <?= html_text('uName', "class='sm-input-box w-50' spellcheck='false' readonly") ?>
         </div>
         <div class="billing-detail-container">
             <label for="uPhone" class="normal-label">Phone</label>
             <?php $GLOBALS['uPhone'] = $uPhone ?>
-            <?= html_text('uPhone', "class='sm-input-box w-50' spellcheck='false'") ?>
+            <?= html_text('uPhone', "class='sm-input-box w-50' spellcheck='false' readonly") ?>
         </div>
         <form class="billing-detail-container">
             <label for="uAddress" class="normal-label">Address</label>
@@ -90,31 +92,31 @@ if (!$cart) {
                 html_select('selectAddress', $addressOption, '- Please choose an address -');
             } ?>
             <br>
-            <label for="uAddress" class="normal-label">Enter Manually:</label>
+            <label for="uAddress" class="normal-label">or<br><br>Enter Manually:&nbsp;<span class="text-red">*</span></label>
             <div>
                 <div class="address-subcontainer">
-                    <label for="line-1" class="label">Address Line 1</label><br>
+                    <label for="line-1" class='address-label'>Address Line 1</label><br>
                     <input id="line-1" type="text" name="line_1" class="sm-input-box w-100" placeholder=" " required />
                 </div>
                 <div class="address-subcontainer">
-                    <label for="village" class="label">Village</label><br>
+                    <label for="village" class='address-label'>Village</label><br>
                     <input id="village" type="text" name="village" class="sm-input-box w-100" placeholder=" " />
 
                 </div>
                 <div class="d-flex flex-direction-row">
                     <div class="address-subcontainer">
-                        <label for="postal-code" class="label">Postal Code</label><br>
+                        <label for="postal-code" class='address-label'>Postal Code</label><br>
                         <input id="postal-code" type="text" name="postal_code" class="sm-input-box w-100" placeholder=" " required />
 
                     </div>
                     <div class="address-subcontainer">
-                        <label for="city" class="label">City</label><br>
+                        <label for="city" class='address-label'>City</label><br>
                         <input id="city" type="text" name="city" class="sm-input-box w-100" placeholder=" " required />
 
                     </div>
                 </div>
                 <div class="address-subcontainer" style="position: relative;">
-                    <label for="state" class="label">State</label><br>
+                    <label for="state" class='address-label'>State</label><br>
                     <input id="state" type="text" name="state" class="sm-input-box w-50" placeholder=" " required />
 
                 </div>
@@ -213,7 +215,7 @@ if (!$cart) {
                         <?php endif ?>
                     </td>
                     <td class="text-green-darker">
-                        RM <span id="uPromo" class="number-figure">0.00</span>
+                        -RM <span id="uPromo" class="number-figure">0.00</span>
                     </td>
                 </tr>
                 <tr>
@@ -227,15 +229,25 @@ if (!$cart) {
                 </tr>
                 <tr>
                     <td colspan="4" class="text-center">
-                        <form action="payment_checkout.php" target="_blank" method="post">
+                        <form id="checkout-form" action="payment_checkout.php" target="_blank" method="post">
                             <?= html_hidden('uName'); ?>
                             <?= html_hidden('uEmail'); ?>
                             <?= html_hidden('uPhone'); ?>
                             <?php $cart = json_encode($cart); ?>
                             <?= html_hidden('cart') ?>
-                            <?= html_hidden('accNum', "id='hiddenAccNum"); ?>
-                            <?= html_hidden('cvvNum', "id='hiddenCvvNum"); ?>
-                            <?= html_hidden('exDate', "id=hiddenExDate"); ?>
+                            <!-- Hidden bank field -->
+                            <?= html_hidden('hiddenAccNum'); ?>
+                            <?= html_hidden('hideenCvvNum'); ?>
+                            <?= html_hidden('hidenExDate'); ?>
+                            <!-- Hidden address field -->
+                            <?= html_hidden('hiddenLine_1'); ?>
+                            <?= html_hidden('hiddenVillage'); ?>
+                            <?= html_hidden('hiddenPostal_code'); ?>
+                            <?= html_hidden('hiddenCity'); ?>
+                            <?= html_hidden('hiddenState'); ?>
+                            <!-- Additional fee -->
+                            <?= html_hidden('hiddenShippingFee'); ?>
+                            <?= html_hidden('hiddenPromoAmount'); ?>
                             <button id="pay-button">Pay</button>
                         </form>
                     </td>

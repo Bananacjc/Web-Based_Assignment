@@ -28,7 +28,7 @@ $(() => {
     })
 
     /**@type {HTMLButtonElement}*/
-    $('#pay-button').on('submit', e => {
+    $('#pay-button').on('click', e => {
         e.preventDefault;
 
         accNum = null;
@@ -37,18 +37,30 @@ $(() => {
 
         const paymentMethod = $('#selectPayment').val();
         if (paymentMethod) {
-            $('#hiddenAccNum').val($('#accNum').val());
-            $('#hiddenCvvNum').val($('#cvvNum').val());
-            $('#hiddenExDate').val($('#exDate').val());
+            $('#hiddenAccNum').val($('#accNum').text());
+            $('#hideenCvvNum').val($('#cvvNum').text());
+            $('#hiddenExDate').val($('#exDate').text());
         }
 
-        const address = $('#uAddress').val();
+        const address = $('#selectAddress').val();
         if (address) {
-
+            $('#hiddenLine_1').val($('#line-1').val());
+            $('#hiddenVillage').val($('#village').val());
+            $('#hiddenPostal_code').val( $('#postal-code').val());
+            $('#hiddenCity').val($('#city').val());
+            $('#hiddenState').val($('#state').val());
         }
 
+        const shippingFee = $('#pShippingFee').text();
+        if (parseFloat(shippingFee) >= 0) {
+            $('#hiddenShippingFee').val(parseFloat(shippingFee));
+        }
 
-        $('#hiddenAddress').val(address);
+        const promoAmount = $('#uPromo').text();
+        if (parseFloat(promoAmount) >= 0) {
+            $('#hiddenPromoAmount').val(parseFloat(promoAmount));
+        }
+        console.log($('#hiddenPromoAmount').val());
 
         $('#checkout-form').trigger('submit');
     })
@@ -90,12 +102,17 @@ function updateAddress(address) {
             dataType: 'json',
             success: function (data) {
                 if (data.success) {
-                    $('#address-input').val(data.address);
+                    $('#line-1').val(data.line_1);
+                    $('#village').val(data.village);
+                    $('#postal-code').val(data.postal_code);
+                    $('#city').val(data.city);
+                    $('#state').val(data.state);
+
                     distance = 0;
-                    
+
                     (async () => {
                         try {
-                            distance = await calculateDistance(data.address);
+                            distance = await calculateDistance(data.full_address);
                             updateShippingFee(distance);
                             updateTotal();
                         } catch (error) {
@@ -103,14 +120,18 @@ function updateAddress(address) {
                         }
                     })();
 
-                   
+
                 } else {
                     showAlertPopup(data.message, false);
                 }
             }
         })
     } else {
-        $('#address-input').val('');
+        $('#line-1').val('');
+        $('#village').val('');
+        $('#postal-code').val('');
+        $('#city').val('');
+        $('#state').val('');
         updateShippingFee(0);
         updateTotal(0);
     }

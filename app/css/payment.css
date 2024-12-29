@@ -26,6 +26,7 @@
     box-sizing: border-box;
     pointer-events: pointer;
     font-size: 16px;
+    margin-top: 10px;
 }
 
 #order-summary-container,
@@ -48,6 +49,7 @@
     margin: 10px 10px 0 0;
 }
 
+
 #summary-table,
 #summary-table th, 
 #summary-table td{
@@ -60,23 +62,7 @@
 }
 
 #promo-amount {
-    color: #13c86f !important;
-}
-
-.subtotal {
-    border-top: solid #ccc 1px;
-    padding-top: 20px;
-}
-
-.order-header {
-    border-bottom: solid #ccc 1px;
-    padding-bottom: 20px;
-}
-
-.total-price {
-    border-top: solid #ccc 1px;
-    border-bottom: solid #ccc 1px;
-    padding: 20px 0;    
+    color: var(--color-green) !important;
 }
 
 #pay-button,
