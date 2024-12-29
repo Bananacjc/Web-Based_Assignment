@@ -11,9 +11,8 @@
 
 <?php
 include 'adminHeader.php';
-?>
 
-<?php
+
 $fields = [
     '',
     'order_id'    => 'Order ID',
@@ -65,6 +64,9 @@ $query = "
 $stm = $_db->prepare($query);
 $stm->execute($params);
 $orders = $stm->fetchAll();
+
+$userRole = ['MANAGER', 'DELIVERY_GUY'];
+
 ?>
 
 <div class="main">
@@ -115,6 +117,18 @@ $orders = $stm->fetchAll();
                     <td><?= $o->order_time ?></td>
                     <td><?= $o->status ?></td>
                     <td>
+                        <?php if ($_user->role == 'DELIVERY_GUY'): ?>
+                            <form action="updateStatus.php" method="post" style="display: inline;">
+                                <input type="hidden" name="order_id" value="<?= $o->order_id ?>">
+                                <select name="status1" onchange="this.form.submit()">
+                                <option value="PAID" <?= $o->status === 'PAID' ? 'selected' : '' ?>>Paid</option>
+                                    <option value="SHIPPING" <?= $o->status === 'SHIPPING' ? 'selected' : '' ?>>Shipping</option>
+                                    <option value="DELIVERED" <?= $o->status === 'DELIVERED' ? 'selected' : '' ?>>Delivered</option>
+                                </select>
+                            </form>
+                        <?php endif; ?>
+                    </td>
+                    <td>
 
                         <?php if ($_user->role == 'STAFF'): ?>
                             <button class="button view-action-button" onclick="showViewOrderForm(
@@ -131,9 +145,9 @@ $orders = $stm->fetchAll();
                             </button>
                         <?php endif; ?>
 
-
                         <?php if ($_user->role == 'MANAGER'): ?>
-                        <button class="button action-button" onclick="showUpdateOrderForm(
+
+                            <button class="button action-button" onclick="showUpdateOrderForm(
                             '<?= $o->order_id ?>', 
                             '<?= $o->customer_id ?>', 
     '<?= plainTextJson($o->order_items) ?>', 
@@ -144,20 +158,20 @@ $orders = $stm->fetchAll();
     '<?= $o->order_time ?>', 
     '<?= $o->status ?>', 
                                 )">
-                            Update
-                        </button>
+                                Update
+                            </button>
 
-                        <form action="deleteOrder.php" method="post" style="display: inline;">
-                            <input type="hidden" name="id" value="<?= $o->order_id ?>">
-                            <button type="submit" class="button delete-action-button" onclick="return confirmDelete();">Delete</button>
-                        </form>
-                    <?php endif; ?>
+                            <form action="deleteOrder.php" method="post" style="display: inline;">
+                                <input type="hidden" name="id" value="<?= $o->order_id ?>">
+                                <button type="submit" class="button delete-action-button" onclick="return confirmDelete();">Delete</button>
+                            </form>
+                        <?php endif; ?>
 
 
                     </td>
 
                 </tr>
-            <?php endforeach ?>
+            <?php endforeach; ?>
 
         </tbody>
     </table>

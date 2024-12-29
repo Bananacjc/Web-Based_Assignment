@@ -57,7 +57,7 @@ $actionLogQuery = "
 $actionLogStm = $_db->prepare($actionLogQuery);
 $actionLogStm->execute([$searchQuery]);
 $actionLogs = $actionLogStm->fetchAll(PDO::FETCH_ASSOC);
-
+$userRole=['MANAGER','STAFF'];
 ?>
 
 <body>
@@ -66,7 +66,7 @@ $actionLogs = $actionLogStm->fetchAll(PDO::FETCH_ASSOC);
 
         <div class="sub-main">
             <div class="top-selling-products">
-
+            <?php if (in_array($_user?->role, $userRole)): ?>
                 <h2>Top 5 Selling Products</h2>
                 <table class="data-table">
                     <thead>
@@ -96,6 +96,7 @@ $actionLogs = $actionLogStm->fetchAll(PDO::FETCH_ASSOC);
                     </tbody>
                 </table>
             </div>
+<?php endif; ?>
         </div>
 
         <?php if ($_user?->role == 'MANAGER'): ?>
