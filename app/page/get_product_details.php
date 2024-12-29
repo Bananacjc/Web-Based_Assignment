@@ -4,7 +4,7 @@ header('Content-Type: application/json');
 try {
     // Database connection
     $_db = new PDO('mysql:host=127.0.0.1;dbname=db_bananasis;charset=utf8mb4', 'root', '');
-    
+
     $productId = $_GET['product_id'] ?? null;
 
     if (!$productId) {
@@ -14,23 +14,25 @@ try {
 
     // Fetch product details
     $stmt = $_db->prepare("
-        SELECT 
-            p.product_id, 
-            p.product_name, 
-            p.product_image, 
-            p.price, 
-            p.description, 
-            COALESCE(AVG(r.rating), 0) AS avg_rating, 
-            COUNT(r.rating) AS review_count,
-            (SELECT COUNT(*) 
-             FROM orders o 
-             WHERE JSON_CONTAINS(o.order_items, JSON_OBJECT('product_id', p.product_id))
-            ) AS amount_sold
-        FROM products p
-        LEFT JOIN reviews r ON p.product_id = r.product_id
-        WHERE p.product_id = :productId
-        GROUP BY p.product_id
-    ");
+    SELECT 
+        p.product_id, 
+        p.product_name, 
+        p.product_image, 
+        p.price, 
+        p.description, 
+        p.amount_sold, 
+        COALESCE(AVG(r.rating), 0) AS avg_rating, 
+        COUNT(r.rating) AS review_count,
+        (
+            SELECT SUM(JSON_UNQUOTE(JSON_EXTRACT(order_items, '$.\"{$productId}\"')))
+            FROM orders o
+            WHERE JSON_CONTAINS_PATH(o.order_items, 'one', '$.\"{$productId}\"')
+        ) AS total_sold
+    FROM products p
+    LEFT JOIN reviews r ON p.product_id = r.product_id
+    WHERE p.product_id = :productId
+    GROUP BY p.product_id
+");
     $stmt->execute(['productId' => $productId]);
 
     $product = $stmt->fetch(PDO::FETCH_ASSOC);

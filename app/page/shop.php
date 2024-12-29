@@ -176,7 +176,7 @@ try {
                 document.getElementById('modal-product-name').textContent = data.product.product_name;
                 document.getElementById('modal-average-rating-stars').innerHTML = renderStars(data.product.avg_rating);
                 document.getElementById('modal-rating-amount').textContent = `${data.product.review_count} Ratings`;
-                document.getElementById('modal-amount-sold').textContent = `${data.product.amount_sold} Sold`;
+                document.getElementById('modal-amount-sold').textContent = `${data.product.total_sold || 0} Sold`;
                 document.getElementById('modal-price').textContent = `Price: RM ${parseFloat(data.product.price).toFixed(2)}`;
                 document.getElementById('modal-description').textContent = data.product.description;
 
