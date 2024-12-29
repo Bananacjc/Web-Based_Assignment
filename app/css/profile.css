@@ -40,6 +40,10 @@
     border-bottom-left-radius: 8px;
 }
 
+.active{
+    background-color: var(--color-grey-light);
+}
+
 #logout-btn {
     padding: 0;
 }
