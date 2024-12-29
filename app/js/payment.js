@@ -46,7 +46,7 @@ $(() => {
         if (address) {
             $('#hiddenLine_1').val($('#line-1').val());
             $('#hiddenVillage').val($('#village').val());
-            $('#hiddenPostal_code').val( $('#postal-code').val());
+            $('#hiddenPostal_code').val($('#postal-code').val());
             $('#hiddenCity').val($('#city').val());
             $('#hiddenState').val($('#state').val());
         }
@@ -56,11 +56,26 @@ $(() => {
             $('#hiddenShippingFee').val(parseFloat(shippingFee));
         }
 
-        const promoAmount = $('#uPromo').text();
-        if (parseFloat(promoAmount) >= 0) {
-            $('#hiddenPromoAmount').val(parseFloat(promoAmount));
+        const promoID = $('#selectPromo').val();
+        if (promoID) {
+            $('#hiddenPromoID').val(promoID);
+            const promoAmount = $('#uPromo').text();
+            if (parseFloat(promoAmount) >= 0) {
+                $('#hiddenPromoAmount').val(parseFloat(promoAmount));
+            }
         }
-        console.log($('#hiddenPromoAmount').val());
+
+        const subtotal = $('#pTotal').text();
+        if (parseFloat(subtotal) >= 0) {
+            $('#hiddenSubtotal').val(parseFloat(subtotal));
+        }
+        console.log(subtotal);
+
+        const total = $('#total-payment').text();
+        if (parseFloat(total) >= 0) {
+            $('#hiddenTotal').val(parseFloat(total));
+        }
+        console.log(total);
 
         $('#checkout-form').trigger('submit');
     })

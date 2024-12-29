@@ -247,7 +247,10 @@ if (!$cart) {
                             <?= html_hidden('hiddenState'); ?>
                             <!-- Additional fee -->
                             <?= html_hidden('hiddenShippingFee'); ?>
+                            <?= html_hidden('hiddenPromoID'); ?>
                             <?= html_hidden('hiddenPromoAmount'); ?>
+                            <?= html_hidden('hiddenSubtotal'); ?>
+                            <?= html_hidden('hiddenTotal'); ?>
                             <button id="pay-button">Pay</button>
                         </form>
                     </td>

@@ -22,7 +22,10 @@ $cvvNum = post('hiddenCvvNum');
 $exDate = post('hiddenExDate');
 //// Additional Fee || Discount
 $shippingFee = post('hiddenShippingFee');
+$promoID = post('hiddenPromoID');
 $promoAmount = post('hiddenPromoAmount');
+$subtotal = post('hiddenSubtotal');
+$total = post('hiddenTotal');
 
 // Editable field, validation required
 $cartDetails = json_decode(post('cart'));
@@ -55,55 +58,32 @@ if (!$line_1) {
 }
 
 if (!$shippingFee) {
+    temp('popup-msg', ['msg' => 'Please enter an address', 'isSuccess' => false]);
     redirect('payment.php');
 }
 
-$line_items = [];
-
-if ($shippingFee) {
-    $line_items[] = [
-        'quantity' => 1,
-        'price_data' => [
-            'currency' => $_currency,
-            'unit_amount' => $shippingFee * 100,
-            'product_data' => [
-                'name' => 'Shipping Fee'
-            ]
-        ]
-    ];
+if (!$subtotal || !$total) {
+    temp('popup-msg', ['msg' => 'Error during confirm payment', 'isSuccess' => false]);
+    redirect('payment.php');
 }
 
-if ($promoAmount) {
-    $line_items[] = [
-        'quantity' => 1,
-        'price_data' => [
-            'currency' => $_currency,
-            'unit_amount' => $promoAmount * -100,
-            'product_data' => [
-                'name' => 'Promotion Discount'
-            ]
-        ]
-    ];
+$paymentMethod = null;
+if ($accNum && $cvvNum && $exDate) {
+    $paymentMethod = 'bank';
+} else {
+    $paymentMethod = 'other';
 }
 
-$stmt = $_db->prepare('SELECT product_name, price FROM products WHERE product_id = ?');
-foreach ($cartDetails as $productID => $quantity) {
-
-    $stmt->execute([$productID]);
-    $product = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    $line_items[] = [
-        'quantity' => $quantity,
-        'price_data' => [
-            'currency' => $_currency,
-            'unit_amount' => $product['price'] * 100,
-            'product_data' => [
-                'name' => $product['product_name']
-            ]
+$line_items[] = [
+    'quantity' => 1,
+    'price_data' => [
+        'currency' => $_currency,
+        'unit_amount' => $total * 100,
+        'product_data' => [
+            'name' => 'Total Payment'
         ]
-    ];
-}
-
+    ]
+];
 
 
 \Stripe\Stripe::setApiKey($stripe_key);
@@ -120,18 +100,26 @@ $customer = \Stripe\Customer::create([
         'state'       => $state,
         'postal_code' => $postal_code,
         'country'     => 'MY',
-    ],
-    'metadata' => [
-        'contact_num' => $uPhone
     ]
 ]);
 
+$orderId = generate_unique_id('ORD', 'orders', 'order_id', $_db);
+$cart = json_encode($cartDetails);
 
+$passing_data =
+    "order_id=$orderId
+&order_items=$cart
+&promo_id=$promoID
+&promo_amount=$promoAmount
+&subtotal=$subtotal
+&shipping_fee=$shippingFee
+&total=$total
+&payment_method=$paymentMethod";
 
 $session = $stripe->checkout->sessions->create([
     'customer' => $customer->id,
     'mode' => "payment",
-    'success_url' => $domain . "/page/payment_success.php",
+    'success_url' => $domain . "/page/payment_success.php?order_id=$orderId",
     'cancel_url' => $domain . "/page/cart.php",
     'payment_method_types' => ["card", "fpx", "grabpay", "alipay", "link"],
     "line_items" => $line_items,

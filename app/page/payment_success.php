@@ -3,6 +3,67 @@ $_title = 'Payment Successful';
 require '../_base.php';
 
 require_login();
+
+$order_id = get('order_id');
+
+if (!$order_id || !$_user->email) {
+    die("Invalid request");
+}
+
+$order_id = htmlspecialchars($order_id);
+$customer_id = $_user->customer_id;
+$order_items = json_encode(get('order_items'));
+$promo_id = get('promo_id');
+$promo_amount = get('promo_amount');
+$subtotal = get('subtotal');
+$shipping_fee = get('shipping_fee');
+$total = get('total');
+$paymentMethod = get('payment_method');
+
+
+$stmt = $_db->prepare('INSERT INTO orders 
+(order_id, customer_id, order_items, 
+promo_amount, subtotal, shipping_fee, 
+total, payment_method, order_time, `status`) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+
+if ($stmt->execute([$order_id, $customer_id, $order_items, 
+    $promo_amount, $subtotal, $shipping_fee,
+    $total, $paymentMethod, new Datetime(), 'PAID'])) {
+
+        // Update product
+        $update_stmt = $_db->prepare('UPDATE products VALUE amount_sold = ?, current_stock = ? WHERE product_id = ?');
+        $get_stock_stmt = $_db->prepare('SELECT current_stock FROM products WHERE product_id = ?');
+
+        foreach(json_decode($order_items, true) as $pID => $quantity) {
+
+            $get_stock_stmt->execute([$pID]);
+            $current_stock = $get_stock_stmt->fetch();
+
+            $update_stmt->execute([$quantity, $current_stock - $quantity, $pID]);
+        }
+
+        // Reduce promotion uses
+        $promo_limit_stmt = $_db->prepare('UPDATE customers VALUE promotion_records = ? WHERE customer_id = ?');
+        $get_promo_stmt = $_db->prepare('SELECT promotion_records FROM customers WHERE customer_id = ?');
+
+        $get_promo_stmt->execute([$customer_id]);
+        $uPromotions = $get_promo_stmt->fetchAll();
+
+        foreach($uPromotions as $promoID => $promoLimit) {
+            if ($promoID == $promo_id) {
+                $newPromoRecord = [
+                    $promoID => $promoLimit - 1
+                ];
+                $promo_limit_stmt->execute([json_encode($newPromoRecord), $customer_id]);
+            }
+        }
+
+
+    }
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -55,10 +116,7 @@ require_login();
     </script>
 </body>
 <?php
-// Assuming $_user['email'] contains the current user's email
-if (!isset($_GET['order_id']) || !isset($_user->email)) {
-    die("Invalid request");
-}
+
 
 $order_id = htmlspecialchars($_GET['order_id']);
 $user_email = $_user->email;
