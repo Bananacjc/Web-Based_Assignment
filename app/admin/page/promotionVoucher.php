@@ -125,7 +125,6 @@ $promotions = $stm->fetchAll();
                     <td><?= $p->status ?></td>
 
 
-                    <?php if ($_user?->role == 'STAFF'): ?>
 
                     <td>
                     <button class="button view-action-button" onclick="showViewPromotionForm(
@@ -143,7 +142,6 @@ $promotions = $stm->fetchAll();
 )">
                             View
                         </button>
-                        <?php endif; ?>
 
                     <?php if ($_user?->role == 'MANAGER'): ?>
 

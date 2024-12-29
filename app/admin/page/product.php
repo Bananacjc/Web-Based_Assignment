@@ -79,9 +79,9 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
 
     <?php if ($_user?->role == 'MANAGER'): ?>
 
-    <form method="post" id="f">
-        <button class="delete-btn" formaction="delete.php" onclick="return confirmDelete()">Batch Delete</button>
-    </form>
+        <form method="post" id="f">
+            <button class="delete-btn" formaction="delete.php" onclick="return confirmDelete()">Batch Delete</button>
+        </form>
     <?php endif; ?>
 
     <p><?= count($arr) ?> product(s) on this page | Total: <?= $total_products ?> product(s)</p>
@@ -122,29 +122,6 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
                     <td>
 
 
-                        <?php if ($_user?->role == 'MANAGER'): ?>
-
-                            <button class="button action-button" onclick="showUpdateProductForm(
-    '<?= $s->product_image ?>', 
-    '<?= $s->product_id ?>', 
-    '<?= $s->product_name ?>', 
-    '<?= $s->category_name ?>', 
-    '<?= $s->price ?>', 
-    '<?= $s->description ?>', 
-    '<?= $s->current_stock ?>', 
-    '<?= $s->amount_sold ?>', 
-    '<?= $s->status ?>'
-)">
-                                Update
-                            </button>
-
-
-                            <form action="delete.php" method="post">
-                                <input type="hidden" name="id" value="<?= $s->product_id ?>">
-                                <button type="submit" class="button delete-action-button" onclick="return confirmDelete();">Delete</button>
-                            </form>
-                        <?php endif; ?>
-
                         <button class="button view-action-button" onclick="showViewForm(
     '<?= $s->product_id ?>', 
     '<?= $s->product_name ?>',
@@ -157,6 +134,31 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
     '<?= $s->amount_sold ?>', 
     '<?= $s->status ?>'
     )">View
+
+
+                            <?php if ($_user?->role == 'MANAGER'): ?>
+
+                                <button class="button action-button" onclick="showUpdateProductForm(
+    '<?= $s->product_image ?>', 
+    '<?= $s->product_id ?>', 
+    '<?= $s->product_name ?>', 
+    '<?= $s->category_name ?>', 
+    '<?= $s->price ?>', 
+    '<?= $s->description ?>', 
+    '<?= $s->current_stock ?>', 
+    '<?= $s->amount_sold ?>', 
+    '<?= $s->status ?>'
+)">
+                                    Update
+                                </button>
+
+
+                                <form action="delete.php" method="post">
+                                    <input type="hidden" name="id" value="<?= $s->product_id ?>">
+                                    <button type="submit" class="button delete-action-button" onclick="return confirmDelete();">Delete</button>
+                                </form>
+                            <?php endif; ?>
+
                         </button>
                     </td>
 
@@ -342,11 +344,9 @@ $_categoryName = $_db->query('SELECT category_name, category_name FROM categorie
 
 
 <script>
-
-    
-function hideViewForm() {
-    document.getElementById('viewModal').style.display = 'none';
-}
+    function hideViewForm() {
+        document.getElementById('viewModal').style.display = 'none';
+    }
 
     function showUpdateProductForm(productImage, productId, productName, category, price, productDescription, currentStock, amountSold, status) {
         var modal = document.getElementById('updateModal');
@@ -397,7 +397,7 @@ function hideViewForm() {
         return confirmation;
     }
 
-    function showViewForm(productId, productName, productImage,category, price, productDescription, currentStock, amountSold, status) {
+    function showViewForm(productId, productName, productImage, category, price, productDescription, currentStock, amountSold, status) {
         var modal = document.getElementById('viewModal');
         modal.style.display = 'block';
         document.getElementById('viewProductID').innerText = productId;
