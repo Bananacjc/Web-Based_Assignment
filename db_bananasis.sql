@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 29, 2024 at 06:50 AM
+-- Generation Time: Dec 29, 2024 at 07:03 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -58,7 +58,9 @@ INSERT INTO `actionlog` (`log_id`, `employee_id`, `action_type`, `action_details
 (42, 'EMP-20241226-ko12na', 'Add Product', 'Added new product: Bagel', '2024-12-29 13:37:44'),
 (43, 'EMP-20241226-ko12na', 'Add Product', 'Added new product: Brioche', '2024-12-29 13:45:43'),
 (44, 'EMP-20241226-ko12na', 'Add Product', 'Added new product: Baguette Sliced', '2024-12-29 13:46:20'),
-(45, 'EMP-20241226-ko12na', 'Add Product', 'Added new product: French Boule', '2024-12-29 13:46:45');
+(45, 'EMP-20241226-ko12na', 'Add Product', 'Added new product: French Boule', '2024-12-29 13:46:45'),
+(46, 'E0113', 'Delete Category', 'Deleted Category: Premium Bread', '2024-12-30 01:15:41'),
+(47, 'E0113', 'Delete Category', 'Deleted Category: Premium Meat', '2024-12-30 01:15:44');
 
 -- --------------------------------------------------------
 
@@ -81,8 +83,6 @@ INSERT INTO `categories` (`category_name`, `category_image`) VALUES
 ('Fruits', '6770df65bb381.png'),
 ('Juices', '6770df8165182.png'),
 ('Meat', '6770df8cbe58a.png'),
-('Premium Bread', '6770dfcba1c2f.png'),
-('Premium Meat', '6770dfab72af7.png'),
 ('Vegetables', '6770df71b6049.png');
 
 -- --------------------------------------------------------
@@ -191,7 +191,47 @@ INSERT INTO `products` (`product_id`, `product_name`, `category_name`, `price`, 
 ('PRO-20241229-3plhzN', 'Bagel', 'Breads', 2.5, 'Bagels are a popular bread product known for their dense, chewy texture and distinctive ring shape. In Malaysia, the price of bagels varies depending on the bakery, flavor, and whether they are purchased individually or in sets.', 52, 1, '6770e02883bb2.png', 'AVAILABLE'),
 ('PRO-20241229-eT5XQc', 'Baguette Sliced', 'Breads', 2.5, 'Slice baguette is good', 40, 1, '6770e22c47963.png', 'AVAILABLE'),
 ('PRO-20241229-w5jZ3K', 'French Boule', 'Breads', 2.5, 'FRENCHHHH Boule', 37, 4, '6770e244f38f9.png', 'AVAILABLE'),
-('PRO-20241229-wKuUPr', 'Brioche', 'Breads', 2.5, 'THis is brioche', 48, 5, '6770e207345bb.png', 'AVAILABLE');
+('PRO-20241229-wKuUPr', 'Brioche', 'Breads', 2.5, 'THis is brioche', 48, 5, '6770e207345bb.png', 'AVAILABLE'),
+('PRO-20241230-0Cx2rK', 'Mango', 'Fruits', 7, 'A juicy, tropical fruit with a sweet, tangy flavor and smooth, golden-orange flesh.', 15, 0, '6771878447fa4.png', 'AVAILABLE'),
+('PRO-20241230-1M3EWa', 'Watermelon', 'Fruits', 6, 'A large, juicy fruit with a high water content, making it perfect for hydration. Its sweet, refreshing flavor is great for snacking on hot days.', 45, 0, '6771884c28548.png', 'AVAILABLE'),
+('PRO-20241230-3eDi2L', 'Ciabatta', 'Breads', 7, 'An Italian rustic bread with a crispy crust and soft, airy interior.', 15, 0, '67718540d655a.png', 'AVAILABLE'),
+('PRO-20241230-4AkiBw', 'Pumpkin', 'Vegetables', 10, 'A versatile, round squash with a smooth orange skin and sweet, slightly earthy flavor.', 20, 0, '67718aaf42145.png', 'AVAILABLE'),
+('PRO-20241230-4xed6h', 'Okra', 'Vegetables', 10, 'A green, finger-like vegetable with a slightly ribbed texture, often used in Southern and Mediterranean cuisine.', 50, 0, '67718af45b6a6.png', 'AVAILABLE'),
+('PRO-20241230-54nctH', 'Mutton Chop', 'Meat', 80, 'A flavorful cut of meat from the rib or shoulder of an older sheep (mutton), known for its rich, robust taste.', 15, 0, '67718a5cd93c4.png', 'AVAILABLE'),
+('PRO-20241230-5Zlmx3', 'Pork Chop', 'Meat', 80, 'A tender, flavorful cut of pork, typically taken from the loin or rib section.', 15, 0, '67718a1b7e1ed.png', 'AVAILABLE'),
+('PRO-20241230-6egF5z', 'Rye Bread', 'Breads', 15, 'A dense, hearty bread made with rye flour, offering a distinct earthy flavor and slightly darker color', 50, 0, '677185ff78c2c.png', 'AVAILABLE'),
+('PRO-20241230-6i3qV4', 'Kiwifuit Juice', 'Juices', 15, 'A tangy and refreshing beverage made by extracting the juice from ripe kiwifruits.', 15, 0, '67718cadbb89b.png', 'AVAILABLE'),
+('PRO-20241230-7Z14lS', 'Sparkling Water', 'Cold Drinks', 10, 'A type of water that has been carbonated, giving it a fizzy, effervescent quality.', 20, 0, '67718e4906e04.png', 'AVAILABLE'),
+('PRO-20241230-8tQx1q', 'Grapes', 'Fruits', 40, 'Small, sweet, and juicy fruits that come in clusters.', 50, 0, '6771882b37006.png', 'AVAILABLE'),
+('PRO-20241230-bas2Np', 'Baguette', 'Breads', 10, 'A classic French bread with a long, thin shape, featuring a golden, crispy crust and a soft, airy interior.', 30, 0, '67718632c0787.png', 'AVAILABLE'),
+('PRO-20241230-bNGw5R', 'Coca-cola', 'Cold Drinks', 3, 'A popular carbonated soft drink known for its sweet, refreshing taste with a unique blend of flavors, including hints of vanilla, caramel, and citrus.', 100, 0, '67718dc49b91b.png', 'AVAILABLE'),
+('PRO-20241230-boZzl5', 'Blueberry', 'Fruits', 15, 'A small, round berry with a sweet-tart flavor, packed with antioxidants. Perfect for smoothies, desserts, or eating fresh.', 25, 0, '677188d1e0d01.png', 'AVAILABLE'),
+('PRO-20241230-cnK5zW', 'Apple', 'Fruits', 4, 'A crisp, sweet, or tart fruit with a crunchy texture, available in various colors like red, green, and yellow. Perfect for snacking or adding to salads.', 100, 0, '677188fd91f47.png', 'AVAILABLE'),
+('PRO-20241230-DJVRrj', 'Beet Juice', 'Fruits', 15, 'A vibrant, earthy beverage made by juicing fresh beets. Known for its deep red color, beet juice has a slightly sweet and earthy flavor.', 12, 0, '67718d5402bce.png', 'AVAILABLE'),
+('PRO-20241230-dlU4pJ', 'Mango Juice', 'Juices', 12, 'A sweet, tropical beverage made from ripe mangoes, known for its rich and fruity flavor.', 30, 0, '67718c7b7f843.png', 'AVAILABLE'),
+('PRO-20241230-DQFeS4', 'Strawberry', 'Fruits', 30, 'A juicy, red berry with a sweet, slightly tart flavor. Often used in desserts, salads, or eaten fresh.', 50, 0, '677187f96cf58.png', 'AVAILABLE'),
+('PRO-20241230-Ef4g2p', 'Sourdough Bread', 'Breads', 20, 'A tangy, flavorful bread made with a naturally fermented starter, giving it a distinctive taste and chewy texture.', 20, 0, '677185cb57606.png', 'AVAILABLE'),
+('PRO-20241230-IvqDdb', 'Pomegranate', 'Fruits', 20, 'A fruit with a tough outer rind and numerous jewel-like seeds. Known for its sweet-tart flavor, it’s perfect for snacking or adding to salads.', 50, 0, '677188a9a0868.png', 'AVAILABLE'),
+('PRO-20241230-J9arQe', 'Radish', 'Fruits', 12, 'A small, round root vegetable with a crisp texture and a peppery, slightly spicy flavor', 45, 0, '67718ba09191b.png', 'AVAILABLE'),
+('PRO-20241230-JuMWkI', 'Sports Drink', 'Cold Drinks', 6, 'A beverage designed to hydrate and replenish electrolytes lost during physical activity.', 108, 0, '67718e0c6612d.png', 'AVAILABLE'),
+('PRO-20241230-Kn4Sqe', 'Prosciutto', 'Meat', 80, 'A type of Italian dry-cured ham, typically served thinly sliced.', 10, 0, '677189e485838.png', 'AVAILABLE'),
+('PRO-20241230-MUFdWt', 'Pineapple Juice', 'Juices', 10, 'A sweet, tangy, and refreshing beverage made by extracting the juice from fresh pineapple.', 13, 0, '67718c55ee52e.png', 'AVAILABLE'),
+('PRO-20241230-n6vSjg', 'Steak', 'Meat', 130, 'A popular cut of beef, known for its rich flavor and tender texture.', 20, 0, '677189b09ba94.png', 'AVAILABLE'),
+('PRO-20241230-NAngjm', 'Blackcurrant Juice', 'Juices', 17, 'A rich, tangy beverage made from fresh or concentrated blackcurrants.', 16, 0, '67718d24824ff.png', 'AVAILABLE'),
+('PRO-20241230-qIjDgv', 'Cucumber Juice', 'Juices', 7, 'A light, refreshing beverage made by blending fresh cucumber with water or ice', 15, 0, '67718c2bbe584.png', 'AVAILABLE'),
+('PRO-20241230-QO9l4I', 'Banana', 'Fruits', 5, 'A sweet, tropical fruit with a soft, creamy texture and a bright yellow peel when ripe.', 30, 0, '67718733d5384.png', 'AVAILABLE'),
+('PRO-20241230-r3oc6M', 'Melon juice', 'Juices', 10, 'A refreshing beverage made by blending ripe melon, typically watermelon, cantaloupe, or honeydew, with water or ice.', 15, 0, '67718bdab9b77.png', 'AVAILABLE'),
+('PRO-20241230-rljgdx', 'Croissant', 'Breads', 10, 'A buttery, flaky pastry with a golden, crispy exterior and soft, airy interior.', 20, 0, '677184bd8ac6a.png', 'AVAILABLE'),
+('PRO-20241230-s4CmTM', 'Energy Drink', 'Cold Drinks', 13, 'A beverage designed to boost energy and alertness, typically containing caffeine, sugar, and other ingredients like taurine, B-vitamins, and amino acids.', 50, 0, '67718eae46309.png', 'AVAILABLE'),
+('PRO-20241230-sAizZL', 'Pineapple', 'Fruits', 10, 'A tropical fruit with a tangy, refreshing taste and juicy texture.', 100, 0, '677187cc93911.png', 'AVAILABLE'),
+('PRO-20241230-sj3Mbm', 'Preztal', 'Breads', 5, 'A dense, chewy bread with a deep brown, crispy crust and a distinctive knot shape.', 30, 0, '677184ff118d8.png', 'AVAILABLE'),
+('PRO-20241230-uj1G3F', 'Green Capsium', 'Vegetables', 10, 'A mild, slightly bitter-flavored vegetable that is part of the nightshade family.', 30, 0, '67718b68e6cef.png', 'AVAILABLE'),
+('PRO-20241230-ujLASI', 'Avocado', 'Fruits', 5, 'A creamy, nutrient-packed fruit with a rich, buttery texture and mild flavor.', 20, 0, '677187076837b.png', 'AVAILABLE'),
+('PRO-20241230-VPua6o', 'Passion fuits', 'Fruits', 10, 'A small, round fruit with a tough outer rind and vibrant, seed-filled interior.', 45, 0, '6771892c2cfcc.png', 'AVAILABLE'),
+('PRO-20241230-xbTzr6', 'Apple Gourd', 'Vegetables', 7, 'known as turkey berry or round gourd, the apple gourd is a small, round, green vegetable with a slightly bumpy texture and mild, slightly bitter flavor.', 50, 0, '67718b378d782.png', 'AVAILABLE'),
+('PRO-20241230-XICQ30', 'Coconut Juice', 'Juices', 10, 'A refreshing, naturally sweet beverage extracted from the clear liquid inside young, green coconuts.', 30, 0, '67718d81cbd89.png', 'AVAILABLE'),
+('PRO-20241230-Y6LblI', 'Beef Roast', 'Meat', 100, 'A tender, flavorful cut of beef, typically slow-cooked to bring out its rich taste and juicy texture.', 10, 0, '6771897caf11d.png', 'AVAILABLE'),
+('PRO-20241230-yULwnQ', 'Pita Bread', 'Breads', 7, 'A soft, round flatbread with a pocket, perfect for stuffing with fillings like falafel, shawarma, or salads.', 20, 0, '6771857d9fa90.png', 'AVAILABLE');
 
 -- --------------------------------------------------------
 
@@ -303,7 +343,7 @@ ALTER TABLE `reviews`
 -- AUTO_INCREMENT for table `actionlog`
 --
 ALTER TABLE `actionlog`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
 
 --
 -- Constraints for dumped tables
