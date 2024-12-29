@@ -3,159 +3,264 @@ $_title = 'Payment';
 $_css = '../css/payment.css';
 require '../_base.php';
 include '../_head.php';
+
+require_login();
+reset_user();
+
+// Initialize cart
+$cart = get_cart();
+
+if (!$cart) {
+    temp('popup-msg', ['msg' => 'Cart is Empty', 'isSuccess' => false]);
+    redirect('cart.php');
+}
+
+
+
 ?>
 <h1 class="h1 header-banner">Payment</h1>
 <div class="d-flex justify-content-space-evenly">
     <div id="billing-details-container">
         <h3>Billing Details</h3>
-        <select class="flex-item payment-method-select" name="selectPayment">
-            <option value="">Choose a payment method</option>
-            <option value="bank">Bank</option>
-            <option value="ewallet">E Wallet</option>
-            <option value="cash">Cash on delivery</option>
-        </select>
+        <?php
+        $uName = $_user->username;
+        $uEmail = $_user->email;
+        $uPhone = $_user->contact_num;
+
+        $paymentMethod = [];
+        $addressOption = [];
+
+        if ($_user->banks) {
+            $banks = json_decode($_user->banks, true);
+
+            foreach ($banks as $bank) {
+                $paymentMethod[$bank['accNum']] = $bank['accNum'];
+            }
+        }
+
+        if ($_user->addresses) {
+            $addresses = json_decode($_user->addresses, true);
+
+            foreach ($addresses as $index => $address) {
+                $addressStr = $address['line_1'] . ', ' .
+                $address['village'] . ', ' .
+                $address['postal_code'] . ' ' .
+                $address['city'] . ', ' .
+                $address['state'];
+
+                $addressOption[$addressStr] = $addressStr;
+                    
+            }
+        }
+        ?>
+
+        <form id="payment-method-form" class="billing-detail-container">
+            <label for="uPaymentMethod" class="normal-label">Payment Method</label>
+            <?= html_select('selectPayment', $paymentMethod, '- Decide Later -') ?>
+
+            <div id="bank-detail-container" class="d-none">
+                <div id="bank-detail-subcontainer" class="d-flex flex-direction-row">
+                    <div class="billing-detail-container" style="width: 40%; padding-right: 10px; ">
+                        <label for="accNum" class="normal-label">Account Number</label>
+                        <?= html_text('accNum', "class='sm-input-box' spellcheck='false' readonly ") ?>
+                    </div>
+                    <div class="billing-detail-container" style="width: 20%; padding-right: 10px;">
+                        <label for="cvvNum" class="normal-label">CVV</label>
+                        <?= html_text('cvvNum', "class='sm-input-box' spellcheck='false' readonly ") ?>
+                    </div>
+                    <div class="billing-detail-container" style="width: 20%; user-select: none;">
+                        <label for="exDate" class="normal-label">Expiry Date</label>
+                        <?= html_text('exDate', "class='sm-input-box' spellcheck='false' readonly ") ?>
+                    </div>
+                </div>
+            </div>
+        </form>
+
         <div class="billing-detail-container">
-            <label for="name" class="normal-label">Name</label>
-            <input type="text" name="name" value="<%= customer.getCustomerName()%>" class="sm-input-box" spellcheck="false" readonly tabindex="-1" />
+            <label for="uName" class="normal-label">Name</label>
+            <?php $GLOBALS['uName'] = $uName ?>
+            <?= html_text('uName', "class='sm-input-box w-50' spellcheck='false' readonly") ?>
         </div>
         <div class="billing-detail-container">
-            <label for="phone" class="normal-label">Phone</label>
-            <input type="text" name="phone" value="<%= customer.getContactNumber()%>" class="sm-input-box" spellcheck="false" readonly tabindex="-1" />
+            <label for="uPhone" class="normal-label">Phone</label>
+            <?php $GLOBALS['uPhone'] = $uPhone ?>
+            <?= html_text('uPhone', "class='sm-input-box w-50' spellcheck='false' readonly") ?>
         </div>
-        <div class="billing-detail-container">
-            <label for="address" class="normal-label">Address</label>
-            <textarea name="address" class="bg-input-box" rows="4" cols="50" placeholder="<%= customer.getAddress()%>"></textarea>
-        </div>
-        <div class="payment-method-container" id="bank-detail" style="display: none;">
-            <div class="billing-detail-container">
-                <label for="name-in-bank" class="normal-label">Name in Bank</label>
-                <input type="text" name="name-in-bank" value="<%= bank.getName()%>" class="sm-input-box" spellcheck="false" readonly tabindex="-1" />
+        <form class="billing-detail-container">
+            <label for="uAddress" class="normal-label">Address</label>
+            <?php if ($addressOption) {
+                html_select('selectAddress', $addressOption, '- Please choose an address -');
+            } ?>
+            <br>
+            <label for="uAddress" class="normal-label">or<br><br>Enter Manually:&nbsp;<span class="text-red">*</span></label>
+            <div>
+                <div class="address-subcontainer">
+                    <label for="line-1" class='address-label'>Address Line 1</label><br>
+                    <input id="line-1" type="text" name="line_1" class="sm-input-box w-100" placeholder=" " required />
+                </div>
+                <div class="address-subcontainer">
+                    <label for="village" class='address-label'>Village</label><br>
+                    <input id="village" type="text" name="village" class="sm-input-box w-100" placeholder=" " />
+
+                </div>
+                <div class="d-flex flex-direction-row">
+                    <div class="address-subcontainer">
+                        <label for="postal-code" class='address-label'>Postal Code</label><br>
+                        <input id="postal-code" type="text" name="postal_code" class="sm-input-box w-100" placeholder=" " required />
+
+                    </div>
+                    <div class="address-subcontainer">
+                        <label for="city" class='address-label'>City</label><br>
+                        <input id="city" type="text" name="city" class="sm-input-box w-100" placeholder=" " required />
+
+                    </div>
+                </div>
+                <div class="address-subcontainer" style="position: relative;">
+                    <label for="state" class='address-label'>State</label><br>
+                    <input id="state" type="text" name="state" class="sm-input-box w-50" placeholder=" " required />
+
+                </div>
             </div>
-            <div class="billing-detail-container">
-                <label for="bank-acc-num" class="normal-label">Bank Account Number</label>
-                <input type="text" name="bank-acc-num" value="<%= bank.getAccNum()%>" class="sm-input-box" spellcheck="false" readonly tabindex="-1" />
+            <div id="map-container">
+                <div id="map" style="width: 100%; height: 300px; margin-top: 20px;"></div>
+                <button class="btn" id="use-my-location-btn">Use My Location</button>
+                <div id="coordinates" class="d-none">
+                    <p>Latitude: <span id="latitude">0</span></p>
+                    <p>Longitude: <span id="longitude">0</span></p>
+                </div>
             </div>
-            <div class="billing-detail-container">
-                <label for="card-type" class="normal-label">Card Type</label>
-                <input type="text" name="card-type" value="<%= bank.getCardType()%>" class="sm-input-box" spellcheck="false" readonly tabindex="-1" />
-            </div>
-        </div>
-        <div class="payment-method-container" id="ewallet-detail" style="display: none;">
-            <div class="billing-detail-container">
-                <label for="name-in-ewallet" class="normal-label">Name in E-Wallet</label>
-                <input type="text" name="name-in-ewallet" value="<%= ewallet.getName()%>" class="sm-input-box" spellcheck="false" readonly tabindex="-1" />
-            </div>
-            <div class="billing-detail-container">
-                <label for="ewallet-phone-num" class="normal-label">E-Wallet Phone Number</label>
-                <input type="text" name="ewallet-phone-num" value="<%= ewallet.getPhone()%>" class="sm-input-box" spellcheck="false" readonly tabindex="-1" />
-            </div>
-        </div>
+        </form>
     </div>
 
-    <div id="order-summary-container">
-        <h3>Order Summary</h3>
-        <div id="flex-container">
-            <h5 class="flex-item order-header">PRODUCT</h5>
-            <h5 class="flex-item order-header">TOTAL (RM)</h5>
-            <!-- <%
-                    List<Orderitems> orderItems = (List<Orderitems>) request.getAttribute("orderItemList");
-                    List<Product> products = (List<Product>) request.getAttribute("products");
-                    if (orderItems != null && products != null) {
-                        for (Orderitems orderItem : orderItems) {
-                            for (Product product : products) {
-                                if (orderItem.getProductId().equals(product.getProductId())) {
-                    %> -->
-            <p class="flex-item product-name"><%= product.getProductName()%> x <%= orderItem.getQuantity()%></p>
-            <p class="flex-item product-price"><%= orderItem.getTotalPrice(product.getPrice(), orderItem.getQuantity())%></p>
-            <!-- <%
-                                }
+    <div id='order-summary-container'>
+        <h3 class="text-center">Order Summary</h3>
+        <div class="d-flex flex-wrap w-100 justify-content-space-between">
+            <table id="summary-table" class="w-100">
+                <tr>
+                    <th>PRODUCT</th>
+                    <th>PRICE (RM)</th>
+                    <th>QUANTITY</th>
+                    <th>SUBTOTAL (RM)</th>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                        <hr>
+                    </td>
+                </tr>
+                <?php
+                $pTotal = 0;
+                $shippingFee = 0; //TODO
+                $stmt = $_db->prepare('SELECT * FROM products WHERE product_id = ?');
+                ?>
+                <?php foreach ($cart as $id => $quantity): ?>
+                    <?php
+                    $stmt->execute([$id]);
+                    $p = $stmt->fetch();
+
+                    $pName = $p->product_name;
+                    $pPrice = $p->price;
+                    $pSubtotal = $pPrice * $quantity;
+                    $pTotal += $pSubtotal;
+                    ?>
+                    <tr>
+                        <td><?= $pName; ?></td>
+                        <td class="number-figure"><?= priceFormat($pPrice); ?></td>
+                        <td><?= $quantity ?></td>
+                        <td class="number-figure"><?= priceFormat($pSubtotal); ?></td>
+                    </tr>
+                <?php endforeach ?>
+                <tr>
+                    <td colspan="4">
+                        <hr>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">Products Subtotal (RM):</td>
+                    <td>
+                        <span id="pTotal" class="number-figure"><?= priceFormat($pTotal) ?></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">Shipping Fee (RM):</td>
+                    <td>
+                        <span id="pShippingFee" class="number-figure"><?= priceFormat($shippingFee) ?></span>
+                    </td>
+                </tr>
+                <tr>
+                    <?php
+                    $promotionsOption = [];
+                    $promotions = [];
+                    $uPromotions = [];
+
+                    $stmt = $_db->prepare('SELECT end_date, promo_code, requirement FROM promotions WHERE promo_id = ?');
+
+                    if ($_user->promotion_records) {
+                        $uPromotions = json_decode($_user->promotion_records, true);
+
+                        foreach ($uPromotions as $promotionID => $promotionLimit) {
+                            $stmt->execute([$promotionID]);
+                            $promotion = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                            if ($promotionLimit > 0 && $promotion['end_date'] < new DateTime() && $pTotal > $promotion['requirement']) {
+                                $promotionsOption[$promotionID] = $promotion['promo_code'];
                             }
                         }
                     }
-                    %> -->
-            <h5 class="flex-item subtotal">SUBTOTAL</h5>
-            <h5 class="flex-item subtotal">${subTotal}</h5>
-            <h5 class="flex-item">Shipping Fee</h5>
-            <h5 class="flex-item">+ ${shippingFee}</h5>
-            <select class="flex-item promo-code-select" onchange="fetchPromoDetails()" name="promoCode">
-                <option value="-1">Choose a promo code...</option>
-                <%
-                        List<Promotionrecord> records = (List<Promotionrecord>) request.getAttribute("promotionRecordList");
-                        List<Promotion> promotions = (List<Promotion>) request.getAttribute("promotions");
-                        if (records != null && promotions != null) {
-                            for (Promotionrecord record : records) {
-                                for (Promotion promotion : promotions) {
-                                    if (record.getPromotionrecordPK().getPromoId()== promotion.getPromoId()) {
-                        %>
-                <option value="<%= promotion.getPromoId()%>"><%= promotion.getPromoName()%></option>
-                <%
-                                    }
-                                }
-                            }
-                        }
-                        %>
-            </select>
-            <p class="flex-item" id="promo-amount">- RM ${promoAmount}</p>
-            <h5 class="flex-item total-price">TOTAL</h5>
-            <h5 id="total" class="flex-item total-price">RM ${total}</h5>
+                    ?>
+                    <td colspan="3">
+                        <?php if ($promotionsOption): ?>
+                            <?= html_select('selectPromo', $promotionsOption, 'Don\'t use promo code', 'data-select-onchange') ?> :
+                        <?php else: ?>
+                            No promotion code available :
+                        <?php endif ?>
+                    </td>
+                    <td class="text-green-darker">
+                        -RM <span id="uPromo" class="number-figure">0.00</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <hr>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">TOTAL PAYMENT (RM):</td>
+                    <td><span id="total-payment" class="number-figure"><?= priceFormat($pTotal + $shippingFee) ?></span></td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-center">
+                        <form id="checkout-form" action="payment_checkout.php" target="_blank" method="post">
+                            <?= html_hidden('uName'); ?>
+                            <?= html_hidden('uEmail'); ?>
+                            <?= html_hidden('uPhone'); ?>
+                            <?php $cart = json_encode($cart); ?>
+                            <?= html_hidden('cart') ?>
+                            <!-- Hidden bank field -->
+                            <?= html_hidden('hiddenAccNum'); ?>
+                            <?= html_hidden('hideenCvvNum'); ?>
+                            <?= html_hidden('hidenExDate'); ?>
+                            <!-- Hidden address field -->
+                            <?= html_hidden('hiddenLine_1'); ?>
+                            <?= html_hidden('hiddenVillage'); ?>
+                            <?= html_hidden('hiddenPostal_code'); ?>
+                            <?= html_hidden('hiddenCity'); ?>
+                            <?= html_hidden('hiddenState'); ?>
+                            <!-- Additional fee -->
+                            <?= html_hidden('hiddenShippingFee'); ?>
+                            <?= html_hidden('hiddenPromoID'); ?>
+                            <?= html_hidden('hiddenPromoAmount'); ?>
+                            <?= html_hidden('hiddenSubtotal'); ?>
+                            <?= html_hidden('hiddenTotal'); ?>
+                            <button id="pay-button">Pay</button>
+                        </form>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 </div>
-<form action="PromotionServlet" method="POST" id="selectForm">
-    <input type="hidden" name="url" value="payment">
-    <input type="hidden" name="action" value="select">
-    <input type="hidden" name="promoId" value="">
-    <input type="hidden" name="subTotal" value="${subTotal}">
-</form>
-<div>
-    <form id="payForm" action="PaymentServlet" method="POST">
-        <input type="hidden" name="paymentMethod" value="">
-        <button class="paybtn" onclick="pay()">Pay</button>
-    </form>
-</div>
-<script src="js/paymentMethod.js"></script>
-<script>
-    function pay() {
-        var inputElements = document.getElementsByName('paymentMethod');
-        var selectElements = document.getElementsByName('selectPayment');
-        if (selectElements[0].value === "bank") {
-            inputElements[0].value = "0";
-        }
-        if (selectElements[0].value === "ewallet") {
-            inputElements[0].value = "1";
-        }
-        if (selectElements[0].value === "cash") {
-            inputElements[0].value = "2";
-        }
-        var form = document.getElementById("payForm");
-        form.submit();
-    }
+<script src="../js/payment.js"></script>
+<script src="../js/googleMap.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBFPpOlKxMJuu6PxnVrwxNd1G6vERpptro&libraries=places"></script>
 
-    function fetchPromoDetails() {
-        var inputElements = document.getElementsByName('promoId');
-        var selectElements = document.getElementsByName('promoCode');
-        inputElements[0].value = selectElements[0].value;
-        if (selectElements[0].value === "-1") {
-            return;
-        }
-        var form = document.getElementById("selectForm");
-        form.submit();
-    }
-
-    var selectedPromoId = '<%= session.getAttribute("promoId") %>';
-
-    document.addEventListener('DOMContentLoaded', function() {
-        selectPromoCode(selectedPromoId);
-    });
-
-    function selectPromoCode(promoId) {
-        if (promoId !== null && promoId !== "-1") {
-            var selectElement = document.querySelector('.promo-code-select');
-            selectElement.value = promoId;
-        } else {
-            var selectElement = document.querySelector('.promo-code-select');
-            selectElement.value = "-1";
-        }
-    }
-</script>
 <?php include '../_foot.php'; ?>

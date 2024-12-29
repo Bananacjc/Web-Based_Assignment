@@ -7,60 +7,58 @@ Have fun coding!
 
 1. Jee Cheng
   - [x] Login / Logout
-  - [ ] Shop
-  - [ ] Profile
+  - [x] Shop
+  - [x] Profile
 
 2. Jau Chun
-  - [ ] Promotion
-  - [ ] Cart
-  - [ ] Payment
+  - [x] Promotion
+  - [x] Cart
+  - [x] Payment
 
 3. Chun Tian
-  - [ ] Admin
+  - [x] Admin
 
 # Additional Function
 
 ## Must have function
-  - [ ] Category Maintenance + CRUD
-  - [ ] Admin Maintenance + CRUD
+  - [x] Category Maintenance + CRUD
+  - [x] Admin Maintenance + CRUD
   - [ ] Order Cancellation (Member cancel order)
-  - [ ] Order Cancellation (Admin overwrite member's order)
-  - [ ] Shipping Address Handling
-  - [ ] Discount Voucher Handling
-  - [ ] Product Rating + Review
-  - [ ] Record Listing (Table View + Photo View)
-  - [ ] Product Filtering by Category
-  - [ ] Product Filtering by Price Range
+  - [x] Order Cancellation (Admin overwrite member's order)
+  - [x] Shipping Address Handling
+  - [x] Discount Voucher Handling
+  - [x] Product Rating + Review
+  - [x] Record Listing (Table View + Photo View)
+  - [x] Product Filtering by Category
+  - [x] Product Filtering by Price Range
   - [ ] Temporary Login Blocking
-  - [ ] Block + Unblock User Account (Admin ban/unban member)
-  - [ ] Remember Me
-  - [ ] Permanent Shopping Cart
-  - [ ] Filtering, Sorting and Paging
-  - [ ] Top Selling Products
-  - [ ] AJAX Integration
-  - [ ] Fake Payment (can be replaced by Real Payment in [feasible function](#feasible-function)
-  - [ ] SMS Integration
+  - [x] Block + Unblock User Account (Admin ban/unban member)
+  - [x] Remember Me
+  - [x] Permanent Shopping Cart
+  - [x] Filtering, Sorting and Paging
+  - [x] Top Selling Products
+  - [x] AJAX Integration (Currently on cart.php)
 
 ## Feasible function
-  - [ ] Real Payment using [Stripe API](stripe.com)
-  - [ ] E-receipt sent to e-mail or in PDF
-  - [ ] Drag-and-Drop Photo Upload
+  - [x] Real Payment using [Stripe API](stripe.com)
+  - [x] E-receipt sent to e-mail or in PDF
+  - [x] Drag-and-Drop Photo Upload
   - [ ] Webcam Integration
   - [ ] Image Processing (Flip, Rotate, etc.)
   - [ ] Batch Insertion (Import from Text / CSV files)
   - [ ] Batch Updating
-  - [ ] Batch Deletion
-  - [ ] User Email Verification (either detecting real email / verify email from db)
+  - [x] Batch Deletion
+  - [x] User Email Verification (either detecting real email / verify email from db)
   - [ ] Captcha Integration (3rd Party Library)
   - [ ] Add to Favorites / Wishlist
   - [ ] Reward Point Handling
-  - [ ] Product Stock Handling
+  - [x] Product Stock Handling
   - [ ] Low-in-Stock Alert
   - [ ] Generaste + Scan QR Code
 
 ## Out of scope stuff, feasible
-  - [ ] Google Maps Integration
-  - [ ] Remember User Preference (Theme, settings, etc.)
+  - [x] Google Maps Integration
+  - [x] Remember User Preference (Theme, settings, etc.)
   - [ ] Data Charts
   - [ ] Real-Time Chat
 

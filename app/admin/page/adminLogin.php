@@ -1,56 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+    <title>BananaSIS</title>
 <?php
+$_css = '../css/base.css';
+$_css1 = '../css/adminLogin.css';
 require '../_base.php';
-
-// Start session to track user state
-// Check if the form is submitted
+$msg = '';
+$isSuccess = false;
 if (is_post()) {
-    // Retrieve and sanitize input
-    $userId = post('userId');
-    $password = post('userPassword');
+    $email = req('email');
+    $password = req('password');
+    $_err = []; 
 
-    // Validate input
-    if (empty($userId) || empty($password)) {
-        $_err['error'] = 'Please fill in all fields.';
-    } else {
-        // Prepare and execute the query securely
-        try {
-            $stmt = $_db->prepare('SELECT * FROM employees WHERE employee_id = :userId');
-            $stmt->bindParam(':userId', $userId, PDO::PARAM_STR);
-            $stmt->execute();
+    if ($email == '') {
+        $_err['email'] = 'Email is required';
+    } elseif (!is_email($email)) {
+        $_err['email'] = 'Invalid email format';
+    }
 
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($password == '') {
+        $_err['password'] = 'Password is required';
+    }
 
-            if ($user && password_verify($password, $user['password'])) {
-                // Successful login
-                $_SESSION['user_id'] = $user['employee_id'];
-                $_SESSION['role'] = $user['role']; // Store the user role in session
+    if (empty($_err)) {
+        $hashedPassword = sha1($password); 
 
-                // Redirect to the dashboard based on role
-                if ($user['role'] == 'admin') {
-                    redirect('adminDashboard.php');
-                } else {
-                    redirect('userDashboard.php');
-                }
+        $stm = $_db->prepare('
+            SELECT * FROM employees
+            WHERE email = ? AND password = ?
+        ');
+        $stm->execute([$email, $hashedPassword]);
+        $u = $stm->fetch();
+
+        if ($u) {
+            if ($u->banned == 1) {
+                $msg = 'Your account is banned. Please contact support.';
+                popup($msg, false);
             } else {
-                $_err['error'] = 'Invalid username or password.';
+                temp('info', 'Login successful');
+                login($u); 
             }
-        } catch (PDOException $e) {
-            $_err['error'] = 'An error occurred while processing your request. Please try again later.';
+        } else {
+            $msg = 'Invalid email or password';
+            popup($msg, false);
+        }
+    } else {
+        foreach ($_err as $field => $error) {
+            popup("$field: $error", false);
         }
     }
 }
-
 ?>
-<!DOCTYPE html>
-<html lang="en">
+
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="../css/adminLogin.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet" />
     <link rel="icon" href="/app/images/logo.png" />
     <title>Admin Login</title>
 </head>
@@ -60,31 +64,35 @@ if (is_post()) {
         <div id="container-left">
             <form id="login-container" method="post">
                 <div id="logo">
-                    <img src="../images/logo.png" alt="Logo" width="70" height="70" />
+                    <img src="../../images/logo.png" alt="Logo" width="70" height="70" />
                     <p id="banana">BANANA</p>
                     <p id="sis">SIS</p>
                 </div>
                 <div id="input-container">
                     <div class="input-subcontainer">
-                        <input type="text" name="userId" id="userId" class="input-box" required />
-                        <label for="userId" class="label">UserId</label>
+                        <input type="text" name="email" id="email" class="input-box" spellcheck="false" placeholder=" " />
+                        <label for="email" class="label">Email</label>
                     </div>
                     <div class="input-subcontainer">
-                        <input type="password" name="userPassword" id="userPassword" class="input-box" required />
-                        <label for="userPassword" class="label">Password</label>
+                        <input type="password" name="password" id="password" class="input-box" spellcheck="false" placeholder=" " />
+                        <label for="password" class="label">Password</label>
                         <i class="ti ti-eye-off" id="togglePassword"></i>
                     </div>
+                    <div>
+                        <a href="forgetPassword.php" id="forgotpass" class="hover-underline-anim">Forgot your password?</a>
+                    </div>
                 </div>
+
                 <?php err('error'); ?>
                 <button id="loginbtn" type="submit">Login</button>
             </form>
         </div>
-        <div id="container-right">
-            <p>Welcome Back</p>
-            <img src="../images/login-products.png" alt="Grocery items on shelves" style="width:60%; height:auto;">
-        </div>
-    </div>
-    <script src="js/showPassword.js"></script>
-</body>
 
+    <div id="container-right">
+        <p>Welcome Back</p>
+        <img src="../../images/login-products.png" alt="Grocery items on shelves" style="width:60%; height:auto;">
+    </div>
+</div>
+</body>
+<script src="../js/showPassword.js"></script>
 </html>

@@ -16,7 +16,7 @@ body{
     justify-content: space-between;
     position: fixed;
     top: 0;
-    z-index: 999;
+    z-index: 9998;
     transition: transform 0.3s ease;
 }
 
@@ -88,3 +88,36 @@ body{
     transition: color 0.3s ease-in-out;
     font-size: 24px;
 }
+
+#header-profile-pic {
+    margin: auto 5px;
+    border-radius: 50%;
+}
+
+/* Cart popup */
+#cart-popup {
+    border: 1px solid black;
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    left: 42%;
+    z-index: 9999;
+    display: none;
+
+    opacity: 0;
+    top: 0;
+}
+
+#cart-popup.show{
+    display: flex;
+    animation: add-to-cart 0.5s linear;
+}
+
+@keyframes add-to-cart {
+    0% {top:100px; opacity: 1;}
+    100% {top: 0; opacity: 0;}
+}
+
+
+
+

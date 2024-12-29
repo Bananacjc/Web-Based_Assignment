@@ -1,29 +1,34 @@
-
 h1 {
     margin-top: 160px;
     color: #333;
     text-align: center;
 }
+
 .data-table {
     width: 95%;
     border-collapse: collapse;
     margin: 20px auto;
     background-color: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.data-table th, .data-table td {
+.data-table th,
+.data-table td {
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
 
 .data-table th {
-    background-color: #b100cd; /* Changed blue to green */
+    background-color: 333333;
     color: white;
 }
+.data-table th a{
+    background-color: 333333;
+    color:white;
+}
 
-.data-table tr:hover {
+.data-table:hover {
     background-color: #f5f5f5;
 }
 
@@ -33,6 +38,197 @@ h1 {
     max-width: 100px;
     border-radius: 50%;
     object-fit: cover;
+}
+
+.button {
+    height: 40px;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    border-radius: 5px;
+}
+/* Buttons with static size */
+.add-button {
+    background-color: #007BFF; /* Blue */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.add-button:hover {
+    background-color: #0056b3; /* Darker blue */
+}
+.delete-action-button {
+    background-color: red;
+}
+
+.delete-action-button:hover {
+    background-color: #cc0000; /* Slightly darker red */
+}
+
+.action-button {
+    background-color: #007BFF; /* Blue */
+}
+
+.action-button:hover {
+    background-color: #0056b3; /* Darker blue */
+}
+
+.ban-action-button,
+.unban-action-button {
+    background-color: #ff5c33; /* Same base color */
+}
+
+.ban-action-button:hover,
+.unban-action-button:hover {
+    background-color: #ff471a; /* Same hover color */
+}
+
+
+.update-form,
+.add-form {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 20px auto;
+    width: 90%;
+}
+
+.update-form label,
+.add-form label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333333;
+    font-size: 14px;
+}
+
+.update-form input,
+.update-form select,
+.update-form textarea,
+.add-form input,
+.add-form select,
+.add-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.update-form img,
+.add-form img {
+    margin-top: 10px;
+    border-radius: 4px;
+}
+
+.update-form input[type="submit"],
+.add-form input[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
+.update-form input[type="submit"]:hover,
+.add-form input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+.cancel-button{
+    background-color: #ff4d4d;
+
+}
+
+.cancel-button:hover{
+    background-color: #ff4d4d;
+    background-color: #e04343;
+}
+.modal {
+    margin-top: 80px;
+    display: none;
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background: white;
+    width: 60%;
+    margin: 35px auto;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+
+.close-button {
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+/* Adjust the layout when the sidebar is toggled */
+#nav-toggle:checked~.main {
+    margin-left: 70px;
+
+}
+
+
+.main {
+    margin-left: 250px;
+    padding-left: 20px;
+
+}
+
+.resized-image {
+    width: 100px;
+    height: auto;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow-y: auto;
+    /* Enables vertical scrolling */
+}
+
+
+.modal-content {
+    background: white;
+    width: 60%;
+    margin: 35px auto;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 form button.delete-action-button, button.cancel-button {
@@ -51,7 +247,7 @@ form button.delete-action-button, button.cancel-button {
 }
 
 .action-button {
-    background-color: #007BFF; /* Retained original button color */
+    background-color: #007BFF;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -66,113 +262,78 @@ form button.delete-action-button, button.cancel-button {
 }
 
 .action-button:hover {
-    background-color: #0056b3; /* Retained original button hover color */
+    background-color: #0056b3;
 }
 
-.update-form, .add-form {
-    background-color: #ffffff;
-    padding: 20px;
+.button {
+    width: 100px;
+    color: white;
+    border: none;
+    text-decoration: none;
+    font-size: 16px;
+    display: flex;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    
     border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    max-width: 600px;
-    margin: 20px auto;
-    width: 90%;
 }
 
-.update-form label, .add-form label {
-    display: block;
-    margin-bottom: 8px;
-    color: #333333;
+.ban-action-button,
+.unban-action-button {
+    background-color: #ff5c33;
+}
+
+.ban-action-button:hover,
+.unban-action-button:hover {
+    background-color: #ff471a;
+}
+
+
+
+.form-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+input[type="search"], select {
+    padding: 8px 12px;
     font-size: 14px;
-}
-
-.update-form input, .update-form select, .update-form textarea,
-.add-form input, .add-form select, .add-form textarea {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #cccccc;
-    border-radius: 4px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
     box-sizing: border-box;
+    background-color: #f9f9f9;
 }
-
-.update-form img, .add-form img {
-    margin-top: 10px;
-    border-radius: 4px;
-}
-
-.update-form input[type="submit"], .add-form input[type="submit"] {
+button {
+    padding: 8px 16px;
+    font-size: 14px;
     background-color: #4CAF50;
     color: white;
-    font-weight: bold;
     border: none;
+    border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
-
-.update-form input[type="submit"]:hover, .add-form input[type="submit"]:hover {
+button:hover {
     background-color: #45a049;
 }
-
-.modal {
-    margin-top: 80px;
-    display: none;
-    position: absolute;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: auto;
-    background-color: rgba(0,0,0,0.4);
-}
-.modal-content {
-    background: white;
-    width: 60%;
-    margin: 35px auto;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    box-sizing: border-box;
-}
-.close-button {
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.category-filter {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    background-color: #f8f9fa; /* Light grey background */
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin: 10px; /* Adjust as needed */
-}
-
-.category-filter label {
-    font-weight: bold;
-    margin-right: 10px;
-    color: #333; /* Dark grey color for the text */
-}
-
-.category-filter select {
+.delete-btn {
+    background-color: #ff4d4d;
+    margin-top: 15px;
     padding: 8px 16px;
-    border: 2px solid #ccc; /* Light grey border */
-    border-radius: 4px;
-    background-color: white;
+    font-size: 14px;
+    color: white;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
-    outline: none;
-    transition: border-color 0.3s;
+    transition: background-color 0.3s ease;
+}
+.delete-btn:hover {
+    background-color: #e04343;
+}
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
 }
 
-.category-filter select:hover,
-.category-filter select:focus {
-    border-color: #007bff; /* Blue color on hover/focus */
-}
 
-/* Optional: style for options in the dropdown */
-.category-filter option {
-    padding: 10px; /* Adds padding inside the dropdown */
-}
 

@@ -1,0 +1,204 @@
+/*Pagination*/
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.pagination a {
+    padding: 8px 12px;
+    text-decoration: none;
+    color: #007bff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination a:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.pagination .active {
+    background-color: #007bff;
+    color: white;
+}
+
+.pagination .first-page, .pagination .prev-page, .pagination .next-page, .pagination .last-page {
+    font-weight: bold;
+}
+
+.pagination .first-page:hover, .pagination .prev-page:hover, .pagination .next-page:hover, .pagination .last-page:hover {
+    background-color: #0056b3;
+}
+
+.pagination a.disabled {
+    color: #ccc;
+    pointer-events: none;
+}
+
+.pagination a.disabled:hover {
+    background-color: transparent;
+}
+
+/* Adjust the layout when the sidebar is toggled */
+#nav-toggle:checked~.main {
+    margin-left: 70px;
+
+}
+
+
+.main {
+    margin-left: 250px;
+    padding-left: 20px;
+
+}
+
+.resized-image {
+    width: 100px;
+    height: auto;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow-y: auto;
+    /* Enables vertical scrolling */
+}
+
+/* Flash Message ----------------------------------------------------------- */
+
+#info {
+    position: fixed;
+    color: #fff;
+    background: #666;
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 10px 20px;
+    left: 50%;
+    translate: -50% 0;
+    z-index: 999;
+
+    top: -100px;
+    opacity: 0;
+}
+
+#info:not(:empty) {
+    animation: fade 5s;
+}
+
+
+
+#error {
+    position: fixed;
+    color: #fff;
+    background: #DC3545;
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 10px 20px;
+    left: 50%;
+    translate: -50% 0;
+    z-index: 999;
+
+    top: -100px;
+    opacity: 0;
+}
+
+#error:not(:empty) {
+    animation: fade 5s;
+}
+
+@keyframes fade {
+      0% { top: -100px; opacity: 0; }
+     10% { top:  100px; opacity: 1; }
+     90% { top:  100px; opacity: 1; }
+    100% { top: -100px; opacity: 0; }
+}
+
+
+/*popup window*/
+#popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    z-index: 9999;
+}
+
+#popup.show {
+    display: flex;
+}
+
+#popup.hide {
+    display: none;
+}
+
+#popup #popup-content {
+    width: 300px;
+    height: 120px;
+    padding: 25px;
+    border-radius: 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#popup #popup-content.success {
+    background-color: #D4EDDA;
+    color: #155724;
+}
+
+#popup #popup-content.failed {
+    background-color: #F8D7DA;
+    color: #721C24;
+}
+
+#popup #popup-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+#popup #popup-msg {
+    margin: 10px 0;
+}
+
+#popup #popup-btn {
+    padding: 10px 20px;
+    color: var(--color-white-pure);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#popup #popup-btn.success {
+    background-color: #28A745;
+}
+
+#popup #popup-btn.success:hover {
+    background-color: #218838;
+}
+
+#popup #popup-btn.failed {
+    background-color: #DC3545;
+}
+
+#popup #popup-btn.failed:hover {
+    background-color: #C82333;
+}
+
+
+/* Remove the light blue background on autocomplete */
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px var(--color-white-pure) inset !important;
+}

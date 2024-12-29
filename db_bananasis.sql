@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 08, 2024 at 12:31 PM
+-- Generation Time: Dec 26, 2024 at 04:50 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -24,6 +24,20 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `actionlogs`
+--
+
+CREATE TABLE `actionlogs` (
+  `log_id` int(11) NOT NULL,
+  `employee_id` varchar(19) NOT NULL,
+  `action` text NOT NULL,
+  `product_id` varchar(19) DEFAULT NULL,
+  `timestamp` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `categories`
 --
 
@@ -37,9 +51,9 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`category_name`, `category_image`) VALUES
-('Breads', '6752d8a74a874.jpg'),
-('Fruits', '6752d67620f3a.jpg'),
-('Vegetables', '6755771f882b8.jpg');
+('Breads', '676d76e845209.jpg'),
+('Fruits', '676d7687b37f7.jpg'),
+('Vegetables', '676d77c3627cf.jpg');
 
 -- --------------------------------------------------------
 
@@ -55,20 +69,19 @@ CREATE TABLE `customers` (
   `password` varchar(255) NOT NULL,
   `remember_token` varchar(255) DEFAULT NULL,
   `banks` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
-  `ewallets` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `addresses` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `cart` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`cart`)),
   `promotion_records` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`promotion_records`)),
-  `profile_image` varchar(255) DEFAULT NULL
+  `profile_image` varchar(255) DEFAULT NULL,
+  `banned` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `customers`
 --
 
-INSERT INTO `customers` (`customer_id`, `username`, `email`, `contact_num`, `password`, `remember_token`, `banks`, `ewallets`, `addresses`, `cart`, `promotion_records`, `profile_image`) VALUES
-('CUS-20241205-h415YA', 'tanjc', 'haha@gmail.com', '', '$2y$10$3nqdhbNjYymK5NMZzWfQY.4tNlSXdDjYTyF57QK7vdnkVxwAt2Eu2', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('CUS-20241206-rX31Kx', 'hahahaha', 'hahahaha@gmail.com', '', '$2y$10$SnLxrkeL/h2uU3hJ79ykeOK.SpsbXO.4XePH.HFQ5LMd5JvTGvo8i', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `customers` (`customer_id`, `username`, `email`, `contact_num`, `password`, `remember_token`, `banks`, `addresses`, `cart`, `promotion_records`, `profile_image`, `banned`) VALUES
+('CUS-20241226-HScE4N', 'tanjc', 'tanjeecheng1016@gmail.com', '', '$2y$10$OnNzCxds5mgZtQ63YthdKO7VeJk3Mueu27.TUo6WhT62jXdOfbCom', '33effdb051c253eb885fca5f2ef48684cfd7746bbeb7593bc62fcfeb97bd6037', NULL, NULL, NULL, NULL, 'guest.png', 0);
 
 -- --------------------------------------------------------
 
@@ -81,8 +94,19 @@ CREATE TABLE `employees` (
   `employee_name` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `role` enum('MANAGER','STAFF','DELIVERY_GUY','RESTOCK_GUY') NOT NULL
+  `role` enum('MANAGER','STAFF','DELIVERY_GUY') NOT NULL,
+  `profile_image` varchar(255) DEFAULT NULL,
+  `banned` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `employees`
+--
+
+INSERT INTO `employees` (`employee_id`, `employee_name`, `password`, `email`, `role`, `profile_image`, `banned`) VALUES
+('EMP-20241226-ko12na', 'admin', '664819d8c5343676c9225b5ed00a5cdc6f3a1ff3', 'admin@gmail.com', 'MANAGER', NULL, 0),
+('EMP-20241226-s5U0Zw', 'DeliveryGuy', '0a566818cd05e2c3726677a95ec1dc8657d5cc51', 'deliveryguy@gmail.com', 'DELIVERY_GUY', '676d7ae93e125.jpg', 0),
+('EMP-20241226-TWykLg', 'Staff1', '62d1677a9acbd298db0f7a906848c68cebcb154b', 'staff1@gmail.com', 'STAFF', '676d7b44324d8.jpg', 0);
 
 -- --------------------------------------------------------
 
@@ -94,27 +118,13 @@ CREATE TABLE `orders` (
   `order_id` varchar(19) NOT NULL,
   `customer_id` varchar(19) NOT NULL,
   `order_items` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`order_items`)),
-  `order_time` datetime NOT NULL,
-  `status` enum('PENDING','PAID','SHIPPING','DELIVERED') NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `payments`
---
-
-CREATE TABLE `payments` (
-  `payment_id` varchar(19) NOT NULL,
-  `customer_id` varchar(19) NOT NULL,
-  `order_id` varchar(19) NOT NULL,
-  `promo_id` varchar(19) NOT NULL,
+  `promo_amount` float DEFAULT NULL,
   `subtotal` float NOT NULL,
   `shipping_fee` float NOT NULL,
-  `promo_amount` float NOT NULL,
   `total` float NOT NULL,
-  `payment_method` enum('CREDIT_CARD','E_WALLET','CASH') NOT NULL,
-  `paid_date_time` datetime NOT NULL
+  `payment_method` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`payment_method`)),
+  `order_time` datetime NOT NULL,
+  `status` enum('PAID','SHIPPING','DELIVERED') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -140,10 +150,11 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`product_id`, `product_name`, `category_name`, `price`, `description`, `current_stock`, `amount_sold`, `product_image`, `status`) VALUES
-('PRO-20241206-q7m69G', 'Apple', 'Fruits', 1.5, 'This is apple', 2000, 0, '6752d6762b753.jpg', 'AVAILABLE'),
-('PRO-20241206-RC0FQX', 'Bagel', 'Breads', 4.5, 'This is a big big bagel', 20, 0, '6752d8a74db40.jpg', 'AVAILABLE'),
-('PRO-20241206-xTQb1p', 'Banana', 'Fruits', 100, 'This is a banana pro max', 1, 0, '6752d7a3034e1.jpg', 'AVAILABLE'),
-('PRO-20241208-2u0tPc', 'Carrot', 'Vegetables', 2, 'This is a orange carrot', 50, 0, '6755771f94f48.jpg', 'OUT_OF_STOCK');
+('PRO-20241226-3srUTR', 'Brioche', 'Breads', 3.29, 'Soft and buttery brioche with a rich, fluffy texture and a hint of sweetness. Perfect for sandwiches, toast, or enjoying on its own as a delightful treat!', 0, 0, '676d79df1ac78.jpg', 'OUT_OF_STOCK'),
+('PRO-20241226-cSEwhZ', 'Banana', 'Fruits', 4.99, 'Sweet and creamy bananas, rich in potassium and essential nutrients. Perfect for snacking, smoothies, or baking. Enjoy their natural energy boost anytime!', 912, 0, '676d774282332.jpg', 'AVAILABLE'),
+('PRO-20241226-i5HA8g', 'Carrot', 'Vegetables', 1.99, 'Fresh, crunchy carrots packed with vitamins and a naturally sweet flavor. Perfect for snacking, cooking, or juicing. A healthy choice for every meal!', 129, 0, '676d77c36cc96.jpg', 'AVAILABLE'),
+('PRO-20241226-rWEiPT', 'Bagel', 'Breads', 4.29, 'Soft and chewy bagels baked to perfection, with a golden crust and a delightful texture. Perfect for breakfast or snacks, pair them with cream cheese, jam, or your favorite toppings. Available in plain, sesame, and everything flavors!', 42, 0, '676d76e8494e5.jpg', 'AVAILABLE'),
+('PRO-20241226-sk9VcT', 'Apple', 'Fruits', 1.39, 'Juicy and crisp, our fresh red apples are the perfect blend of sweetness and tartness.', 292, 0, '676d7687b9b73.jpg', 'AVAILABLE');
 
 -- --------------------------------------------------------
 
@@ -186,6 +197,14 @@ CREATE TABLE `reviews` (
 --
 
 --
+-- Indexes for table `actionlogs`
+--
+ALTER TABLE `actionlogs`
+  ADD PRIMARY KEY (`log_id`),
+  ADD KEY `employee_id` (`employee_id`),
+  ADD KEY `product_id` (`product_id`);
+
+--
 -- Indexes for table `categories`
 --
 ALTER TABLE `categories`
@@ -211,15 +230,6 @@ ALTER TABLE `orders`
   ADD KEY `customer_id` (`customer_id`);
 
 --
--- Indexes for table `payments`
---
-ALTER TABLE `payments`
-  ADD PRIMARY KEY (`payment_id`),
-  ADD KEY `customer_id` (`customer_id`),
-  ADD KEY `order_id` (`order_id`),
-  ADD KEY `promo_id` (`promo_id`);
-
---
 -- Indexes for table `products`
 --
 ALTER TABLE `products`
@@ -241,22 +251,31 @@ ALTER TABLE `reviews`
   ADD KEY `product_id` (`product_id`);
 
 --
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `actionlogs`
+--
+ALTER TABLE `actionlogs`
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `actionlogs`
+--
+ALTER TABLE `actionlogs`
+  ADD CONSTRAINT `fk_employee` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`),
+  ADD CONSTRAINT `fk_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`);
 
 --
 -- Constraints for table `orders`
 --
 ALTER TABLE `orders`
   ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`);
-
---
--- Constraints for table `payments`
---
-ALTER TABLE `payments`
-  ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`),
-  ADD CONSTRAINT `payments_ibfk_2` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
-  ADD CONSTRAINT `payments_ibfk_3` FOREIGN KEY (`promo_id`) REFERENCES `promotions` (`promo_id`);
 
 --
 -- Constraints for table `products`

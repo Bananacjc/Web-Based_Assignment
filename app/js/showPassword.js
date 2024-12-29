@@ -6,6 +6,14 @@ $(document).ready(function () {
             .toggleClass('ti-eye', isPassword)
             .toggleClass('ti-eye-off', !isPassword);
     }
+    
+    $('#toggleOldPassword').on('click', function () {
+        togglePasswordVisibility($(this), $('#old-password'));
+    });
+
+    $('#toggleNewPassword').on('click', function () {
+        togglePasswordVisibility($(this), $('#new-password'));
+    });
 
     $('#togglePassword').on('click', function () {
         togglePasswordVisibility($(this), $('#password'));

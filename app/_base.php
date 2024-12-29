@@ -7,26 +7,38 @@
 date_default_timezone_set('Asia/Kuala_Lumpur');
 session_start();
 
-if (!isset($_SESSION['user']) && isset($_COOKIE['remember_me'])) {
-    $token = $_COOKIE['remember_me'];
-
-    // Verify the token
-    $stmt = $_db->prepare("SELECT * FROM customers WHERE remember_token = ?");
-    $stmt->execute([$token]);
-    $user = $stmt->fetch();
-
-    if ($user) {
-        login($user); // Log the user in
-    }
-}
-
 // ============================================================================
 // General Page Functions
 // ============================================================================
 
+function validate_address_with_google($address, $apiKey)
+        {
+            $formattedAddress = urlencode("{$address['line_1']}, {$address['village']}, {$address['city']}, {$address['state']}, {$address['postal_code']}");
+            $apiUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=$formattedAddress&key=$apiKey";
+    
+            $response = file_get_contents($apiUrl);
+            if (!$response) {
+                return false; // API call failed
+            }
+    
+            $data = json_decode($response, true);
+            return isset($data['status']) && $data['status'] === 'OK'; // Address is valid if status is 'OK'
+        }
+    
+
 function popup($msg, $isSuccess)
 {
-    echo "<script>showPopup('$msg', $isSuccess);</script>";
+    echo "<script>showAlertPopup('$msg', $isSuccess);</script>";
+}
+
+function cartPopup($imagePath)
+{
+    echo "<script>showCartPopup('$imagePath');</script>";
+}
+
+function priceFormat($price): string
+{
+    return number_format($price, 2, '.', ',');
 }
 
 // Is GET request?
@@ -99,15 +111,16 @@ function get_file($key)
 }
 
 // Crop, resize and save photo
-function save_photo($f, $folder, $width = 200, $height = 200)
+function save_photo($f, $folder)
 {
-    $photo = uniqid() . '.jpg';
+    $photo = uniqid() . '.png'; // Use PNG to preserve transparency
 
     require_once 'lib/SimpleImage.php';
     $img = new SimpleImage();
+
+    // Load the file and save it directly without resizing
     $img->fromFile($f->tmp_name)
-        ->thumbnail($width, $height)
-        ->toFile("$folder/$photo", 'image/jpeg');
+        ->toFile("$folder/$photo", 'image/png'); // Save as PNG to retain transparency
 
     return $photo;
 }
@@ -277,6 +290,13 @@ function html_time($key, $attr = '')
     echo "<input type='time' id='$key' name='$key' value='$value' $attr>";
 }
 
+// Generate <input type='datetime-local'>
+function html_datetime($key, $attr = '')
+{
+    $value = encode($GLOBALS[$key] ?? '');
+    echo "<input type='datetime-local' id='$key' name='$key' value='$value' $attr>";
+}
+
 // Generate <textarea>
 function html_textarea($key, $attr = '')
 {
@@ -386,6 +406,24 @@ function err($key)
 // Global user object
 $_user = $_SESSION['user'] ?? null;
 
+function require_login()
+{
+    global $_user;
+    if (!$_user) {
+        redirect('/page/login.php');
+    }
+}
+
+function reset_user()
+{
+    global $_user;
+    global $_db;
+    $stmt = $_db->prepare("SELECT * FROM customers WHERE customer_id = ?");
+    $stmt->execute([$_user->customer_id]);
+    $_user = $stmt->fetch();
+    $_SESSION['user'] = $_user;
+}
+
 // Login user
 function login($user, $url = '/')
 {
@@ -437,13 +475,6 @@ function auth(...$roles)
 // Email Functions
 // ============================================================================
 
-// Demo Accounts:
-// --------------
-// AACS3173@gmail.com           npsg gzfd pnio aylm
-// BAIT2173.email@gmail.com     ytwo bbon lrvw wclr
-// liaw.casual@gmail.com        wtpa kjxr dfcb xkhg
-// liawcv1@gmail.com            obyj shnv prpa kzvj
-
 // Initialize and return mail object
 function get_mail()
 {
@@ -455,10 +486,10 @@ function get_mail()
     $m->SMTPAuth = true;
     $m->Host = 'smtp.gmail.com';
     $m->Port = 587;
-    $m->Username = 'AACS3173@gmail.com';
-    $m->Password = 'npsg gzfd pnio aylm';
+    $m->Username = 'bananasis.com@gmail.com';
+    $m->Password = 'lgxf qnts ffkt biaf';
     $m->CharSet = 'utf-8';
-    $m->setFrom($m->Username, '😺 Admin');
+    $m->setFrom($m->Username, '🍌BANANASIS👧🏻');
 
     return $m;
 }
@@ -468,30 +499,82 @@ function get_mail()
 // ============================================================================
 
 // Get shopping cart
-function get_cart()
+function get_cart(): array
 {
-    return $_SESSION['cart'] ?? [];
+    global $_db;
+    global $_user;
+
+    // Prepare query
+    $stmt = $_db->prepare('SELECT cart FROM customers WHERE customer_id = ?');
+    $stmt->execute([$_user->customer_id]);
+    $cartRow = $stmt->fetch(PDO::FETCH_OBJ); // Fetch as object
+
+    // If user exists and 'cart' is not empty
+    if ($cartRow && !empty($cartRow->cart)) {
+        $cart = json_decode($cartRow->cart, true);  // Decode JSON into array
+        if (json_last_error() === JSON_ERROR_NONE) {
+            set_cart($cart);
+            return $cart;
+        } else {
+            error_log("JSON Decode Error: " . json_last_error_msg());
+        }
+    }
+
+    return [];
 }
 
 // Set shopping cart
 function set_cart($cart = [])
 {
-    $_SESSION['cart'] = $cart;
+    global $_db;
+    global $_user;
+
+    // Prepare query
+    $stmt = $_db->prepare('UPDATE customers SET cart = ? WHERE customer_id = ?');
+
+    // Encode cart into json
+    $cart_json = json_encode($cart);
+    if (json_last_error() == JSON_ERROR_NONE) {
+        try {
+            $stmt->execute([$cart_json, $_user->customer_id]);
+            $_user->cart = $cart_json;
+        } catch (PDOException $e) {
+            throw new PDOException("Database Error: " . $e->getMessage(), (int)$e->getCode());
+        }
+    } else {
+        error_log("JSON Decode Error: " . json_last_error_msg());
+    }
 }
 
-// Update shopping cart
+
 function update_cart($id, $unit)
 {
-    $cart = get_cart();
+    global $_db;
+    global $_user;
 
-    if ($unit >= 1 && $unit <= 10 && is_exists($id, 'product', 'id')) {
+    $cart = get_cart();     // Get cart
+    $stmt = $_db->prepare('UPDATE customers SET cart = ? WHERE customer_id = ?');  // Prepare update query
+
+    // Update local cart if valid
+    if ($unit >= 1 && is_exists($id, 'products', 'product_id')) {
         $cart[$id] = $unit;
-        ksort($cart);
     } else {
         unset($cart[$id]);
     }
 
-    set_cart($cart);
+    // Convert to json
+    $cart_json = json_encode($cart);
+    if (json_last_error() == JSON_ERROR_NONE) {
+        // Write to db
+        try {
+            $stmt->execute([$cart_json, $_user->customer_id]);
+            $_user->cart = $cart_json;
+        } catch (PDOException $e) {
+            throw new PDOException("Database Error: " . $e->getMessage(), (int)$e->getCode());
+        }
+    } else {
+        error_log("JSON Decode Error: " . json_last_error_msg());
+    }
 }
 
 // ============================================================================
@@ -502,6 +585,20 @@ function update_cart($id, $unit)
 $_db = new PDO('mysql:dbname=db_bananasis', 'root', '', [
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
 ]);
+
+// Remember ME
+if (!isset($_SESSION['user']) && isset($_COOKIE['remember_me'])) {
+    $token = $_COOKIE['remember_me'];
+
+    // Verify the token
+    $stmt = $_db->prepare("SELECT * FROM customers WHERE remember_token = ?");
+    $stmt->execute([$token]);
+    $user = $stmt->fetch();
+
+    if ($user) {
+        login($user); // Log the user in
+    }
+}
 
 // Is unique?
 function is_unique($value, $table, $field)
@@ -541,10 +638,39 @@ function generate_unique_id($prefix, $table, $column, $pdo)
     return $generated_id;
 }
 
+function renderStars($rating) {
+    $fullStars = floor($rating);
+    $halfStar = ($rating - $fullStars >= 0.5) ? 1 : 0;
+    $emptyStars = 5 - $fullStars - $halfStar;
+
+    $stars = str_repeat('<i class="ti ti-star-filled"></i>', $fullStars);
+    if ($halfStar) $stars .= '<i class="ti ti-star-half-filled"></i>';
+    $stars .= str_repeat('<i class="ti ti-star"></i>', $emptyStars);
+
+    return $stars;
+}
+
+
 // ============================================================================
 // Global Constants and Variables
 // ============================================================================
 
+
+// ============================================================================
+// Session, Cookie, Cache Handling
+// ============================================================================
+if (!isset($_SESSION['user']) && isset($_COOKIE['remember_me'])) {
+    $token = $_COOKIE['remember_me'];
+
+    // Verify the token
+    $stmt = $_db->prepare("SELECT * FROM customers WHERE remember_token = ?");
+    $stmt->execute([$token]);
+    $user = $stmt->fetch();
+
+    if ($user) {
+        login($user); // Log the user in
+    }
+}
 ?>
 
 <!DOCTYPE html>

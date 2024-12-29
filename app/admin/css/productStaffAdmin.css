@@ -49,6 +49,21 @@ form button.delete-action-button, button.cancel-button {
     border-radius: 5px;
 }
 
+.deleteButton{
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
 
 .action-button {
     background-color: #007BFF; /* Retained original button color */
@@ -162,3 +177,45 @@ form button.delete-action-button, button.cancel-button {
 
 }
 
+.resized-image {
+    width: 100px; 
+    height: auto; 
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow-y: auto; /* Enables vertical scrolling */
+}
+
+.modal-content {
+    background: white;
+    width: 60%;
+    margin: 35px auto;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    max-height: 80vh; /* Restricts modal height */
+    overflow-y: auto; /* Enables scrolling within the modal if the content is too large */
+}
+.modal {
+    margin-top: 80px;
+    display: none;
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+
+.close-button {
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}

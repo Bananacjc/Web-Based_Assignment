@@ -12,6 +12,79 @@ session_start();
 // ============================================================================
 
 // Is GET request?
+function get_mail()
+{
+    require_once 'lib/PHPMailer.php';
+    require_once 'lib/SMTP.php';
+
+    $m = new PHPMailer(true);
+    $m->isSMTP();
+    $m->SMTPAuth = true;
+    $m->Host = 'smtp.gmail.com';
+    $m->Port = 587;
+    $m->Username = 'liaw.casual@gmail.com';
+    $m->Password = 'buvq yftx klma vezl';
+    $m->CharSet = 'utf-8';
+    $m->setFrom($m->Username, '😺 Admin');
+
+    return $m;
+}
+
+function popup($msg, $isSuccess)
+{
+    echo "<script>showAlertPopup('$msg', $isSuccess);</script>";
+}
+
+function log_action($employeeId, $actionType, $actionDetails, $db) {
+    try {
+        $stmt = $db->prepare("INSERT INTO actionlog (employee_id, action_type, action_details, action_date) VALUES (?, ?, ?, NOW())");
+        $stmt->execute([$employeeId, $actionType, $actionDetails]);
+    } catch (PDOException $e) {
+        // Log error if needed
+        error_log("Error logging action: " . $e->getMessage());
+    }
+}
+
+function require_login()
+{
+    global $_user;
+    if (!$_user) {
+        redirect('/admin/page/adminLogin.php');
+    }
+}
+
+function is_valid_json($string) {
+    json_decode($string);
+    return (json_last_error() == JSON_ERROR_NONE);
+}
+
+
+// Function to log actions in the database
+function logAction($employee_id, $action, $product_id = null) {
+    // Using the global $_db object for the database connection
+    global $_db;
+
+    // Prepare the SQL query to insert the log into the actionlogs table
+    $sql = "INSERT INTO actionlogs (employee_id, action, product_id, timestamp) 
+            VALUES (:employee_id, :action, :product_id, NOW())";
+
+    // Prepare the statement
+    $stmt = $_db->prepare($sql);
+
+    // Bind parameters to the prepared statement
+    $stmt->bindParam(':employee_id', $employee_id, PDO::PARAM_STR);
+    $stmt->bindParam(':action', $action, PDO::PARAM_STR);
+    $stmt->bindParam(':product_id', $product_id, PDO::PARAM_STR); // Can be null
+
+    // Execute the statement and check if successful
+    if ($stmt->execute()) {
+        echo "Action logged successfully.";
+    } else {
+        echo "Error logging action: " . $stmt->errorInfo()[2];
+    }
+}
+
+
 function is_get(): bool
 {
     return $_SERVER['REQUEST_METHOD'] == 'GET';
@@ -62,7 +135,7 @@ function temp($key, $value = null)
         $_SESSION['temp_' . $key] = $value;
     } else {
         $value = $_SESSION['temp_' . $key] ?? null;
-        unset($_SESSION['temp' . $key]); // Unset the session variable
+        unset($_SESSION['temp_' . $key]); // Unset the session variable
         return $value;
     }
 }
@@ -80,15 +153,16 @@ function get_file($key)
 }
 
 // Crop, resize and save photo
-function save_photo($f, $folder, $width = 200, $height = 200)
+function save_photo($f, $folder)
 {
-    $photo = uniqid() . '.jpg';
+    $photo = uniqid() . '.png'; // Use PNG to preserve transparency
 
     require_once 'lib/SimpleImage.php';
     $img = new SimpleImage();
+
+    // Load the file and save it directly without resizing
     $img->fromFile($f->tmp_name)
-        ->thumbnail($width, $height)
-        ->toFile("$folder/$photo", 'image/jpeg');
+        ->toFile("$folder/$photo", 'image/png'); // Save as PNG to retain transparency
 
     return $photo;
 }
@@ -237,11 +311,14 @@ function html_number($key, $min = '', $max = '', $step = '', $attr = '')
 }
 
 // Generate <input type='search'>
-function html_search($key, $attr = '')
-{
+function html_search($key, $attr = '',$placeholder = 'Search Username Here') {
+    // Encode the value if it exists in the global array or is empty
     $value = encode($GLOBALS[$key] ?? '');
-    echo "<input type='search' id='$key' name='$key' value='$value' $attr>";
+    
+    // Create the input field with the value, attributes, and placeholder
+    echo "<input type='search' id='$key' name='$key' value='$value' $attr placeholder='$placeholder'>";
 }
+
 
 // Generate <input type='date'>
 function html_date($key, $min = '', $max = '', $attr = '')
@@ -256,6 +333,13 @@ function html_time($key, $attr = '')
 {
     $value = encode($GLOBALS[$key] ?? '');
     echo "<input type='time' id='$key' name='$key' value='$value' $attr>";
+}
+
+// Generate <input type='datetime-local'>
+function html_datetime($key, $attr = '')
+{
+    $value = encode($GLOBALS[$key] ?? '');
+    echo "<input type='datetime-local' id='$key' name='$key' value='$value' $attr>";
 }
 
 // Generate <textarea>
@@ -350,14 +434,12 @@ function table_headers($fields, $sort, $dir, $href = '')
 $_err = [];
 
 // Generate <span class='err'>
-function err($key)
-{
+function err($field) {
     global $_err;
-    if ($_err[$key] ?? false) {
-        echo "<span class='err'>$_err[$key]</span>";
-    } else {
-        echo '<span></span>';
+    if (isset($_err[$field])) {
+        return $_err[$field];
     }
+    return '';
 }
 
 // ============================================================================
@@ -368,14 +450,14 @@ function err($key)
 $_user = $_SESSION['user'] ?? null;
 
 // Login user
-function login($user, $url = '/')
+function login($user, $url = 'adminDashboard.php')
 {
     $_SESSION['user'] = $user;
     redirect($url);
 }
 
 // Logout user
-function logout($url = '/')
+function logout($url = 'adminLogin.php')
 {
     unset($_SESSION['user']);
     redirect($url);
@@ -410,23 +492,7 @@ function auth(...$roles)
 // liawcv1@gmail.com            obyj shnv prpa kzvj
 
 // Initialize and return mail object
-function get_mail()
-{
-    require_once 'lib/PHPMailer.php';
-    require_once 'lib/SMTP.php';
 
-    $m = new PHPMailer(true);
-    $m->isSMTP();
-    $m->SMTPAuth = true;
-    $m->Host = 'smtp.gmail.com';
-    $m->Port = 587;
-    $m->Username = 'AACS3173@gmail.com';
-    $m->Password = 'npsg gzfd pnio aylm';
-    $m->CharSet = 'utf-8';
-    $m->setFrom($m->Username, '😺 Admin');
-
-    return $m;
-}
 
 // ============================================================================
 // Shopping Cart
@@ -506,6 +572,30 @@ function generate_unique_id($prefix, $table, $column, $pdo)
     return $generated_id;
 }
 
+
+function plainTextJson($jsonString)
+{
+    $decoded = json_decode($jsonString, true); // Use associative array mode
+
+    // Check if JSON decoding was successful
+    if (json_last_error() === JSON_ERROR_NONE) {
+        if (is_array($decoded)) {
+            // Convert array to a plain string (key-value pairs for associative arrays)
+            return implode("", array_map(function ($key, $value) {
+                if (is_array($value)) {
+                    // Handle nested arrays
+                    return "$key: [" . implode(", ",$value) . "]";
+                }
+                return "$key: $value";
+            }, array_keys($decoded), $decoded));
+        } elseif (is_string($decoded)) {
+            return $decoded;
+        }
+    }
+
+    return htmlspecialchars($jsonString);
+}
+
 // ============================================================================
 // Global Constants and Variables
 // ============================================================================
@@ -522,11 +612,35 @@ function generate_unique_id($prefix, $table, $column, $pdo)
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
     <link rel="icon" href="../images/logo.png">
     <link rel="stylesheet" href="../css/base.css" type="text/css">
-    <link href="<?= $_css ?>" rel="stylesheet" type="text/css">
+   <link href="<?= $_css ?>" rel="stylesheet" type="text/css">
+   <link href="<?= $_css1 ?>" rel="stylesheet" type="text/css">
     <title><?= $_title ?? 'Untitled' ?></title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="/js/popup.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="/js/custom.js"></script>
+
 </head>
+
+<body>
+    <div id="popup" class="hide">
+        <div id="popup-content">
+            <h3 id="popup-title">Title</h3>
+            <p id="popup-msg">Message</p>
+            <button id="popup-btn" type="button">OK</button>
+        </div>
+    </div>
+    <script src="/js/popup.js"></script>
+</body>
+
+<?php
+$popup_message = temp('popup-msg') ?? null;
+if ($popup_message) {
+    $msg = $popup_message['msg'];
+    $isSuccess = $popup_message['isSuccess'];
+    popup($msg, $isSuccess);
+}
+
+?>

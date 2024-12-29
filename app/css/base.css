@@ -13,6 +13,47 @@ label input[type='checkbox'] {
     vertical-align: middle;
 }
 
+/* Checkbox standard appearance */
+input[type="checkbox"] {
+    appearance: none; /* For modern browsers */
+    -webkit-appearance: none; /* For Safari */
+    -moz-appearance: none; /* For older Firefox */
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--color-grey);
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+}
+
+/* Change the background color when checked */
+input[type="checkbox"]:checked {
+    background-color: var(--color-green);
+    border-color: var(--color-green);
+}
+
+/* Optional: Add a checkmark */
+input[type="checkbox"]:checked::after {
+    content: "\01F5F8";
+    color: var(--color-black-pure);
+    font-size: 16px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+select {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--color-grey);
+}
+
+
+
 /* Set some useful variable for use*/
 :root {
     --color-white-pure: #FFF;
@@ -70,6 +111,10 @@ label input[type='checkbox'] {
 
 .text-gold {
     color: var(--color-gold);
+}
+
+.text-red {
+    color: var(--color-red);
 }
 
 /* width */
@@ -208,6 +253,10 @@ label input[type='checkbox'] {
 }
 
 /* display */
+.d-none {
+    display: none !important;
+}
+
 .d-flex {
     display: -webkit-box !important;
     display: -ms-flexbox !important;
@@ -229,6 +278,10 @@ label input[type='checkbox'] {
 
 .flex-direction-column {
     flex-direction: column !important; 
+}
+
+.flex-wrap-wrap {
+    flex-wrap: wrap !important;  
 }
 
 /* justify-content */
@@ -294,6 +347,10 @@ label input[type='checkbox'] {
     text-align: left !important;
 }
 
+.text-right {
+    text-align: right !important;
+}
+
 /* cursor */
 .cursor-pointer {
     cursor: pointer !important;
@@ -328,6 +385,11 @@ Special CSS
 ===================================================================
 */
 
+.number-figure {
+    font-family: monospace !important;
+    font-size: 16px !important;
+
+}
 
 .text-hover-underline:hover {
     text-decoration: underline !important;
@@ -375,7 +437,7 @@ Special CSS
     text-decoration: none;
     justify-content: center;
     align-items: center;
-    margin: 25px 50px;
+    margin: 15px 50px;
     transition: transform 0.3s ease-in-out;
 }
 
@@ -450,6 +512,7 @@ Source: https://stackoverflow.com/questions/54616139/how-to-animate-underline-fr
     
 }
 
+/* Custom Popup Window */
 #popup {
     position: fixed;
     top: 0;
@@ -458,7 +521,7 @@ Source: https://stackoverflow.com/questions/54616139/how-to-animate-underline-fr
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     justify-content: center;
-    z-index: 999;
+    z-index: 9999;
 }
 
 #popup.show {
@@ -470,13 +533,6 @@ Source: https://stackoverflow.com/questions/54616139/how-to-animate-underline-fr
 }
 
 #popup #popup-content {
-    --bg-success: #D4EDDA;
-    --bg-failed: #F8D7DA;
-    --color-success: #155724;
-    --color-failed: #721C24;
-
-    background-color: var(--bg-success);
-    color: var(--color-success);
     width: 300px;
     height: 120px;
     padding: 25px;
@@ -487,6 +543,16 @@ Source: https://stackoverflow.com/questions/54616139/how-to-animate-underline-fr
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#popup #popup-content.success {
+    background-color: #D4EDDA;
+    color: #155724;
+}
+
+#popup #popup-content.failed {
+    background-color: #F8D7DA;
+    color: #721C24;
 }
 
 #popup #popup-title {
@@ -500,9 +566,6 @@ Source: https://stackoverflow.com/questions/54616139/how-to-animate-underline-fr
 }
 
 #popup #popup-btn {
-    --bg-success: #28A745;
-    --bg-failed: #DC3545;
-    background-color: var(--bg-success);
     padding: 10px 20px;
     color: var(--color-white-pure);
     border: none;
@@ -511,13 +574,36 @@ Source: https://stackoverflow.com/questions/54616139/how-to-animate-underline-fr
     font-size: 14px;
 }
 
-#popup #popup-btn:hover {
-    --bg-success: #218838;
-    --bg-failed: #C82333;
-    background-color: var(--bg-success);
+#popup #popup-btn.success {
+    background-color: #28A745;
 }
+
+#popup #popup-btn.success:hover {
+    background-color: #218838;
+}
+
+#popup #popup-btn.failed {
+    background-color: #DC3545;
+}
+
+#popup #popup-btn.failed:hover {
+    background-color: #C82333;
+}
+
 
 /* Remove the light blue background on autocomplete */
 input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0px 1000px var(--color-white-pure) inset !important;
 }
+
+.pac-container {
+    z-index: 10000 !important; /* Ensures it's above all elements */
+    position: absolute !important;
+  }
+  
+  
+  .pac-container .pac-item {
+    font-family: "Inter", sans-serif; /* Match the form style */
+    font-size: 14px; /* Adjust font size */
+  }
+  

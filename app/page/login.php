@@ -7,47 +7,57 @@ $msg = '';
 $isSuccess = false;
 
 if (is_post()) {
-    $usernameOrEmail = post('username-email');
-    $password = post('password');
-    $rememberMe = post('remember_me'); // Check if "Remember Me" is checked
+    $usernameOrEmail = trim(post('username-email'));
+    $password = trim(post('password'));
+    $rememberMe = post('remember_me') === '1';
 
     // Fetch user from the database
     $stmt = $_db->prepare("SELECT * FROM customers WHERE username = ? OR email = ?");
     $stmt->execute([$usernameOrEmail, $usernameOrEmail]);
     $user = $stmt->fetch();
 
-    if ($user && password_verify($password, $user->password)) {
-        login($user); // Log the user in
+    if ($user) {
+        // Check if the user is banned
+        if ($user->banned == 1) {
+            $msg = 'Your account is banned. Please contact support.';
+            popup($msg, false);
+        } else {
+            // Verify password hashed with SHA1
+            if (sha1($password) === $user->password) { // Compare SHA1 hashes
+                if ($rememberMe) {
+                    // Generate a secure token
+                    $token = bin2hex(random_bytes(32)); // 64-character secure token
 
-        if ($rememberMe) {
-            // Generate a secure token
-            $token = bin2hex(random_bytes(32)); // 64-character secure token
+                    // Store the token in the database
+                    $updateStmt = $_db->prepare("UPDATE customers SET remember_token = ? WHERE customer_id = ?");
+                    $updateStmt->execute([$token, $user->customer_id]);
 
-            // Store the token in the database
-            $updateStmt = $_db->prepare("UPDATE customers SET remember_token = ? WHERE customer_id = ?");
-            $updateStmt->execute([$token, $user->customer_id]);
-
-            // Set the token in a secure cookie
-            setcookie('remember_me', $token, [
-                'expires' => time() + (30 * 24 * 60 * 60), // 30 days
-                'path' => '/',
-                'secure' => true,    // Ensures the cookie is sent over HTTPS only
-                'httponly' => true,  // Prevents JavaScript access to the cookie
-                'samesite' => 'Strict',
-            ]);
+                    // Set the token in a secure cookie
+                    setcookie('remember_me', $token, [
+                        'expires' => time() + (30 * 24 * 60 * 60), // 30 days
+                        'path' => '/',
+                        'secure' => true,    // Ensures the cookie is sent over HTTPS only
+                        'httponly' => true,  // Prevents JavaScript access to the cookie
+                        'samesite' => 'Strict',
+                    ]);
+                }
+                login($user); // Log the user in
+            } else {
+                $msg = 'Invalid username/email or password';
+                popup($msg, false);
+            }
         }
     } else {
         $msg = 'Invalid username/email or password';
-        echo "<script>showPopup('$msg', false);</script>";
+        popup($msg, false);
     }
 }
-
 ?>
 
 <body>
-    <?php if (!empty($error)): ?>
+    <?php if (!empty($msg)): ?>
         <script>
-            showPopup('<?= $error ?>', 'error');
+            showPopup('<?= $msg ?>', 'error');
         </script>
     <?php endif; ?>
     <div id="container">
@@ -56,21 +66,21 @@ if (is_post()) {
                 <?= html_logo(60, 60, true) ?>
                 <div id="input-container" class="w-100 d-flex flex-direction-column justify-content-center align-items-center">
                     <div class="input-subcontainer">
-                        <?= html_text('username-email', "class='input-box' spellcheck='false' required")?>
+                        <?= html_text('username-email', "class='input-box' spellcheck='false' required") ?>
                         <label for="username-email" class="label">Username or email</label>
                     </div>
                     <div class="input-subcontainer">
-                        <?= html_password('password', "class='input-box' spellcheck='false' required")?>
+                        <?= html_password('password', "class='input-box' spellcheck='false' required") ?>
                         <label for="password" class="label">Password</label>
                         <i class="ti ti-eye-off" id="togglePassword"></i>
                     </div>
                 </div>
                 <div id="login-helper-container" class="d-flex justify-content-space-between align-items-center">
                     <div class="d-flex align-items-center">
-                        <?= html_checkbox('remember_me', 'Remember Me', '', "id='remember-me'")?>
+                        <?= html_checkbox('remember_me', 'Remember Me', '', "id='remember-me'") ?>
                     </div>
                     <div>
-                        <a href="ForgetPassword.php" id="forgotpass" class="hover-underline-anim">Forgot your password?</a>
+                        <a href="forget_password.php" id="forgotpass" class="hover-underline-anim">Forgot your password?</a>
                     </div>
                 </div>
                 <button id="loginbtn" type="submit">Login</button>
@@ -79,11 +89,11 @@ if (is_post()) {
                     <a href="register.php" class="hover-underline-anim">Sign up here</a>
                 </div>
                 <div id="cont-guest-container" class="hover-translate-y">
-                <a href="../index.php" id="cont-guest"><i class="ti ti-user-off position-relative"></i>Continue As Guest</a>
-            </div>
+                    <a href="../index.php" id="cont-guest"><i class="ti ti-user-off position-relative"></i>Continue As Guest</a>
+                </div>
 
             </form>
-            
+
         </div>
         <div id="container-right">
             <p>Get all your groceries<br>with just a few clicks</p>
@@ -92,5 +102,3 @@ if (is_post()) {
     </div>
     <script src="../js/showPassword.js"></script>
 </body>
-
-</html>
