@@ -18,10 +18,10 @@ if (is_post()) {
 
     if (empty($order_items)) {
         $_err['order_items'] = "Order items are required.";
-    } 
+    }
     if (empty($payment_method)) {
         $_err['payment_method'] = "Payment method is required.";
-    } 
+    }
 
     if (empty($sub_total)) {
         $_err['sub_total'] = "Sub total is required.";
@@ -51,8 +51,46 @@ if (is_post()) {
 
     if (!$_err) {
         try {
-            $order_items = json_encode($order_items);
-            $payment_method = json_encode($payment_method);
+            // Convert `order_items` input to JSON format
+            $order_items_raw = req('order_items'); // Raw input string
+            $order_items_array = []; // Use a separate variable for array
+
+            // Use regex to parse the input
+            preg_match_all('/(PRO-\d+-[a-zA-Z0-9]+):\s*(\d+)/', $order_items_raw, $matches, PREG_SET_ORDER);
+
+            // Build the associative array
+            foreach ($matches as $match) {
+                $order_items_array[$match[1]] = (int)$match[2]; // Convert the value to an integer
+            }
+
+            // Encode the array to JSON
+            $order_items = json_encode($order_items_array, JSON_UNESCAPED_SLASHES);
+
+            // Process and validate payment method
+            $payment_method_raw = req('payment_method');
+            $valid_methods = ['link', 'alipay', 'grabpay', 'fpx', 'other'];
+
+            if (!empty($payment_method_raw)) {
+                // Initialize an array for the parsed payment method
+                $payment_method_array = [];
+            
+                // Use regex to extract the values for accNum, cvv, and expiry
+                preg_match('/accNum:\s*([\d]+)cvv:\s*([\d]+)expiry:\s*([\d\-]+)/', $payment_method_raw, $matches);
+            
+                if (!empty($matches) && count($matches) === 4) {
+                    // Map extracted values to the expected keys
+                    $payment_method_array['accNum'] = $matches[1];
+                    $payment_method_array['cvv'] = $matches[2];
+                    $payment_method_array['expiry'] = $matches[3];
+            
+                    // Encode the array to JSON
+                    $payment_method = json_encode($payment_method_array, JSON_UNESCAPED_SLASHES);
+                } else {
+                    $_err['payment_method'] = "Invalid payment method format. Ensure it matches 'accNum: <value>cvv: <value>expiry: <value>'.";
+                }
+            } else {
+                $_err['payment_method'] = "Payment method cannot be empty.";
+            }            
 
             $total = ($sub_total + $shipping_fee) - $promo_amount;
 
@@ -93,4 +131,3 @@ if (is_post()) {
         redirect('orderStatus.php');
     }
 }
-?>
