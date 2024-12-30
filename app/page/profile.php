@@ -130,6 +130,18 @@ if (is_post()) {
                 redirect();
             }
 
+            // Validate bank account number
+            if (!preg_match('/^\d{7,14}$/', $bankData['accNum'])) {
+                temp('popup-msg', ['msg' => 'Invalid bank account number. Must be 7-14 digits.', 'isSuccess' => false]);
+                redirect();
+            }
+
+            // Validate CVV code
+            if (!preg_match('/^\d{3}$/', $bankData['cvv'])) {
+                temp('popup-msg', ['msg' => 'Invalid CVV code. Must be 3 digits.', 'isSuccess' => false]);
+                redirect();
+            }
+
             // Check for duplicate account numbers
             foreach ($banks as $bank) {
                 if ($bank['accNum'] === $bankData['accNum']) {
@@ -155,8 +167,21 @@ if (is_post()) {
                 redirect();
             }
 
-            // Check for duplicate account numbers (excluding the current index being edited)
+            // Validate bank account number
             $newAccNum = trim(post('acc-num'));
+            if (!preg_match('/^\d{7,14}$/', $newAccNum)) {
+                temp('popup-msg', ['msg' => 'Invalid bank account number. Must be 7-14 digits.', 'isSuccess' => false]);
+                redirect();
+            }
+
+            // Validate CVV code
+            $newCvv = trim(post('cvv'));
+            if (!preg_match('/^\d{3}$/', $newCvv)) {
+                temp('popup-msg', ['msg' => 'Invalid CVV code. Must be 3 digits.', 'isSuccess' => false]);
+                redirect();
+            }
+
+            // Check for duplicate account numbers (excluding the current index being edited)
             foreach ($banks as $i => $bank) {
                 if ($i !== (int)$index && $bank['accNum'] === $newAccNum) {
                     temp('popup-msg', ['msg' => 'This account number is already added.', 'isSuccess' => false]);
@@ -166,7 +191,7 @@ if (is_post()) {
 
             $banks[$index] = [
                 'accNum' => $newAccNum,
-                'cvv' => trim(post('cvv')),
+                'cvv' => $newCvv,
                 'expiry' => $expiry,
             ];
 
@@ -437,8 +462,9 @@ if (is_post()) {
                 <tbody>
                     <?php
                     $banks = json_decode($_user->banks ?? '[]', true);
-                    foreach ($banks as $index => $bank) {
-                        echo "<tr>
+                    if (!empty($banks)) {
+                        foreach ($banks as $index => $bank) {
+                            echo "<tr>
                                 <td>" . ($index + 1) . "</td>
                                 <td class='bank-account'>{$bank['accNum']}</td>
                                 <td class='bank-cvv'>{$bank['cvv']}</td>
@@ -451,6 +477,11 @@ if (is_post()) {
                                         <i class='ti ti-trash'></i>
                                     </button>
                                 </td>
+                            </tr>";
+                        }
+                    } else {
+                        echo "<tr>
+                                <td colspan='5'><p class='empty-row'>No banks available.</p></td>
                             </tr>";
                     }
                     ?>
@@ -490,6 +521,7 @@ if (is_post()) {
             <tbody>
                 <?php
                 $addresses = json_decode($_user->addresses ?? '[]', true);
+                if(!empty($addresses)){
                 foreach ($addresses as $index => $address) {
                     // Concatenate the address fields for display
                     $formattedAddress = "{$address['line_1']}";
@@ -516,6 +548,13 @@ if (is_post()) {
                             </td>
                         </tr>";
                 }
+            }else{
+                echo"
+                        <tr>
+                            <td colspan='3'><p class='empty-row'>No addresses available.</p></td>
+                        </tr>
+                ";
+            }
                 ?>
             </tbody>
         </table>
@@ -570,7 +609,9 @@ if (is_post()) {
         <h2>Collected Promotions</h2>
         <link rel="stylesheet" href="../css/promotion.css">
         <?php if (!empty($promotionRecords)): ?>
-            <?php foreach ($promotionRecords as $promoID => $promoDetails): ?>
+            <?php
+            $hasValidPromotions = false; // Track if there are valid promotions
+            foreach ($promotionRecords as $promoID => $promoDetails): ?>
                 <?php
                 $promo_stmt->execute([$promoID]);
                 $promo = $promo_stmt->fetch(PDO::FETCH_OBJ);
@@ -589,6 +630,8 @@ if (is_post()) {
                 if ($upcoming || $expired) {
                     continue;
                 }
+
+                $hasValidPromotions = true; // Found at least one valid promotion
                 ?>
                 <div class="promo-card">
                     <div class="promo-image">
@@ -650,10 +693,14 @@ if (is_post()) {
                         </table>
                     </div>
                 </div>
-            <?php endforeach ?>
-        <?php endif ?>
+            <?php endforeach; ?>
+            <?php if (!$hasValidPromotions): ?>
+                <p>No valid promotions available at the moment.</p>
+            <?php endif; ?>
+        <?php else: ?>
+            <p>You haven't claimed any promotions yet.</p>
+        <?php endif; ?>
     </div>
-
     <?php
     $orderHistory = []; // Initialize an empty array for order history
 
@@ -677,94 +724,102 @@ if (is_post()) {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($orderHistory as $order):
-                    $paymentMethodRaw = $order['payment_method'];
-                    $paymentDisplay = '';
-                    $paymentIcon = '';
+                <?php if (!empty($orderHistory)): ?>
+                    <?php foreach ($orderHistory as $order):
+                        $paymentMethodRaw = $order['payment_method'];
+                        $paymentDisplay = '';
+                        $paymentIcon = '';
 
-                    // Decode order items and check review status
-                    $orderItems = json_decode($order['order_items'], true);
-                    $allReviewed = true;
+                        // Decode order items and check review status
+                        $orderItems = json_decode($order['order_items'], true);
+                        $allReviewed = true;
 
-                    foreach ($orderItems as $productID => $quantity) {
-                        $stmt = $_db->prepare("SELECT COUNT(*) FROM reviews WHERE customer_id = ? AND product_id = ?");
-                        $stmt->execute([$_user->customer_id, $productID]);
-                        $isReviewed = $stmt->fetchColumn() > 0;
+                        foreach ($orderItems as $productID => $quantity) {
+                            $stmt = $_db->prepare("SELECT COUNT(*) FROM reviews WHERE customer_id = ? AND product_id = ?");
+                            $stmt->execute([$_user->customer_id, $productID]);
+                            $isReviewed = $stmt->fetchColumn() > 0;
 
-                        if (!$isReviewed) {
-                            $allReviewed = false;
-                            break;
+                            if (!$isReviewed) {
+                                $allReviewed = false;
+                                break;
+                            }
                         }
-                    }
 
-                    // Check if payment method is a JSON object or plain text
-                    $decodedMethod = json_decode($paymentMethodRaw, true);
-                    if (json_last_error() === JSON_ERROR_NONE && is_array($decodedMethod)) {
-                        // Handle bank payment method
-                        if (isset($decodedMethod['accNum'])) {
-                            $cardLastFour = substr($decodedMethod['accNum'], -4);
-                            $paymentDisplay = "***$cardLastFour";
-                            $paymentIcon = "../images/card.svg";
+                        // Check if payment method is a JSON object or plain text
+                        $decodedMethod = json_decode($paymentMethodRaw, true);
+                        if (json_last_error() === JSON_ERROR_NONE && is_array($decodedMethod)) {
+                            // Handle bank payment method
+                            if (isset($decodedMethod['accNum'])) {
+                                $cardLastFour = substr($decodedMethod['accNum'], -4);
+                                $paymentDisplay = "***$cardLastFour";
+                                $paymentIcon = "../images/card.svg";
+                            }
+                        } else {
+                            // Handle other payment methods (plain text)
+                            $paymentMethodText = trim($paymentMethodRaw, '"'); // Remove surrounding quotes if any
+                            switch (strtolower($paymentMethodText)) {
+                                case 'fpx':
+                                    $paymentIcon = "../images/fpx.svg";
+                                    break;
+                                case 'grabpay':
+                                    $paymentIcon = "../images/grabpay.svg";
+                                    break;
+                                case 'alipay':
+                                    $paymentIcon = "../images/alipay.svg";
+                                    break;
+                                case 'link':
+                                    $paymentIcon = "../images/link.svg";
+                                    break;
+                                default:
+                                    $paymentIcon = ""; // Default to no icon
+                                    break;
+                            }
+                            $paymentDisplay = ucfirst($paymentMethodText); // Capitalize first letter
                         }
-                    } else {
-                        // Handle other payment methods (plain text)
-                        $paymentMethodText = trim($paymentMethodRaw, '"'); // Remove surrounding quotes if any
-                        switch (strtolower($paymentMethodText)) {
-                            case 'fpx':
-                                $paymentIcon = "../images/fpx.svg";
-                                break;
-                            case 'grabpay':
-                                $paymentIcon = "../images/grabpay.svg";
-                                break;
-                            case 'alipay':
-                                $paymentIcon = "../images/alipay.svg";
-                                break;
-                            case 'link':
-                                $paymentIcon = "../images/link.svg";
-                                break;
-                            default:
-                                $paymentIcon = ""; // Default to no icon
-                                break;
-                        }
-                        $paymentDisplay = ucfirst($paymentMethodText); // Capitalize first letter
-                    }
-                ?>
-                    <tr>
-                        <td>
-                            <p class="order-id"><?= $order['order_id'] ?></p>
-                        </td>
-                        <td>
-                            <p class="date"><?= date('d M Y', strtotime($order['order_time'])) ?></p>
-                        </td>
-                        <td>
-                            <p class="time"><?= date('h:i A', strtotime($order['order_time'])) ?></p>
-                        </td>
-                        <td class="total-price"><?= number_format($order['total'], 2) ?></td>
-                        <td class="payment-method text-center">
-                            <?php if ($paymentIcon): ?>
-                                <img src="<?= $paymentIcon ?>" alt="<?= $paymentDisplay ?>" style="width: 24px; vertical-align: middle;" />
-                            <?php endif; ?>
-                            <span><?= $paymentDisplay ?></span>
-                        </td>
-                        <td class="delivery-status"><?= $order['status'] ?></td>
-                        <td class="action">
-                            <a class="receiptbtn" href="receipt.php?order_id=<?= urlencode($order['order_id']) ?>">
-                                <span>View Receipt</span>
-                            </a>
-                            <?php if ($order['status'] === 'DELIVERED'): ?>
-                                <?php if ($allReviewed): ?>
-                                    <a class="reviewbtn" href="review.php?order_id=<?= urlencode($order['order_id']) ?>">
-                                        <span>Reviewed&nbsp;&nbsp;</span><i class="ti ti-check"></i>
-                                    </a>
-                                <?php else: ?>
-                                    <a class="reviewbtn" href="review.php?order_id=<?= urlencode($order['order_id']) ?>">
-                                        <span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i>
-                                    </a>
+                    ?>
+                        <tr>
+                            <td>
+                                <p class="order-id"><?= $order['order_id'] ?></p>
+                            </td>
+                            <td>
+                                <p class="date"><?= date('d M Y', strtotime($order['order_time'])) ?></p>
+                            </td>
+                            <td>
+                                <p class="time"><?= date('h:i A', strtotime($order['order_time'])) ?></p>
+                            </td>
+                            <td class="total-price"><?= number_format($order['total'], 2) ?></td>
+                            <td class="payment-method text-center">
+                                <?php if ($paymentIcon): ?>
+                                    <img src="<?= $paymentIcon ?>" alt="<?= $paymentDisplay ?>" style="width: 24px; vertical-align: middle;" />
                                 <?php endif; ?>
-                            <?php endif; ?>
+                                <span><?= $paymentDisplay ?></span>
+                            </td>
+                            <td class="delivery-status"><?= $order['status'] ?></td>
+                            <td class="action">
+                                <a class="receiptbtn" href="receipt.php?order_id=<?= urlencode($order['order_id']) ?>">
+                                    <span>View Receipt</span>
+                                </a>
+                                <?php if ($order['status'] === 'DELIVERED'): ?>
+                                    <?php if ($allReviewed): ?>
+                                        <a class="reviewbtn" href="review.php?order_id=<?= urlencode($order['order_id']) ?>">
+                                            <span>Reviewed&nbsp;&nbsp;</span><i class="ti ti-check"></i>
+                                        </a>
+                                    <?php else: ?>
+                                        <a class="reviewbtn" href="review.php?order_id=<?= urlencode($order['order_id']) ?>">
+                                            <span>Review&nbsp;&nbsp;</span><i class="ti ti-circle-filled"></i>
+                                        </a>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="7">
+                            <p class="empty-row">No orders available.</p>
                         </td>
                     </tr>
-                <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>

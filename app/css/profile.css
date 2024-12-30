@@ -302,6 +302,11 @@
 
 /* Order History */
 
+.empty-row {
+    text-align: center;
+    margin: 100px auto;
+}
+
 .table {
     width: 100%;
     border-collapse: separate;
