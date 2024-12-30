@@ -61,8 +61,9 @@ require_login();
             $pImage = $p->product_image;
             $pName  = $p->product_name;
             $pPrice = $p->price;
+            $pCurrentStock = $p->current_stock;
 
-            $pSubtotal = $pPrice* $quantity;
+            $pSubtotal = $pPrice * $quantity;
             $pCount += $quantity;
             $pTotal += $pSubtotal;
             ?>
@@ -81,11 +82,20 @@ require_login();
                 <!-- Product Qty + Modify Qty -->
                 <td class="quantity">
                     <div class='d-flex align-items-center justify-content-space-around'>
-                        <i class="ti ti-minus cursor-pointer" data-product-id="<?= $pID ?>" data-action="decrease"></i>
+
                         <?php $GLOBALS['quantity-' . $pID] = $quantity; ?>
-                        <?= html_number('quantity-' . $pID, 1, '', 1, "class='quantity-value' data-product-id='$pID' data-action='change'") ?>
-                        
-                        <i class="ti ti-plus cursor-pointer" data-product-id="<?= $pID ?>" data-action="increase"></i>
+                        <?php if ($pCurrentStock > $quantity): ?>
+                            <i class="ti ti-minus cursor-pointer" data-product-id="<?= $pID ?>" data-action="decrease"></i>
+                            <?= html_number('quantity-' . $pID, 1, '', 1, "class='quantity-value' data-product-id='$pID' data-action='change'") ?>
+                            <i class="ti ti-plus cursor-pointer" data-product-id="<?= $pID ?>" data-action="increase"></i>
+                        <?php else: ?>
+                            <div class="d-flex flex-direction-column align-items-center">
+                                <?= html_number('quantity-' . $pID, 1, '', 1, "disabled class='quantity-value' data-product-id='$pID' data-action='change'") ?>
+                                <br>
+                                <span class="text-red">Current Item is out of stock</span>
+                            </div>
+                        <?php endif ?>
+
                     </div>
                 </td>
                 <!-- Sub-total -->
@@ -113,11 +123,11 @@ require_login();
         <?php endif ?>
 
         <tr id="nothing-to-show">
-        <?php if (!$cart): ?>
-            <td colspan="5">
-                <h3>Nothing is here, Try add <a href="../page/shop.php" class='text-decoration-none text-green-darker hover-underline-anim'>something</a>!</h3>
-            </td>
-        <?php endif ?>
+            <?php if (!$cart): ?>
+                <td colspan="5">
+                    <h3>Nothing is here, Try add <a href="../page/shop.php" class='text-decoration-none text-green-darker hover-underline-anim'>something</a>!</h3>
+                </td>
+            <?php endif ?>
         </tr>
 
 

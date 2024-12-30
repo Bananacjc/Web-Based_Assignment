@@ -123,7 +123,7 @@ $customers = $stm->fetchAll();
                     <td><?= plainTextJson($c->cart) ?></td>
                     <td><?= plainTextJson($c->promotion_records) ?></td>
                     <td>
-                        <img src="../../uploads/profile_images/<?= $c->profile_image ?>" class="resized-image" alt="Profile Image">
+                        <img src="../../uploads/customer_images/<?= $c->profile_image ?>" class="resized-image" alt="Profile Image">
                     </td>
 
                     <?php if ($_user->role == 'MANAGER'): ?>

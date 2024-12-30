@@ -33,6 +33,6 @@ if (is_post()) {
 
     $_db->exec('SET FOREIGN_KEY_CHECKS = 1;');
 
-    redirect('customer.php');
+    redirect('category.php');
 }
 ?>

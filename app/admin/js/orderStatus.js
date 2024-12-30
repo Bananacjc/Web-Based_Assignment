@@ -52,7 +52,7 @@ function hideUpdateForm() {
 }
 
 function confirmDelete() {
-    return confirm("Are you sure you want to delete this voucher?");
+    return confirm("Are you sure you want to delete this order?");
 }
 
 function showAddForm() {
@@ -62,6 +62,6 @@ function showAddForm() {
 
 
 function confirmAddVoucher() {
-    const confirmation = confirm("Are you sure you want to add this voucher?");
+    const confirmation = confirm("Are you sure you want to add this order?");
     return confirmation;
 }

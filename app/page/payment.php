@@ -96,7 +96,7 @@ if (!$cart) {
             <div>
                 <div class="address-subcontainer">
                     <label for="line-1" class='address-label'>Address Line 1</label><br>
-                    <input id="line-1" type="text" name="line_1" class="sm-input-box w-100" placeholder=" " required />
+                    <input id="line-1" type="text" name="line_1" class="sm-input-box w-100" placeholder=" "/>
                 </div>
                 <div class="address-subcontainer">
                     <label for="village" class='address-label'>Village</label><br>

@@ -45,7 +45,7 @@ if (is_post()) {
     }
 
         if ($profile_image) {
-            $profile_image_path = save_photo($profile_image, '../../uploads/employee_images');
+            $profile_image_path = save_photo($profile_image, '../uploads/profile_images');
         } else {
             $profile_image_path = null;
         }

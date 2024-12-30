@@ -113,7 +113,7 @@
                         <td><?= $e->email ?></td>
                         <td><?= $e->role ?></td>
                         <td>
-                            <img src="../../uploads/profile_images/<?= $e->profile_image ?>" class="resized-image" alt="Profile Image">
+                            <img src="../uploads/profile_images/<?= $e->profile_image ?>" class="resized-image" alt="Profile Image">
                         </td>
 
                         <td>

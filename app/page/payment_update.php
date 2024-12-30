@@ -64,11 +64,7 @@ if (is_post()) {
         if ($addressDetails) {
             echo json_encode([
                 'success' => true,
-                'full_address' => $address['line_1'] . ', ' .
-                    $address['village'] . ', ' .
-                    $address['postal_code'] . ' ' .
-                    $address['city'] . ', ' .
-                    $address['state'],
+                'full_address' => $selectedAddress,
                 'line_1' => $addressDetails['line_1'],
                 'village' => $addressDetails['village'],
                 'postal_code' => $addressDetails['postal_code'],
@@ -77,8 +73,8 @@ if (is_post()) {
             ]);
         } else {
             echo json_encode([
-                'success' => false,
-                'message' => 'No such address'
+                'success' => true,
+                'full_address' => $selectedAddress
             ]);
         }
         exit();

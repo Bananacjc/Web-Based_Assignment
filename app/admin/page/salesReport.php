@@ -1,13 +1,16 @@
 <?php
 include 'adminHeader.php';
 
-$selectedYear = req('year') ?? date('Y');
-$selectedMonth = req('month') ?? 'all';
-$selectedDay = req('day') ?? 'all';
+// Sanitize and validate the year, month, and day parameters from GET request
+$selectedYear = isset($_GET['year']) && is_numeric($_GET['year']) ? $_GET['year'] : date('Y');
+$selectedMonth = isset($_GET['month']) && $_GET['month'] !== 'all' ? intval($_GET['month']) : 'all';
+$selectedDay = isset($_GET['day']) && $_GET['day'] !== 'all' ? intval($_GET['day']) : 'all';
 
+// Create conditions for month and day if they are selected
 $monthCondition = $selectedMonth === 'all' ? "" : "AND MONTH(order_time) = $selectedMonth";
 $dayCondition = $selectedDay === 'all' ? "" : "AND DAY(order_time) = $selectedDay";
 
+// Query for total orders and total sales
 $totalQuery = "SELECT COUNT(*) AS total_orders, SUM(total) AS total_sales 
                FROM orders 
                WHERE YEAR(order_time) = $selectedYear $monthCondition $dayCondition";
@@ -38,7 +41,6 @@ while ($row = $itemsResult->fetch(PDO::FETCH_ASSOC)) {
     }
 }
 
-
 ?>
 
 <!DOCTYPE html>
@@ -46,25 +48,17 @@ while ($row = $itemsResult->fetch(PDO::FETCH_ASSOC)) {
 
 <head>
     <title>Sales Report</title>
-</head>
-
-<body>
-
-<head>
     <style>
-body {
+        body {
             font-family: 'Roboto', sans-serif;
             background-color: #f4f7fc;
             margin: 0;
             padding: 0;
         }
 
-      
-
         h1 {
             font-size: 2.5em;
             margin: 50px;
-
         }
 
         .container {
@@ -133,8 +127,10 @@ body {
     </style>
 </head>
 
+<body>
+
     <div class="main">
-        <h1>Sales Report for
+        <h1>Sales Report for 
             <?= $selectedDay === 'all' ? ($selectedMonth === 'all' ? "Year $selectedYear" : "Month $selectedMonth, Year $selectedYear") : "Day $selectedDay, Month $selectedMonth, Year $selectedYear" ?>
         </h1>
 
